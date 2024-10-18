@@ -1,0 +1,61 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:dividerPadding="8px"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="16px">
+
+    <!-- Box 1 -->
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:padding="50px"
+        android:text="Monsterpedia"
+        android:textSize="30sp"
+        android:textStyle="bold" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:divider="@android:color/transparent"
+            android:dividerPadding="16dp"
+            android:orientation="horizontal"
+            android:showDividers="middle">
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="100dp"
+                android:layout_weight="1"
+                android:background="@android:color/holo_red_light"
+                android:padding="24px" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="100dp"
+                android:layout_weight="1"
+                android:background="@android:color/holo_green_light" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="100dp"
+                android:layout_weight="1"
+                android:background="@android:color/holo_blue_light" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Box 2 -->
+
+    <!-- Box 3 -->
+
+</LinearLayout>
