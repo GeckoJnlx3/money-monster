@@ -19,7 +19,7 @@ class LoginActivity : ComponentActivity() {
         }
         var enterBtn: TextView = findViewById(R.id.loginEnterBtn)
         enterBtn.setOnClickListener(){
-            val intent = Intent(this, AnalyticsActivity::class.java)
+            val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
         }
     }
