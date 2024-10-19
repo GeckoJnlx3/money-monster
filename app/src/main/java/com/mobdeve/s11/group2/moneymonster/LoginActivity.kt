@@ -10,11 +10,16 @@ class LoginActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setContentView(R.layout.login_main)
+        setContentView(R.layout.login)
 
         var registerBtn: TextView = findViewById(R.id.loginRegisterNowTv)
         registerBtn.setOnClickListener(){
             val intent = Intent(this, RegisterActivity::class.java)
+            startActivity(intent)
+        }
+        var enterBtn: TextView = findViewById(R.id.loginEnterBtn)
+        enterBtn.setOnClickListener(){
+            val intent = Intent(this, AnalyticsActivity::class.java)
             startActivity(intent)
         }
     }

@@ -1,61 +1,60 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:dividerPadding="8px"
     android:gravity="center"
     android:orientation="vertical"
-    android:padding="16px">
+    android:padding="16dp">
 
-    <!-- Box 1 -->
     <TextView
         android:id="@+id/textView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:gravity="center"
-        android:padding="50px"
+        android:padding="50dp"
         android:text="Monsterpedia"
         android:textSize="30sp"
         android:textStyle="bold" />
 
-    <LinearLayout
+    <TextView
+        android:id="@+id/gwomp_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="Gwomp" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/monsterpediaRVG"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:orientation="horizontal">
+        android:scrollbars="vertical">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:divider="@android:color/transparent"
-            android:dividerPadding="16dp"
-            android:orientation="horizontal"
-            android:showDividers="middle">
+    </androidx.recyclerview.widget.RecyclerView>
 
-            <View
-                android:layout_width="0dp"
-                android:layout_height="100dp"
-                android:layout_weight="1"
-                android:background="@android:color/holo_red_light"
-                android:padding="24px" />
+    <TextView
+        android:id="@+id/mamoo_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Mamoo" />
 
-            <View
-                android:layout_width="0dp"
-                android:layout_height="100dp"
-                android:layout_weight="1"
-                android:background="@android:color/holo_green_light" />
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/monsterpediaRVM"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1" >
 
-            <View
-                android:layout_width="0dp"
-                android:layout_height="100dp"
-                android:layout_weight="1"
-                android:background="@android:color/holo_blue_light" />
-        </LinearLayout>
-    </LinearLayout>
+    </androidx.recyclerview.widget.RecyclerView>
 
-    <!-- Box 2 -->
+    <TextView
+        android:id="@+id/ylang_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Ylang" />
 
-    <!-- Box 3 -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/monsterpediaRVY"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1" />
 
 </LinearLayout>
