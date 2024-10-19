@@ -35,11 +35,10 @@ class MainActivity : ComponentActivity() {
             val intent = Intent(this, LoginActivity::class.java)
             startActivity(intent)
         }
-        // added soon
-//        analyticsBtn.setOnClickListener(){
-//            val intent = Intent(this, AnalyticsActivity::class.java)
-//            startActivity(intent)
-//        }
+        analyticsBtn.setOnClickListener(){
+            val intent = Intent(this, AnalyticsActivity::class.java)
+            startActivity(intent)
+        }
 
     }
 
