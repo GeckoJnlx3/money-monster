@@ -3,10 +3,11 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_margin="10dp"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:scrollbarAlwaysDrawVerticalTrack="true">
 
     <TextView
-        android:id="@+id/textView2"
+        android:id="@+id/expensesHeaderTv"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Expenses"
@@ -14,17 +15,26 @@
         android:textSize="34sp"
         android:textStyle="bold" />
 
-    <LinearLayout
+    <com.github.mikephil.charting.charts.PieChart
+        android:id="@+id/expensePc"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:layout_centerHorizontal="false"
+        android:minHeight="250dp" />
 
-        <com.github.mikephil.charting.charts.PieChart
-            android:id="@+id/expensePc"
-            android:layout_width="250dp"
-            android:layout_height="250dp"
-            android:layout_centerHorizontal="false" />
+    <TextView
+        android:id="@+id/overviewHeaderTv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Overview"
+        android:textAlignment="center"
+        android:textSize="34sp"
+        android:textStyle="bold" />
 
-    </LinearLayout>
+    <com.github.mikephil.charting.charts.LineChart
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="250dp" />
+
 
 </LinearLayout>
