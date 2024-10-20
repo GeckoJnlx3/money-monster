@@ -20,6 +20,7 @@ import com.github.mikephil.charting.data.PieData
 import com.github.mikephil.charting.data.PieDataSet
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.mobdeve.s11.group2.moneymonster.databinding.AnalyticsBinding
+import java.time.format.DateTimeFormatter
 import java.util.Date
 import java.util.Locale
 import java.util.concurrent.TimeUnit
@@ -106,9 +107,11 @@ class AnalyticsActivity: ComponentActivity() {
             //https://stackoverflow.com/questions/41426021/how-to-add-x-axis-as-datetime-label-in-mpandroidchart
             val msSince1970 = TimeUnit.DAYS.toMillis(value.toLong())
             val timeMs: Date = Date(msSince1970)
-            val format: SimpleDateFormat = SimpleDateFormat("MM-dd")
+            val loc: Locale = Locale("en")
+            val dateTimeFormat:SimpleDateFormat = SimpleDateFormat("MM-dd", loc)
+//            val format: SimpleDateFormat = SimpleDateFormat("MM-dd")
 
-            return format.format(timeMs)
+            return dateTimeFormat.format(timeMs)
         }
     }
 }
