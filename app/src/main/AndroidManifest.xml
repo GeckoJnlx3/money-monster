@@ -43,6 +43,11 @@
             android:theme="@style/Theme.AppCompat.Light">
         </activity>
 
+        <activity
+            android:name=".MonsterEntryActivity">
+        </activity>
+
+
     </application>
 
 </manifest>

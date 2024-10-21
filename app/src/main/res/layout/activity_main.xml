@@ -10,6 +10,7 @@
         android:id="@+id/loginBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_margin="16sp"
         android:text="Login"
         android:textSize="9sp" />
 
@@ -25,6 +26,7 @@
         android:id="@+id/dateRangeSpnr"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_margin="16sp"
         android:gravity="center" />
 
     <LinearLayout
