@@ -24,7 +24,7 @@ class MainActivity : ComponentActivity() {
     private lateinit var settingBtn: Button // TBA
     private lateinit var monsterpediaBtn: Button
     private lateinit var analyticsBtn: Button
-    private lateinit var financeBtn: Button // TBA
+    private lateinit var financeBtn: Button
     private val handler = Handler()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,6 +41,7 @@ class MainActivity : ComponentActivity() {
         monsterpediaBtn = viewBinding.monsterpediaBtn
         loginBtn = viewBinding.loginBtn
         analyticsBtn = viewBinding.analyticsBtn
+        financeBtn = viewBinding.financeBtn
 
         val weekRanges = generateWeekRanges()
 
@@ -60,6 +61,11 @@ class MainActivity : ComponentActivity() {
 
         analyticsBtn.setOnClickListener {
             val intent = Intent(this, AnalyticsActivity::class.java)
+            startActivity(intent)
+        }
+
+        financeBtn.setOnClickListener {
+            val intent = Intent(this, FinanceActivity::class.java)
             startActivity(intent)
         }
 

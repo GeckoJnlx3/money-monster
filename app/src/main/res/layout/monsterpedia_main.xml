@@ -27,6 +27,7 @@
         android:id="@+id/monsterpediaRVG"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_margin="16sp"
         android:scrollbars="vertical">
 
     </androidx.recyclerview.widget.RecyclerView>
@@ -41,7 +42,8 @@
         android:id="@+id/monsterpediaRVM"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="1" >
+        android:layout_margin="16sp"
+        android:layout_weight="1">
 
     </androidx.recyclerview.widget.RecyclerView>
 
@@ -55,6 +57,7 @@
         android:id="@+id/monsterpediaRVY"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_margin="16sp"
         android:layout_weight="1" />
 
 </LinearLayout>
