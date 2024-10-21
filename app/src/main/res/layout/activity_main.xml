@@ -44,7 +44,7 @@
                 android:id="@+id/imageView5"
                 android:layout_width="50sp"
                 android:layout_height="50sp"
-                android:src="@drawable/moneyfly" />
+                android:src="@drawable/piggy" />
 
             <RelativeLayout
                 android:layout_width="match_parent"
@@ -87,7 +87,7 @@
                 android:id="@+id/imageView3"
                 android:layout_width="50sp"
                 android:layout_height="50sp"
-                android:src="@drawable/piggy" />
+                android:src="@drawable/moneyfly" />
 
             <RelativeLayout
                 android:layout_width="match_parent"
