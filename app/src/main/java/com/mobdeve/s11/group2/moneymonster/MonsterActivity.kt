@@ -10,8 +10,6 @@ class MonsterActivity : ComponentActivity() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var recyclerView1: RecyclerView
     private lateinit var recyclerView2: RecyclerView
-    private lateinit var adapter: MonsterAdapter
-    private lateinit var monsterList: List<Monster>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -19,12 +17,6 @@ class MonsterActivity : ComponentActivity() {
 
         recyclerView = findViewById(R.id.monsterpediaRVG)
         recyclerView.layoutManager = GridLayoutManager(this, 3 )
-
-        monsterList = listOf(
-            Monster("Gwomp", R.drawable.gwomp),
-            Monster("Mamoo", R.drawable.gwomp),
-            Monster("Ylang", R.drawable.gwomp)
-        )
 
         var gwompList = listOf(
             Monster("Gwomp", R.drawable.gwomp_baby),
@@ -38,18 +30,24 @@ class MonsterActivity : ComponentActivity() {
             Monster("Mamoolah", R.drawable.mamoo_adult)
         )
 
+        var aveList = listOf(
+            Monster("Ave", R.drawable.ave_baby),
+            Monster("Evale", R.drawable.ave_teen),
+            Monster("Alvirose", R.drawable.ave_adult)
+        )
+
         recyclerView1 = findViewById(R.id.monsterpediaRVM)
         recyclerView1.layoutManager = GridLayoutManager(this, 3 )
 
-        recyclerView2 = findViewById(R.id.monsterpediaRVY)
+        recyclerView2 = findViewById(R.id.monsterpediaRVA)
         recyclerView2.layoutManager = GridLayoutManager(this, 3 )
 
         var adapterG = MonsterAdapter(gwompList)
         var adapterM = MonsterAdapter(mamooList)
-        adapter = MonsterAdapter(monsterList)
+        var adapterA = MonsterAdapter(aveList)
         recyclerView.adapter = adapterG
         recyclerView1.adapter = adapterM
-        recyclerView2.adapter = adapter
+        recyclerView2.adapter = adapterA
 
     }
 }

@@ -58,17 +58,17 @@
     </androidx.recyclerview.widget.RecyclerView>
 
     <TextView
-        android:id="@+id/ylang_name"
+        android:id="@+id/ave_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="0"
-        android:text="Ylang"
+        android:text="Ave"
         android:textColor="#9D5A38"
         android:textSize="20sp"
         android:textStyle="bold" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/monsterpediaRVY"
+        android:id="@+id/monsterpediaRVA"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="4dp"
