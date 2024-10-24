@@ -3,16 +3,32 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_margin="10dp"
+    android:background="@color/offwhite_bg"
     android:orientation="vertical"
     android:scrollbarAlwaysDrawVerticalTrack="true">
+
+    <TextView
+        android:id="@+id/analyticsHeaderTv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/baloo_bhai"
+        android:gravity="center"
+        android:text="Analytics"
+        android:textColor="@color/brown_header"
+        android:textSize="48sp"
+        android:textStyle="bold"
+        android:textAlignment="center"
+        android:padding="20dp"/>
 
     <TextView
         android:id="@+id/expensesHeaderTv"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:fontFamily="sans-serif"
         android:text="Expenses"
-        android:textAlignment="center"
-        android:textSize="34sp"
+        android:textAlignment="viewStart"
+        android:textColor="@color/brown_header"
+        android:textSize="24sp"
         android:textStyle="bold" />
 
     <com.github.mikephil.charting.charts.PieChart
@@ -26,9 +42,11 @@
         android:id="@+id/overviewHeaderTv"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:fontFamily="sans-serif"
         android:text="Overview"
-        android:textAlignment="center"
-        android:textSize="34sp"
+        android:textAlignment="viewStart"
+        android:textColor="@color/brown_header"
+        android:textSize="24sp"
         android:textStyle="bold" />
 
     <com.github.mikephil.charting.charts.LineChart

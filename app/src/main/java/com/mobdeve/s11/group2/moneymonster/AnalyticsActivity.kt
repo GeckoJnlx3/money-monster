@@ -20,6 +20,7 @@ import com.github.mikephil.charting.data.PieData
 import com.github.mikephil.charting.data.PieDataSet
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.mobdeve.s11.group2.moneymonster.databinding.AnalyticsBinding
+import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Date
 import java.util.Locale
@@ -53,7 +54,6 @@ class AnalyticsActivity: ComponentActivity() {
     }
 
     private fun displayExpensePieChart(){
-
         expensePc.extraRightOffset = 30f
         expensePc.isDrawHoleEnabled = false
         expensePc.setUsePercentValues(false)
@@ -83,23 +83,40 @@ class AnalyticsActivity: ComponentActivity() {
         expensePc.invalidate()
     }
     private fun displayOverviewLineChart() {
-        var expenseOverview: ArrayList<Entry> = ArrayList()
         overviewLc.xAxis.valueFormatter = LineChartXAxisValueFormatter()
+        overviewLc.description.isEnabled = false
 
+        var expenseOverview: ArrayList<Entry> = ArrayList()
         expenseOverview.add(Entry(1725120000000f, 0f))
         expenseOverview.add(Entry(1725206400000f, 100f))
         expenseOverview.add(Entry(1726006400000f, 3000f))
         expenseOverview.add(Entry(1726806400000f, 5000f))
 
-        val expenseOverviewDs = LineDataSet(expenseOverview, "")
-        expenseOverviewDs.colors = colors
+        val expenseOverviewDs = LineDataSet(expenseOverview, "Expenses")
+        expenseOverviewDs.color = resources.getColor(R.color.holo_purple)
+        expenseOverviewDs.lineWidth = 3f
+        expenseOverviewDs.setCircleColor(resources.getColor(R.color.black))
+        expenseOverviewDs.setDrawCircleHole(false)
 
-        val data = LineData(expenseOverviewDs)
+        var savingOverview: ArrayList<Entry> = ArrayList()
+        savingOverview.add(Entry(1725120000000f, 10000f))
+        savingOverview.add(Entry(1725206400000f, 9900f))
+        savingOverview.add(Entry(1726006400000f, 6900f))
+        savingOverview.add(Entry(1726806400000f, 1900f))
+
+        val savingOverviewDs = LineDataSet(savingOverview, "Savings")
+        savingOverviewDs.color = resources.getColor(R.color.holo_green_light)
+        savingOverviewDs.lineWidth = 3f
+        savingOverviewDs.setCircleColor(resources.getColor(R.color.black))
+        savingOverviewDs.setDrawCircleHole(false)
+
+        val data = LineData()
+        data.addDataSet(expenseOverviewDs)
+        data.addDataSet(savingOverviewDs)
+
         overviewLc.data = data
 
-        overviewLc.highlightValues(null)
         overviewLc.invalidate()
-
     }
 
     private class LineChartXAxisValueFormatter: IndexAxisValueFormatter(){
@@ -108,7 +125,7 @@ class AnalyticsActivity: ComponentActivity() {
             val msSince1970 = TimeUnit.DAYS.toMillis(value.toLong())
             val timeMs: Date = Date(msSince1970)
             val loc: Locale = Locale("en")
-            val dateTimeFormat:SimpleDateFormat = SimpleDateFormat("MM-dd", loc)
+            val dateTimeFormat:SimpleDateFormat = SimpleDateFormat("MM-dd-yy", loc)
 //            val format: SimpleDateFormat = SimpleDateFormat("MM-dd")
 
             return dateTimeFormat.format(timeMs)

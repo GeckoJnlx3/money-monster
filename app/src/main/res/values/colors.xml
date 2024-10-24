@@ -17,4 +17,6 @@
     <color name="green_btn">#A5B68D</color>
     <color name="beige">#ECDFCC</color>
     <color name="brown_accent">#DA8359</color>
+    <color name="brown_header">#784934</color>
+    <color name="brown_shadow">#a7856c</color>
 </resources>

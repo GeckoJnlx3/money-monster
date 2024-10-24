@@ -1,8 +1,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     android:background="@color/offwhite_bg"
-    android:gravity="center"
+    android:gravity="center|top"
     android:orientation="vertical"
     android:padding="16dp">
 
@@ -10,26 +10,31 @@
         android:id="@+id/textView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
+        android:layout_weight="0"
+        android:fontFamily="@font/baloo_bhai"
         android:gravity="center"
-        android:padding="50dp"
+        android:padding="20dp"
         android:text="Monsterpedia"
-        android:textSize="30sp"
+        android:textColor="@color/brown_header"
+        android:textSize="48sp"
         android:textStyle="bold" />
 
     <TextView
         android:id="@+id/gwomp_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:text="Gwomp" />
+        android:layout_weight="0"
+        android:text="Gwomp"
+        android:textColor="#9D5A38"
+        android:textSize="20sp"
+        android:textStyle="bold" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/monsterpediaRVG"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_margin="16sp"
-        android:scrollbars="vertical">
+        android:layout_height="wrap_content"
+        android:layout_margin="4dp"
+        android:layout_weight="0">
 
     </androidx.recyclerview.widget.RecyclerView>
 
@@ -37,14 +42,18 @@
         android:id="@+id/mamoo_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Mamoo" />
+        android:layout_weight="0"
+        android:text="Mamoo"
+        android:textColor="#9D5A38"
+        android:textSize="20sp"
+        android:textStyle="bold" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/monsterpediaRVM"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_margin="16sp"
-        android:layout_weight="1">
+        android:layout_height="wrap_content"
+        android:layout_margin="4dp"
+        android:layout_weight="0">
 
     </androidx.recyclerview.widget.RecyclerView>
 
@@ -52,13 +61,17 @@
         android:id="@+id/ylang_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Ylang" />
+        android:layout_weight="0"
+        android:text="Ylang"
+        android:textColor="#9D5A38"
+        android:textSize="20sp"
+        android:textStyle="bold" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/monsterpediaRVY"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_margin="16sp"
-        android:layout_weight="1" />
+        android:layout_height="wrap_content"
+        android:layout_margin="4dp"
+        android:layout_weight="0" />
 
 </LinearLayout>

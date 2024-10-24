@@ -19,9 +19,7 @@ class MainActivity : ComponentActivity() {
     private lateinit var limitProgressBar: ProgressBar
     private lateinit var budgetprogressText: TextView
     private lateinit var limitprogressText: TextView
-    private lateinit var startButton: Button
     private lateinit var loginBtn: Button
-    private lateinit var settingBtn: Button // TBA
     private lateinit var monsterpediaBtn: Button
     private lateinit var analyticsBtn: Button
     private lateinit var financeBtn: Button
@@ -37,7 +35,6 @@ class MainActivity : ComponentActivity() {
         limitProgressBar = viewBinding.limitprogressBar
         budgetprogressText = viewBinding.budgetprogressText
         limitprogressText = viewBinding.limitprogressText
-        startButton = viewBinding.settingBtn
         monsterpediaBtn = viewBinding.monsterpediaBtn
         loginBtn = viewBinding.loginBtn
         analyticsBtn = viewBinding.analyticsBtn
@@ -67,10 +64,6 @@ class MainActivity : ComponentActivity() {
         financeBtn.setOnClickListener {
             val intent = Intent(this, FinanceActivity::class.java)
             startActivity(intent)
-        }
-
-        startButton.setOnClickListener {
-            startProgress()
         }
     }
 

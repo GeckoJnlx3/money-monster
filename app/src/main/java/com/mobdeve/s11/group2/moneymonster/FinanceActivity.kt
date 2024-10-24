@@ -1,5 +1,6 @@
 package com.mobdeve.s11.group2.moneymonster
 
+import android.content.res.ColorStateList
 import android.os.Bundle
 import android.widget.ArrayAdapter
 import android.widget.Button
@@ -9,6 +10,7 @@ import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.ComponentActivity
+import androidx.compose.ui.res.colorResource
 
 class FinanceActivity : ComponentActivity() {
 
@@ -48,7 +50,7 @@ class FinanceActivity : ComponentActivity() {
         categoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         categorySpnr.adapter = categoryAdapter
 
-        imageView.setImageResource(R.drawable.gwomp)
+        imageView.setImageResource(R.drawable.gwomp_baby)
 
         logExpenseBtn.setOnClickListener {
             switchToExpense()
@@ -67,13 +69,17 @@ class FinanceActivity : ComponentActivity() {
 
     private fun switchToExpense() {
         isLoggingExpense = true
-        imageView.setImageResource(R.drawable.gwomp)
+        logExpenseBtn.setBackgroundTintList(ColorStateList.valueOf(resources.getColor(R.color.beige)))
+        logIncomeBtn.setBackgroundTintList(ColorStateList.valueOf(resources.getColor(R.color.brown_shadow)))
+        imageView.setImageResource(R.drawable.gwomp_baby)
         updateUI()
     }
 
     private fun switchToIncome() {
         isLoggingExpense = false
-        imageView.setImageResource(R.drawable.gwomp)
+        logExpenseBtn.setBackgroundTintList(ColorStateList.valueOf(resources.getColor(R.color.brown_shadow)))
+        logIncomeBtn.setBackgroundTintList(ColorStateList.valueOf(resources.getColor(R.color.beige)))
+        imageView.setImageResource(R.drawable.gwomp_baby)
         updateUI()
     }
 

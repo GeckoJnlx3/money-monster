@@ -29,13 +29,13 @@ class MonsterActivity : ComponentActivity() {
         var gwompList = listOf(
             Monster("Gwomp", R.drawable.gwomp_baby),
             Monster("Gwompor", R.drawable.gwomp_teen),
-            Monster("Wompagwoom", R.drawable.gwomp_adult)
+            Monster("Wompagwom", R.drawable.gwomp_adult)
         )
 
         var mamooList = listOf(
             Monster("Mamoo", R.drawable.mamoo_baby),
             Monster("Moomie", R.drawable.mamoo_teen),
-            Monster("Moomama", R.drawable.mamoo_adult)
+            Monster("Mamoolah", R.drawable.mamoo_adult)
         )
 
         recyclerView1 = findViewById(R.id.monsterpediaRVM)

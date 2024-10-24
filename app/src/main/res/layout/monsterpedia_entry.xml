@@ -10,10 +10,13 @@
         android:id="@+id/monsterName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="16dp"
+        android:layout_margin="20dp"
+        android:fontFamily="@font/baloo_bhai"
         android:text="Gwomp"
-        android:textSize="24sp"
-        android:textStyle="bold" />
+        android:textColor="@color/brown_header"
+        android:textSize="48sp"
+        android:textStyle="bold"
+        android:textAlignment="center"/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -21,15 +24,33 @@
         android:orientation="vertical"
         android:weightSum="1">
 
-        <ImageView
-            android:id="@+id/monsterImg"
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_margin="16dp"
-            android:layout_weight="0.7"
-            android:adjustViewBounds="true"
-            android:scaleType="fitCenter"
-            app:srcCompat="@drawable/gwomp" />
+            android:layout_weight="0.7">
+
+            <ImageView
+                android:id="@+id/imageView2"
+                android:layout_width="150dp"
+                android:layout_height="20dp"
+                android:layout_alignStart="@+id/monsterImg"
+                android:layout_alignTop="@+id/monsterImg"
+                android:layout_alignEnd="@+id/monsterImg"
+                android:layout_alignBottom="@+id/monsterImg"
+                android:layout_marginStart="122dp"
+                android:layout_marginTop="130dp"
+                android:layout_marginEnd="122dp"
+                android:layout_marginBottom="40dp"
+                android:src="@drawable/shadow" />
+
+            <ImageView
+                android:id="@+id/monsterImg"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="16dp"
+                android:adjustViewBounds="true"
+                android:scaleType="fitCenter" />
+        </RelativeLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -37,7 +58,9 @@
             android:layout_margin="16dp"
             android:layout_weight="0.3"
             android:background="@drawable/rounded_square"
-            android:orientation="vertical">
+            android:backgroundTint="@color/brown_accent"
+            android:orientation="vertical"
+            android:padding="5dp">
 
             <TextView
                 android:id="@+id/textView2"
@@ -45,6 +68,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="16dp"
                 android:text="Description"
+                android:textColor="@color/black"
                 android:textSize="24sp" />
 
             <TextView
@@ -53,7 +77,8 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:padding="16dp"
-                android:text="blah blah gwomp blah blah blah" />
+                android:text="blah blah gwomp blah blah blah"
+                android:textColor="@color/black" />
 
             <TableLayout
                 android:layout_width="match_parent"
@@ -71,6 +96,7 @@
                         android:gravity="center"
                         android:padding="8dp"
                         android:text="Total Earnings"
+                        android:textColor="@color/black"
                         android:textStyle="bold" />
 
                     <TextView
@@ -80,6 +106,7 @@
                         android:gravity="center"
                         android:padding="8dp"
                         android:text="Total Spent"
+                        android:textColor="@color/black"
                         android:textStyle="bold" />
 
                     <TextView
@@ -89,6 +116,7 @@
                         android:gravity="center"
                         android:padding="8dp"
                         android:text="Average Spending"
+                        android:textColor="@color/black"
                         android:textStyle="bold" />
                 </TableRow>
 
@@ -101,21 +129,24 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:padding="8dp"
-                        android:text="₱527" />
+                        android:text="₱527"
+                        android:textColor="@color/black" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:padding="8dp"
-                        android:text="₱67" />
+                        android:text="₱67"
+                        android:textColor="@color/black" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:padding="8dp"
-                        android:text="₱37" />
+                        android:text="₱37"
+                        android:textColor="@color/black" />
                 </TableRow>
 
             </TableLayout>

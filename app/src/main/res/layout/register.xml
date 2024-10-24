@@ -2,7 +2,8 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/offwhite_bg">
 
     <LinearLayout
         android:layout_width="348dp"
@@ -11,7 +12,7 @@
         android:layout_marginTop="1dp"
         android:layout_marginEnd="24dp"
         android:layout_marginBottom="1dp"
-        android:background="#C7C7C7"
+        android:background="@color/beige"
         android:orientation="vertical"
         android:padding="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -24,9 +25,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
+            android:fontFamily="@font/baloo_bhai"
             android:text="Register"
             android:textAlignment="center"
-            android:textSize="24sp"
+            android:textColor="@color/brown_header"
+            android:textSize="34sp"
             android:textStyle="bold" />
 
         <EditText
@@ -35,6 +38,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
             android:ems="10"
+            android:fontFamily="sans-serif"
             android:hint="email"
             android:inputType="textEmailAddress"
             android:minHeight="48dp" />
@@ -45,6 +49,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
             android:ems="10"
+            android:fontFamily="sans-serif"
             android:hint="password"
             android:inputType="textPassword"
             android:minHeight="48dp" />
@@ -55,6 +60,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
             android:ems="10"
+            android:fontFamily="sans-serif"
             android:hint="reenter password"
             android:inputType="textPassword"
             android:minHeight="48dp" />
@@ -65,6 +71,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:clickable="true"
+            android:fontFamily="sans-serif"
             android:minHeight="30dp"
             android:text="Already have an account? Log in!" />
 
@@ -74,7 +81,9 @@
             android:layout_height="wrap_content"
             android:layout_gravity="end"
             android:layout_margin="5dp"
-            android:text="register" />
+            android:text="register"
+            android:background="@color/brown_accent"
+            android:textSize="16sp"/>
 
     </LinearLayout>
 

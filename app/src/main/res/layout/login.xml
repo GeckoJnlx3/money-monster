@@ -5,6 +5,7 @@
     android:id="@+id/linearLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/offwhite_bg"
     android:orientation="vertical">
 
     <LinearLayout
@@ -14,7 +15,7 @@
         android:layout_marginTop="1dp"
         android:layout_marginEnd="24dp"
         android:layout_marginBottom="1dp"
-        android:background="#C7C7C7"
+        android:background="@color/beige"
         android:orientation="vertical"
         android:padding="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -27,9 +28,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
+            android:fontFamily="@font/baloo_bhai"
             android:text="Login"
             android:textAlignment="center"
-            android:textSize="24sp"
+            android:textColor="@color/brown_header"
+            android:textSize="34sp"
             android:textStyle="bold" />
 
         <EditText
@@ -38,9 +41,11 @@
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
             android:ems="10"
+            android:fontFamily="sans-serif"
             android:hint="email"
             android:inputType="textEmailAddress"
-            android:minHeight="48dp" />
+            android:minHeight="48dp"
+            android:textColor="@color/black" />
 
         <EditText
             android:id="@+id/loginPasswordEtv"
@@ -48,9 +53,11 @@
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
             android:ems="10"
+            android:fontFamily="sans-serif"
             android:hint="password"
             android:inputType="textPassword"
-            android:minHeight="48dp" />
+            android:minHeight="48dp"
+            android:textColor="@color/black" />
 
         <TextView
             android:id="@+id/loginRegisterNowTv"
@@ -58,8 +65,10 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:clickable="true"
+            android:fontFamily="sans-serif"
             android:minHeight="30dp"
-            android:text="No account yet? Register now!" />
+            android:text="No account yet? Register now!"
+            android:textColor="@color/black" />
 
         <Button
             android:id="@+id/loginEnterBtn"
@@ -67,7 +76,9 @@
             android:layout_height="wrap_content"
             android:layout_gravity="end"
             android:layout_margin="5dp"
-            android:text="enter" />
+            android:background="@color/brown_accent"
+            android:text="enter"
+            android:textSize="16sp" />
 
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
