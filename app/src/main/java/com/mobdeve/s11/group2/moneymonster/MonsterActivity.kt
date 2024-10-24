@@ -21,9 +21,9 @@ class MonsterActivity : ComponentActivity() {
         recyclerView.layoutManager = GridLayoutManager(this, 3 )
 
         monsterList = listOf(
-            Monster("Monster 1", R.drawable.gwomp),
-            Monster("Monster 2", R.drawable.gwomp),
-            Monster("Monster 3", R.drawable.gwomp)
+            Monster("Gwomp", R.drawable.gwomp),
+            Monster("Mamoo", R.drawable.gwomp),
+            Monster("Ylang", R.drawable.gwomp)
         )
 
         recyclerView1 = findViewById(R.id.monsterpediaRVM)

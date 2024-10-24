@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import android.content.Intent
 
 class MonsterAdapter(private val monsterList: List<Monster>) : RecyclerView.Adapter<MonsterAdapter.ViewHolder>() {
 
@@ -21,8 +22,16 @@ class MonsterAdapter(private val monsterList: List<Monster>) : RecyclerView.Adap
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val monster = monsterList[position]
         holder.imageView.setImageResource(monster.imageResource)
-    }
 
+        holder.itemView.setOnClickListener {
+            val context = holder.itemView.context
+            val intent = Intent(context, MonsterEntryActivity::class.java).apply {
+                putExtra("monster_name", monster.name)
+                putExtra("monster_image", monster.imageResource)
+            }
+            context.startActivity(intent)
+        }
+    }
     override fun getItemCount(): Int {
         return monsterList.size
     }
