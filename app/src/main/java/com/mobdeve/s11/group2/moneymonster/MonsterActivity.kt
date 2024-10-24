@@ -27,9 +27,15 @@ class MonsterActivity : ComponentActivity() {
         )
 
         var gwompList = listOf(
-            Monster("Gwomp", R.drawable.gwomp1),
-            Monster("Gwompor", R.drawable.gwomp2),
-            Monster("Wompagwoom", R.drawable.gwomp3)
+            Monster("Gwomp", R.drawable.gwomp_baby),
+            Monster("Gwompor", R.drawable.gwomp_teen),
+            Monster("Wompagwoom", R.drawable.gwomp_adult)
+        )
+
+        var mamooList = listOf(
+            Monster("Mamoo", R.drawable.mamoo_baby),
+            Monster("Moomie", R.drawable.mamoo_teen),
+            Monster("Moomama", R.drawable.mamoo_adult)
         )
 
         recyclerView1 = findViewById(R.id.monsterpediaRVM)
@@ -39,9 +45,10 @@ class MonsterActivity : ComponentActivity() {
         recyclerView2.layoutManager = GridLayoutManager(this, 3 )
 
         var adapterG = MonsterAdapter(gwompList)
+        var adapterM = MonsterAdapter(mamooList)
         adapter = MonsterAdapter(monsterList)
         recyclerView.adapter = adapterG
-        recyclerView1.adapter = adapter
+        recyclerView1.adapter = adapterM
         recyclerView2.adapter = adapter
 
     }
