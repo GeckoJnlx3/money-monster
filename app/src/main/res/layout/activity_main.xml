@@ -39,6 +39,8 @@
             android:id="@+id/savingGoal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="12sp"
+            android:layout_marginRight="12sp"
             android:orientation="vertical">
 
             <LinearLayout
@@ -59,7 +61,7 @@
                     android:gravity="center">
 
                     <ProgressBar
-                        android:id="@+id/limitprogressBar"
+                        android:id="@+id/targetProgressBar"
                         style="?android:attr/progressBarStyleHorizontal"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -69,7 +71,7 @@
                         android:progressTint="@color/green_btn" />
 
                     <TextView
-                        android:id="@+id/limitprogressText"
+                        android:id="@+id/targetProgressText"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_centerInParent="true"
@@ -85,6 +87,8 @@
             android:id="@+id/expenseGoal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="12sp"
+            android:layout_marginRight="12sp"
             android:orientation="vertical">
 
             <LinearLayout
@@ -104,7 +108,7 @@
                     android:gravity="center">
 
                     <ProgressBar
-                        android:id="@+id/budgetprogressBar"
+                        android:id="@+id/limitProgressBar"
                         style="?android:attr/progressBarStyleHorizontal"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -113,7 +117,7 @@
                         android:progress="0" />
 
                     <TextView
-                        android:id="@+id/budgetprogressText"
+                        android:id="@+id/limitProgressText"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_centerInParent="true"

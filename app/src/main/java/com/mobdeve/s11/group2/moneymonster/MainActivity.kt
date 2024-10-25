@@ -1,5 +1,6 @@
 package com.mobdeve.s11.group2.moneymonster
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
@@ -10,15 +11,14 @@ import android.widget.Spinner
 import android.widget.TextView
 import android.view.View
 import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
 import com.mobdeve.s11.group2.moneymonster.databinding.ActivityMainBinding
 
 class MainActivity : ComponentActivity() {
 
     private lateinit var dateRangeSpinner: Spinner
-    private lateinit var budgetProgressBar: ProgressBar
+    private lateinit var targetProgressBar: ProgressBar
     private lateinit var limitProgressBar: ProgressBar
-    private lateinit var budgetprogressText: TextView
+    private lateinit var targetprogressText: TextView
     private lateinit var limitprogressText: TextView
     private lateinit var settingsBtn: Button
     private lateinit var expenseGoal: View
@@ -34,10 +34,10 @@ class MainActivity : ComponentActivity() {
         setContentView(viewBinding.root)
 
         dateRangeSpinner = viewBinding.dateRangeSpnr
-        budgetProgressBar = viewBinding.budgetprogressBar
-        limitProgressBar = viewBinding.limitprogressBar
-        budgetprogressText = viewBinding.budgetprogressText
-        limitprogressText = viewBinding.limitprogressText
+        targetProgressBar = viewBinding.targetProgressBar
+        limitProgressBar = viewBinding.limitProgressBar
+        targetprogressText = viewBinding.targetProgressText
+        limitprogressText = viewBinding.limitProgressText
         monsterpediaBtn = viewBinding.monsterpediaBtn
         settingsBtn = viewBinding.settingsBtn
         analyticsBtn = viewBinding.analyticsBtn
@@ -68,6 +68,8 @@ class MainActivity : ComponentActivity() {
             val intent = Intent(this, FinanceActivity::class.java)
             startActivity(intent)
         }
+
+        loadAndDisplayProgress()
     }
 
     private fun openSettings() {
@@ -85,17 +87,34 @@ class MainActivity : ComponentActivity() {
         )
     }
 
-    private fun startProgress() {
-        budgetProgressBar.progress = 0
-        val maxProgress = 10
+    private fun loadAndDisplayProgress() {
+        val sharedPref = getSharedPreferences("com.mobdeve.s11.group2.moneymonster.PREFERENCE_FILE_KEY", Context.MODE_PRIVATE)
+        val target = sharedPref.getInt("TARGET", 500)
+        val limit = sharedPref.getInt("LIMIT", 300)
+
+        targetProgressBar.max = target
+        targetprogressText.text = "0/$target"
+
+        limitProgressBar.max = limit
+        limitprogressText.text = "0/$limit"
+    }
+
+    private fun startProgress(target: Int) {
+        targetProgressBar.progress = 0
+        val maxProgress = target
 
         Thread {
             for (progress in 0..maxProgress) {
                 handler.post {
-                    budgetProgressBar.progress = progress
-                    budgetprogressText.text = "$progress/$maxProgress"
+                    targetProgressBar.progress = progress
+                    targetprogressText.text = "$progress/$maxProgress"
                 }
             }
         }.start()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        loadAndDisplayProgress()
     }
 }

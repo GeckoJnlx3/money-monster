@@ -33,25 +33,53 @@
         android:textSize="20sp"
         android:textStyle="bold" />
 
-    <EditText
-        android:id="@+id/editTextNumber"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="24sp"
-        android:layout_marginRight="24sp"
-        android:ems="10"
-        android:hint="Set saving target"
-        android:inputType="number" />
+        android:orientation="horizontal">
 
-    <EditText
-        android:id="@+id/editTextNumber2"
+        <EditText
+            android:id="@+id/setTarget"
+            android:layout_width="221dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="24sp"
+            android:layout_marginRight="24sp"
+            android:ems="10"
+            android:hint="Set saving target"
+            android:inputType="number" />
+
+        <Button
+            android:id="@+id/saveTargetBtn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="24sp"
+            android:backgroundTint="@color/brown_accent"
+            android:text="Save" />
+    </LinearLayout>
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="24sp"
-        android:layout_marginRight="24sp"
-        android:ems="10"
-        android:hint="Set expense limit"
-        android:inputType="number" />
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/setLimit"
+            android:layout_width="221dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="24sp"
+            android:layout_marginRight="24sp"
+            android:ems="10"
+            android:hint="Set expense limit"
+            android:inputType="number" />
+
+        <Button
+            android:id="@+id/expenseLimitBtn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="24sp"
+            android:backgroundTint="@color/brown_accent"
+            android:text="Save" />
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
