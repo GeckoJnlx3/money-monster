@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_margin="10dp"
+    android:layout_margin="12sp"
     android:background="@color/offwhite_bg"
     android:orientation="vertical"
     android:scrollbarAlwaysDrawVerticalTrack="true">
@@ -24,6 +24,7 @@
         android:id="@+id/expensesHeaderTv"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_margin="12sp"
         android:layout_marginTop="12dp"
         android:fontFamily="sans-serif"
         android:text="Goal Settings"
@@ -36,7 +37,8 @@
         android:id="@+id/editTextNumber"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="12sp"
+        android:layout_marginLeft="24sp"
+        android:layout_marginRight="24sp"
         android:ems="10"
         android:hint="Set saving target"
         android:inputType="number" />
@@ -45,8 +47,8 @@
         android:id="@+id/editTextNumber2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="12sp"
-        android:layout_marginRight="12sp"
+        android:layout_marginLeft="24sp"
+        android:layout_marginRight="24sp"
         android:ems="10"
         android:hint="Set expense limit"
         android:inputType="number" />
@@ -76,6 +78,7 @@
         android:id="@+id/expensesHeaderTv2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_margin="12sp"
         android:layout_marginTop="12dp"
         android:fontFamily="sans-serif"
         android:text="Set Currency"
@@ -88,13 +91,15 @@
         android:id="@+id/currencySpnr"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="12sp" />
+        android:layout_marginLeft="24sp" />
 
     <TextView
         android:id="@+id/expensesHeaderTv3"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
+        android:layout_marginLeft="12sp"
+        android:layout_marginTop="24sp"
+        android:layout_marginRight="12sp"
         android:fontFamily="sans-serif"
         android:text="Account"
         android:textAlignment="viewStart"
