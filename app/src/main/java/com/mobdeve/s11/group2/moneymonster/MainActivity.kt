@@ -8,6 +8,7 @@ import android.widget.Button
 import android.widget.ProgressBar
 import android.widget.Spinner
 import android.widget.TextView
+import android.view.View
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import com.mobdeve.s11.group2.moneymonster.databinding.ActivityMainBinding
@@ -19,7 +20,9 @@ class MainActivity : ComponentActivity() {
     private lateinit var limitProgressBar: ProgressBar
     private lateinit var budgetprogressText: TextView
     private lateinit var limitprogressText: TextView
-    private lateinit var loginBtn: Button
+    private lateinit var settingsBtn: Button
+    private lateinit var expenseGoal: View
+    private lateinit var savingGoal: View
     private lateinit var monsterpediaBtn: Button
     private lateinit var analyticsBtn: Button
     private lateinit var financeBtn: Button
@@ -36,23 +39,23 @@ class MainActivity : ComponentActivity() {
         budgetprogressText = viewBinding.budgetprogressText
         limitprogressText = viewBinding.limitprogressText
         monsterpediaBtn = viewBinding.monsterpediaBtn
-        loginBtn = viewBinding.loginBtn
+        settingsBtn = viewBinding.settingsBtn
         analyticsBtn = viewBinding.analyticsBtn
         financeBtn = viewBinding.financeBtn
+        expenseGoal = viewBinding.expenseGoal
+        savingGoal = viewBinding.savingGoal
 
         val weekRanges = generateWeekRanges()
-
         val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, weekRanges)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         dateRangeSpinner.adapter = adapter
 
+        settingsBtn.setOnClickListener { openSettings() }
+        expenseGoal.setOnClickListener { openSettings() }
+        savingGoal.setOnClickListener { openSettings() }
+
         monsterpediaBtn.setOnClickListener {
             val intent = Intent(this, MonsterActivity::class.java)
-            startActivity(intent)
-        }
-
-        loginBtn.setOnClickListener {
-            val intent = Intent(this, LoginActivity::class.java)
             startActivity(intent)
         }
 
@@ -65,6 +68,11 @@ class MainActivity : ComponentActivity() {
             val intent = Intent(this, FinanceActivity::class.java)
             startActivity(intent)
         }
+    }
+
+    private fun openSettings() {
+        val intent = Intent(this, SettingsActivity::class.java)
+        startActivity(intent)
     }
 
     private fun generateWeekRanges(): List<String> {

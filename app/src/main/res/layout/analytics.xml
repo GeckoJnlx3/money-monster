@@ -36,6 +36,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="false"
+        android:layout_marginTop="12dp"
         android:minHeight="250dp" />
 
     <TextView
@@ -53,6 +54,7 @@
         android:id="@+id/overviewLc"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
         android:minHeight="250dp" />
 
 

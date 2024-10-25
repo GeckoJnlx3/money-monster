@@ -36,6 +36,7 @@
             android:gravity="center" />
 
         <LinearLayout
+            android:id="@+id/savingGoal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
@@ -81,6 +82,7 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/expenseGoal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
@@ -165,14 +167,14 @@
         android:weightSum="4">
 
         <Button
-            android:id="@+id/loginBtn"
+            android:id="@+id/settingsBtn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_margin="5dp"
             android:layout_weight="1"
             android:background="@color/brown_accent"
-            android:text="Login"
+            android:text="Settings"
             android:textSize="16sp" />
 
         <Button

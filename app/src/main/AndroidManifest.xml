@@ -51,6 +51,10 @@
             android:name=".FinanceActivity">
         </activity>
 
+        <activity
+            android:name=".SettingsActivity">
+        </activity>
+
     </application>
 
 </manifest>
