@@ -28,6 +28,8 @@ class MainActivity : ComponentActivity() {
     private lateinit var financeBtn: Button
     private val handler = Handler()
 
+    private var currency: String = "PHP"
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val viewBinding: ActivityMainBinding = ActivityMainBinding.inflate(layoutInflater)
@@ -70,6 +72,7 @@ class MainActivity : ComponentActivity() {
         }
 
         loadAndDisplayProgress()
+        loadAndDisplayCurrency()
     }
 
     private fun openSettings() {
@@ -93,10 +96,18 @@ class MainActivity : ComponentActivity() {
         val limit = sharedPref.getInt("LIMIT", 300)
 
         targetProgressBar.max = target
-        targetprogressText.text = "0/$target"
+        targetprogressText.text = "$currency 0/$target"
 
         limitProgressBar.max = limit
-        limitprogressText.text = "0/$limit"
+        limitprogressText.text = "$currency 0/$limit"
+    }
+
+    private fun loadAndDisplayCurrency() {
+        val sharedPref = getSharedPreferences("com.mobdeve.s11.group2.moneymonster.PREFERENCE_FILE_KEY", Context.MODE_PRIVATE)
+        currency = sharedPref.getString("CURRENCY", "PHP") ?: "PHP"
+
+        targetprogressText.text = "$currency 0/${targetProgressBar.max}"
+        limitprogressText.text = "$currency 0/${limitProgressBar.max}"
     }
 
     private fun startProgress(target: Int) {
@@ -107,7 +118,7 @@ class MainActivity : ComponentActivity() {
             for (progress in 0..maxProgress) {
                 handler.post {
                     targetProgressBar.progress = progress
-                    targetprogressText.text = "$progress/$maxProgress"
+                    targetprogressText.text = "$currency $progress/$maxProgress"
                 }
             }
         }.start()
@@ -116,5 +127,6 @@ class MainActivity : ComponentActivity() {
     override fun onResume() {
         super.onResume()
         loadAndDisplayProgress()
+        loadAndDisplayCurrency()
     }
 }

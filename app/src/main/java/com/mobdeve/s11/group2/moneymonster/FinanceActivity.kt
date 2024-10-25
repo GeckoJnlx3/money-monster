@@ -1,5 +1,6 @@
 package com.mobdeve.s11.group2.moneymonster
 
+import android.content.Context
 import android.content.res.ColorStateList
 import android.os.Bundle
 import android.widget.ArrayAdapter
@@ -22,6 +23,7 @@ class FinanceActivity : ComponentActivity() {
     private lateinit var saveBtn: Button
     private lateinit var categorySpnr: Spinner
     private lateinit var imageView: ImageView
+    private lateinit var currencyText: TextView
 
     private var isLoggingExpense = true
 
@@ -32,6 +34,8 @@ class FinanceActivity : ComponentActivity() {
         "Utilities",
         "Other"
     )
+
+    private var currency: String = "PHP"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,6 +49,7 @@ class FinanceActivity : ComponentActivity() {
         saveBtn = findViewById(R.id.saveBtn)
         imageView = findViewById(R.id.imageView)
         categorySpnr = findViewById(R.id.categorySpnr)
+        currencyText = findViewById(R.id.currencyText)
 
         val categoryAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, categories)
         categoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
@@ -64,6 +69,7 @@ class FinanceActivity : ComponentActivity() {
             saveTransaction()
         }
 
+        loadCurrency()
         updateUI()
     }
 
@@ -91,8 +97,9 @@ class FinanceActivity : ComponentActivity() {
                 "Log Income"
         amountInput.setText("")
         descriptionInput.setText("")
-
+        currencyText.text = currency
     }
+
     private fun saveTransaction() {
         val amount = amountInput.text.toString().toDoubleOrNull()
         val description = descriptionInput.text.toString()
@@ -115,8 +122,16 @@ class FinanceActivity : ComponentActivity() {
                 else
                     "Income"
 
+            Toast.makeText(this, "$transactionType logged: $currency $amount", Toast.LENGTH_SHORT).show()
+
         } else {
             Toast.makeText(this, "Please log your amount", Toast.LENGTH_SHORT).show()
         }
+    }
+
+    private fun loadCurrency() {
+        val sharedPref = getSharedPreferences("com.mobdeve.s11.group2.moneymonster.PREFERENCE_FILE_KEY", Context.MODE_PRIVATE)
+        currency = sharedPref.getString("CURRENCY", "PHP") ?: "PHP"
+        currencyText.text = currency
     }
 }

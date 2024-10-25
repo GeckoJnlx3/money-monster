@@ -3,7 +3,9 @@ package com.mobdeve.s11.group2.moneymonster
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import android.widget.ArrayAdapter
+import android.widget.AdapterView
 import android.widget.Spinner
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -52,6 +54,16 @@ class SettingsActivity : ComponentActivity() {
             }
         }
 
+        currencySpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                val selectedCurrency = parent?.getItemAtPosition(position).toString()
+                saveToPreferences("CURRENCY", selectedCurrency)
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+            }
+        }
+
         binding.loginBtn.setOnClickListener {
             val intent = Intent(this, LoginActivity::class.java)
             startActivity(intent)
@@ -62,6 +74,14 @@ class SettingsActivity : ComponentActivity() {
         val sharedPref = getSharedPreferences("com.mobdeve.s11.group2.moneymonster.PREFERENCE_FILE_KEY", Context.MODE_PRIVATE)
         with(sharedPref.edit()) {
             putInt(key, value)
+            apply()
+        }
+    }
+
+    private fun saveToPreferences(key: String, value: String) {
+        val sharedPref = getSharedPreferences("com.mobdeve.s11.group2.moneymonster.PREFERENCE_FILE_KEY", Context.MODE_PRIVATE)
+        with(sharedPref.edit()) {
+            putString(key, value)
             apply()
         }
     }
