@@ -13,6 +13,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.compose.material3.AlertDialog
+import androidx.core.content.ContextCompat
 import com.mobdeve.s11.group2.moneymonster.databinding.FinanceBinding
 import java.util.Calendar
 
@@ -84,16 +85,16 @@ class FinanceActivity : ComponentActivity() {
 
     private fun switchToExpense() {
         isLoggingExpense = true
-        logExpenseBtn.setBackgroundTintList(ColorStateList.valueOf(resources.getColor(R.color.beige)))
-        logIncomeBtn.setBackgroundTintList(ColorStateList.valueOf(resources.getColor(R.color.brown_shadow)))
+        logExpenseBtn.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.beige)))
+        logIncomeBtn.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.brown_shadow)))
         imageView.setImageResource(R.drawable.gwomp_baby)
         updateUI()
     }
 
     private fun switchToIncome() {
         isLoggingExpense = false
-        logExpenseBtn.setBackgroundTintList(ColorStateList.valueOf(resources.getColor(R.color.brown_shadow)))
-        logIncomeBtn.setBackgroundTintList(ColorStateList.valueOf(resources.getColor(R.color.beige)))
+        logExpenseBtn.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.brown_shadow)))
+        logIncomeBtn.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.beige)))
         imageView.setImageResource(R.drawable.gwomp_baby)
         updateUI()
     }

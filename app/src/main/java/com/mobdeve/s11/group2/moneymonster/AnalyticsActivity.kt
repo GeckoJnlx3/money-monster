@@ -9,6 +9,7 @@ import com.github.mikephil.charting.data.PieEntry
 import androidx.activity.ComponentActivity
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.Typeface
+import androidx.core.content.ContextCompat
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.Description
 import com.github.mikephil.charting.components.Legend
@@ -93,9 +94,9 @@ class AnalyticsActivity: ComponentActivity() {
         expenseOverview.add(Entry(1726806400000f, 5000f))
 
         val expenseOverviewDs = LineDataSet(expenseOverview, "Expenses")
-        expenseOverviewDs.color = resources.getColor(R.color.holo_purple)
+        expenseOverviewDs.color = ContextCompat.getColor(this, R.color.holo_purple)
         expenseOverviewDs.lineWidth = 3f
-        expenseOverviewDs.setCircleColor(resources.getColor(R.color.black))
+        expenseOverviewDs.setCircleColor(ContextCompat.getColor(this, R.color.black))
         expenseOverviewDs.setDrawCircleHole(false)
 
         var savingOverview: ArrayList<Entry> = ArrayList()
@@ -105,9 +106,9 @@ class AnalyticsActivity: ComponentActivity() {
         savingOverview.add(Entry(1726806400000f, 1900f))
 
         val savingOverviewDs = LineDataSet(savingOverview, "Savings")
-        savingOverviewDs.color = resources.getColor(R.color.holo_green_light)
+        savingOverviewDs.color = ContextCompat.getColor(this, R.color.holo_green_light)
         savingOverviewDs.lineWidth = 3f
-        savingOverviewDs.setCircleColor(resources.getColor(R.color.black))
+        savingOverviewDs.setCircleColor(ContextCompat.getColor(this, R.color.black))
         savingOverviewDs.setDrawCircleHole(false)
 
         val data = LineData()
