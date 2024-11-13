@@ -26,6 +26,7 @@ class MainActivity : ComponentActivity() {
     private lateinit var monsterpediaBtn: Button
     private lateinit var analyticsBtn: Button
     private lateinit var financeBtn: Button
+    private lateinit var historyBtn: Button
     private val handler = Handler()
 
     private var currency: String = "PHP"
@@ -40,6 +41,7 @@ class MainActivity : ComponentActivity() {
         limitProgressBar = viewBinding.limitProgressBar
         targetprogressText = viewBinding.targetProgressText
         limitprogressText = viewBinding.limitProgressText
+        historyBtn = viewBinding.historyBtn
         monsterpediaBtn = viewBinding.monsterpediaBtn
         settingsBtn = viewBinding.settingsBtn
         analyticsBtn = viewBinding.analyticsBtn
@@ -55,6 +57,11 @@ class MainActivity : ComponentActivity() {
         settingsBtn.setOnClickListener { openSettings() }
         expenseGoal.setOnClickListener { openSettings() }
         savingGoal.setOnClickListener { openSettings() }
+
+        historyBtn.setOnClickListener{
+            val intent = Intent(this, HistoryActivity::class.java)
+            startActivity(intent)
+        }
 
         monsterpediaBtn.setOnClickListener {
             val intent = Intent(this, MonsterActivity::class.java)
