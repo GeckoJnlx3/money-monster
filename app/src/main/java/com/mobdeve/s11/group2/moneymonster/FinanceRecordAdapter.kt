@@ -6,8 +6,10 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
-class FinanceRecordAdapter(private val records: List<FinanceRecord>) :
-    RecyclerView.Adapter<FinanceRecordAdapter.FinanceRecordViewHolder>() {
+class FinanceRecordAdapter(
+    private val records: List<FinanceRecord>,
+    private val onItemClick: (FinanceRecord) -> Unit
+) : RecyclerView.Adapter<FinanceRecordAdapter.FinanceRecordViewHolder>() {
 
     class FinanceRecordViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         //val typeText: TextView = view.findViewById(R.id.typeText)
@@ -30,6 +32,10 @@ class FinanceRecordAdapter(private val records: List<FinanceRecord>) :
         holder.amountText.text = "${record.currency} " + "${record.amount}"
         holder.categoryText.text = record.category
         //holder.descriptionText.text = record.description
+
+        holder.itemView.setOnClickListener {
+            onItemClick(record)
+        }
     }
 
     override fun getItemCount() = records.size
