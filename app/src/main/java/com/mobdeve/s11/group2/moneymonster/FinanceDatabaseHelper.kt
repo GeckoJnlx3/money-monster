@@ -12,13 +12,15 @@ import java.util.Locale
 class FinanceDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
     companion object {
         private const val DATABASE_NAME = "finance.db"
-        private const val DATABASE_VERSION = 5
+        private const val DATABASE_VERSION = 7
 
         const val TABLE_NAME = "record"
         const val COL_ID = "record_id"
         const val COL_TYPE = "record_type"
-        const val COL_CAT = "category"
+        const val COL_DATE = "date"
+        const val COL_CUR = "currency"
         const val COL_AMT = "amount"
+        const val COL_CAT = "category"
         const val COL_DESC = "description"
         const val COL_DATE = "date"
 
@@ -28,10 +30,11 @@ class FinanceDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABA
     private val CREATE_TABLE = "CREATE TABLE IF NOT EXISTS $TABLE_NAME(" +
             "$COL_ID INTEGER PRIMARY KEY AUTOINCREMENT, " +
             "$COL_TYPE TEXT, " +
-            "$COL_CAT TEXT, " +
+            "$COL_DATE TEXT, " +
+            "$COL_CUR TEXT, " +
             "$COL_AMT REAL, " +
-            "$COL_DESC TEXT, " +
-            "$COL_DATE DATE " +
+            "$COL_CAT TEXT, " +
+            "$COL_DESC TEXT " +
             ");"
 
     override fun onCreate(db: SQLiteDatabase?) {
@@ -40,7 +43,7 @@ class FinanceDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABA
 
     override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
         Log.d("FinanceDatabaseHelper", "Database upgraded from version $oldVersion to $newVersion")
-        if (oldVersion < 5) {
+        if (oldVersion < 7) {
             //  db?.execSQL("DROP TABLE IF EXISTS $TABLE_NAME")
             //db?.execSQL("ALTER TABLE $TABLE_NAME ADD COLUMN $COL_DATE TEXT")
         }
@@ -53,6 +56,8 @@ class FinanceDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABA
 
         val values = ContentValues().apply {
             put(COL_TYPE, record.type)
+            put(COL_DATE, record.date)
+            put(COL_CUR, record.currency)
             put(COL_AMT, record.amount?.toDoubleOrNull())
             put(COL_CAT, record.category)
             put(COL_DESC, record.description)
@@ -78,13 +83,15 @@ class FinanceDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABA
             do {
                 val id = cursor.getInt(cursor.getColumnIndexOrThrow(COL_ID))
                 val type = cursor.getString(cursor.getColumnIndexOrThrow(COL_TYPE))
+                val date = cursor.getString(cursor.getColumnIndexOrThrow(COL_DATE))
+                val currency = cursor.getString(cursor.getColumnIndexOrThrow(COL_CUR))
                 val amount = cursor.getDoubleOrNull(cursor.getColumnIndexOrThrow(COL_AMT))
                 val category = cursor.getString(cursor.getColumnIndexOrThrow(COL_CAT))
                 val description = cursor.getString(cursor.getColumnIndexOrThrow(COL_DESC))
-                val date = cursor.getString(cursor.getColumnIndexOrThrow(COL_DATE))
 
-                records.add(FinanceRecord(id, type,
-                    amount.toString(), category, DATE_FORMAT.parse(date), description))
+
+                records.add(FinanceRecord(id, type, DATE_FORMAT.parse(date), currency, 
+                                          amount.toString(), category, description))
             } while (cursor.moveToNext())
         }
         cursor.close()

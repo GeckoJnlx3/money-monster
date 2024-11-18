@@ -121,26 +121,20 @@ class FinanceActivity : ComponentActivity() {
         val description = memoInput.text.toString()
         val date = FinanceDatabaseHelper.DATE_FORMAT.parse(dateEt.text.toString())
         val category = categorySpnr.selectedItem.toString()
-
+=======
         if (amount != null && date != null) {
             val record = FinanceRecord(
                 id = 0,
                 type = if (isLoggingExpense) "Expense" else "Income",
+                date = date,
+                currency = currencyText.text.toString(),
                 amount = amount.toString(),
                 category = category,
-                date = date,
                 description = description
             )
 
             val dbHelper = FinanceDatabaseHelper(this)
             dbHelper.recordExpense(record)
-    //
-    //        if (result == -1L) {
-    //            Toast.makeText(this, "Failed to save transaction", Toast.LENGTH_SHORT).show()
-    //        } else {
-    //            Toast.makeText(this, "Transaction saved successfully", Toast.LENGTH_SHORT).show()
-    //        }
-
             Log.d("FinanceActivity", "Transaction Saved: $record")
 
             amountInput.setText("")
@@ -159,7 +153,7 @@ class FinanceActivity : ComponentActivity() {
 
         } else {
             Toast.makeText(this, "Please log your amount", Toast.LENGTH_SHORT).show()
-        }
+    >>>>>>> finance-record
     }
 
     private fun loadCurrency() {

@@ -6,13 +6,16 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
-class FinanceRecordAdapter(private val records: List<FinanceRecord>) :
-    RecyclerView.Adapter<FinanceRecordAdapter.FinanceRecordViewHolder>() {
+class FinanceRecordAdapter(
+    private val records: List<FinanceRecord>,
+    private val onItemClick: (FinanceRecord) -> Unit
+) : RecyclerView.Adapter<FinanceRecordAdapter.FinanceRecordViewHolder>() {
 
     class FinanceRecordViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         //val typeText: TextView = view.findViewById(R.id.typeText)
         val amountText: TextView = view.findViewById(R.id.amount)
-        val dateText: TextView = view.findViewById(R.id.date)
+        //val dateText: TextView = view.findViewById(R.id.date)
+        //val currencyText: TextView = view.findViewById(R.id.currency)
         val categoryText: TextView = view.findViewById(R.id.category)
         //val descriptionText: TextView = view.findViewById(R.id.description)
     }
@@ -25,10 +28,15 @@ class FinanceRecordAdapter(private val records: List<FinanceRecord>) :
     override fun onBindViewHolder(holder: FinanceRecordViewHolder, position: Int) {
         val record = records[position]
         //holder.typeText.text = record.type
-        holder.amountText.text = "${record.amount}"
+        //holder.dateText.text = record.date
+        holder.amountText.text = "${record.currency} " + "${record.amount}"
         holder.dateText.text = FinanceDatabaseHelper.DATE_FORMAT.format(record.date)
         holder.categoryText.text = record.category
         //holder.descriptionText.text = record.description
+
+        holder.itemView.setOnClickListener {
+            onItemClick(record)
+        }
     }
 
     override fun getItemCount() = records.size
