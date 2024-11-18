@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.activity.ComponentActivity
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.mobdeve.s11.group2.moneymonster.com.mobdeve.s11.group2.moneymonster.HistoryViewActivity
 import com.mobdeve.s11.group2.moneymonster.databinding.HistoryBinding
 
 class HistoryActivity : ComponentActivity() {

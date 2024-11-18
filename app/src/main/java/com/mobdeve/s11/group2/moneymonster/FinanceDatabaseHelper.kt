@@ -81,15 +81,21 @@ class FinanceDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABA
             do {
                 val id = cursor.getInt(cursor.getColumnIndexOrThrow(COL_ID))
                 val type = cursor.getString(cursor.getColumnIndexOrThrow(COL_TYPE))
-                val date = cursor.getString(cursor.getColumnIndexOrThrow(COL_DATE))
+                val dateString = cursor.getString(cursor.getColumnIndexOrThrow(COL_DATE))
                 val currency = cursor.getString(cursor.getColumnIndexOrThrow(COL_CUR))
                 val amount = cursor.getDoubleOrNull(cursor.getColumnIndexOrThrow(COL_AMT))
                 val category = cursor.getString(cursor.getColumnIndexOrThrow(COL_CAT))
                 val description = cursor.getString(cursor.getColumnIndexOrThrow(COL_DESC))
 
+                val date = try {
+                    FinanceDatabaseHelper.DATE_FORMAT.parse(dateString)
+                } catch (e: Exception) {
+                    null
+                }
 
-                records.add(FinanceRecord(id, type, DATE_FORMAT.parse(date), currency, 
-                                          amount.toString(), category, description))
+                if (date != null) {
+                    records.add(FinanceRecord(id, type, date, currency, amount.toString(), category, description))
+                }
             } while (cursor.moveToNext())
         }
         cursor.close()

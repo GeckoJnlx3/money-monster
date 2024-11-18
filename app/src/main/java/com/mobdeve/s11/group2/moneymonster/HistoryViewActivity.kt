@@ -1,8 +1,9 @@
-package com.mobdeve.s11.group2.moneymonster
+package com.mobdeve.s11.group2.moneymonster.com.mobdeve.s11.group2.moneymonster
 
 import android.os.Bundle
 import android.widget.TextView
 import androidx.activity.ComponentActivity
+import com.mobdeve.s11.group2.moneymonster.R
 
 class HistoryViewActivity : ComponentActivity() {
 
