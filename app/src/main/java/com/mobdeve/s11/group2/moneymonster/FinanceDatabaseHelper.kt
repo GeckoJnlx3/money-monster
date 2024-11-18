@@ -22,7 +22,6 @@ class FinanceDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABA
         const val COL_AMT = "amount"
         const val COL_CAT = "category"
         const val COL_DESC = "description"
-        const val COL_DATE = "date"
 
         val DATE_FORMAT = SimpleDateFormat("dd-MM-yyyy", Locale("en-PH(*)"))
     }
@@ -56,12 +55,11 @@ class FinanceDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABA
 
         val values = ContentValues().apply {
             put(COL_TYPE, record.type)
-            put(COL_DATE, record.date)
+            put(COL_DATE, DATE_FORMAT.format(record.date))
             put(COL_CUR, record.currency)
             put(COL_AMT, record.amount?.toDoubleOrNull())
             put(COL_CAT, record.category)
             put(COL_DESC, record.description)
-            put(COL_DATE, DATE_FORMAT.format(record.date))
         }
 
         val result = db.insert(TABLE_NAME, null, values)

@@ -121,7 +121,6 @@ class FinanceActivity : ComponentActivity() {
         val description = memoInput.text.toString()
         val date = FinanceDatabaseHelper.DATE_FORMAT.parse(dateEt.text.toString())
         val category = categorySpnr.selectedItem.toString()
-=======
         if (amount != null && date != null) {
             val record = FinanceRecord(
                 id = 0,
@@ -153,7 +152,7 @@ class FinanceActivity : ComponentActivity() {
 
         } else {
             Toast.makeText(this, "Please log your amount", Toast.LENGTH_SHORT).show()
-    >>>>>>> finance-record
+        }
     }
 
     private fun loadCurrency() {
