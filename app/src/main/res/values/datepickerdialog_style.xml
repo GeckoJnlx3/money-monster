@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style xmlns:android="http://schemas.android.com/apk/res/android"
+        name="DatePickerDialogStyle"
+        parent="@android:style/Theme.DeviceDefault.Light.Dialog">
+        <item name="android:datePickerStyle">@style/DatePickerStyle</item>
+        <item name="android:colorAccent">@color/green_btn</item>
+        <item name="android:background">@color/offwhite_bg</item>
+        <item name="android:textColor">@color/brown_accent</item>
+    </style>
+    <style name="DatePickerStyle">
+        <item name="android:headerBackground">@color/brown_accent</item>
+        <item name="android:datePickerMode">calendar</item>
+    </style>
+</resources>

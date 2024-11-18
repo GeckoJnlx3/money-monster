@@ -177,7 +177,7 @@ class FinanceActivity : ComponentActivity() {
         val day = c.get(Calendar.DAY_OF_MONTH)
 
         val datePickerDialog = DatePickerDialog(
-            this,
+            this,R.style.DatePickerDialogStyle,
             { view, year, monthOfYear, dayOfMonth ->
                 val dat = (dayOfMonth.toString() + "-" + (monthOfYear + 1) + "-" + year)
                 dateEt.setText(dat)
