@@ -184,7 +184,6 @@ class FinanceActivity : ComponentActivity() {
         val datePickerDialog = DatePickerDialog(
             this, R.style.DatePickerDialogStyle,
             { _, selectedYear, selectedMonth, selectedDay ->
-                // Format the selected date and update the EditText
                 val formattedDate = String.format(
                     "%02d-%02d-%04d", selectedDay, selectedMonth + 1, selectedYear
                 )
