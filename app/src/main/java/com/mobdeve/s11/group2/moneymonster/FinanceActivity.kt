@@ -15,7 +15,11 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.core.content.ContextCompat
 import com.mobdeve.s11.group2.moneymonster.databinding.FinanceBinding
+import java.sql.Date
+import java.text.SimpleDateFormat
+import java.time.LocalDateTime
 import java.util.Calendar
+import java.util.Locale
 
 class FinanceActivity : ComponentActivity() {
 
@@ -115,49 +119,42 @@ class FinanceActivity : ComponentActivity() {
     private fun saveTransaction() {
         val amount = amountInput.text.toString().toDoubleOrNull()
         val description = memoInput.text.toString()
-        val date = dateEt.text.toString()
+        val date = FinanceDatabaseHelper.DATE_FORMAT.parse(dateEt.text.toString())
         val category = categorySpnr.selectedItem.toString()
+=======
+        if (amount != null && date != null) {
+            val record = FinanceRecord(
+                id = 0,
+                type = if (isLoggingExpense) "Expense" else "Income",
+                date = date,
+                currency = currencyText.text.toString(),
+                amount = amount.toString(),
+                category = category,
+                description = description
+            )
 
-    if (amount != null) {
-        val record = FinanceRecord(
-            id = 0,
-            type = if (isLoggingExpense) "Expense" else "Income",
-            date = date,
-            currency = currencyText.text.toString(),
-            amount = amount.toString(),
-            category = category,
-            description = description
-        )
+            val dbHelper = FinanceDatabaseHelper(this)
+            dbHelper.recordExpense(record)
+            Log.d("FinanceActivity", "Transaction Saved: $record")
 
-        val dbHelper = FinanceDatabaseHelper(this)
-        dbHelper.recordExpense(record)
-//
-//        if (result == -1L) {
-//            Toast.makeText(this, "Failed to save transaction", Toast.LENGTH_SHORT).show()
-//        } else {
-//            Toast.makeText(this, "Transaction saved successfully", Toast.LENGTH_SHORT).show()
-//        }
+            amountInput.setText("")
+            memoInput.setText("")
+            dateEt.setText("")
 
-        Log.d("FinanceActivity", "Transaction Saved: $record")
+            imageView.setImageResource(
+                if (isLoggingExpense)
+                    R.drawable.sad_gwomp
+                else
+                    R.drawable.happy_gwomp
+            )
 
-        amountInput.setText("")
-        memoInput.setText("")
-        dateEt.setText("")
+            val transactionType = if (isLoggingExpense) "Expense" else "Income"
+            Toast.makeText(this, "$transactionType logged: $currency $amount", Toast.LENGTH_SHORT).show()
 
-        imageView.setImageResource(
-            if (isLoggingExpense)
-                R.drawable.sad_gwomp
-            else
-                R.drawable.happy_gwomp
-        )
-
-        val transactionType = if (isLoggingExpense) "Expense" else "Income"
-        Toast.makeText(this, "$transactionType logged: $currency $amount", Toast.LENGTH_SHORT).show()
-
-    } else {
-        Toast.makeText(this, "Please log your amount", Toast.LENGTH_SHORT).show()
+        } else {
+            Toast.makeText(this, "Please log your amount", Toast.LENGTH_SHORT).show()
+    >>>>>>> finance-record
     }
-}
 
     private fun loadCurrency() {
         val sharedPref = getSharedPreferences("com.mobdeve.s11.group2.moneymonster.PREFERENCE_FILE_KEY", Context.MODE_PRIVATE)
@@ -174,7 +171,7 @@ class FinanceActivity : ComponentActivity() {
         val day = c.get(Calendar.DAY_OF_MONTH)
 
         val datePickerDialog = DatePickerDialog(
-            this,
+            this,R.style.DatePickerDialogStyle,
             { view, year, monthOfYear, dayOfMonth ->
                 val dat = (dayOfMonth.toString() + "-" + (monthOfYear + 1) + "-" + year)
                 dateEt.setText(dat)

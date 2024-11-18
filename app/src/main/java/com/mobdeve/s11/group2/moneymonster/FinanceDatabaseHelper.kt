@@ -6,6 +6,8 @@ import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import androidx.core.database.getDoubleOrNull
 import android.util.Log
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 class FinanceDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
     companion object {
@@ -20,7 +22,9 @@ class FinanceDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABA
         const val COL_AMT = "amount"
         const val COL_CAT = "category"
         const val COL_DESC = "description"
+        const val COL_DATE = "date"
 
+        val DATE_FORMAT = SimpleDateFormat("dd-MM-yyyy", Locale("en-PH(*)"))
     }
 
     private val CREATE_TABLE = "CREATE TABLE IF NOT EXISTS $TABLE_NAME(" +
@@ -49,6 +53,7 @@ class FinanceDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABA
 
     fun recordExpense(record: FinanceRecord): Long {
         val db = writableDatabase
+
         val values = ContentValues().apply {
             put(COL_TYPE, record.type)
             put(COL_DATE, record.date)
@@ -56,6 +61,7 @@ class FinanceDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABA
             put(COL_AMT, record.amount?.toDoubleOrNull())
             put(COL_CAT, record.category)
             put(COL_DESC, record.description)
+            put(COL_DATE, DATE_FORMAT.format(record.date))
         }
 
         val result = db.insert(TABLE_NAME, null, values)
@@ -84,8 +90,8 @@ class FinanceDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABA
                 val description = cursor.getString(cursor.getColumnIndexOrThrow(COL_DESC))
 
 
-                records.add(FinanceRecord(id, type,
-                    "", currency, amount.toString(), category, description))
+                records.add(FinanceRecord(id, type, DATE_FORMAT.parse(date), currency, 
+                                          amount.toString(), category, description))
             } while (cursor.moveToNext())
         }
         cursor.close()

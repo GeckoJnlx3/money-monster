@@ -30,6 +30,7 @@ class FinanceRecordAdapter(
         //holder.typeText.text = record.type
         //holder.dateText.text = record.date
         holder.amountText.text = "${record.currency} " + "${record.amount}"
+        holder.dateText.text = FinanceDatabaseHelper.DATE_FORMAT.format(record.date)
         holder.categoryText.text = record.category
         //holder.descriptionText.text = record.description
 
