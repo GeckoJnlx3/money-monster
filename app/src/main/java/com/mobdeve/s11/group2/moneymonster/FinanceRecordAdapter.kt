@@ -26,7 +26,7 @@ class FinanceRecordAdapter(private val records: List<FinanceRecord>) :
         val record = records[position]
         //holder.typeText.text = record.type
         holder.amountText.text = "${record.amount}"
-        holder.dateText.text = record.date
+        holder.dateText.text = FinanceDatabaseHelper.DATE_FORMAT.format(record.date)
         holder.categoryText.text = record.category
         //holder.descriptionText.text = record.description
     }
