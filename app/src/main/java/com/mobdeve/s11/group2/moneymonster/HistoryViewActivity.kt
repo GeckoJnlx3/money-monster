@@ -1,14 +1,15 @@
-package com.mobdeve.s11.group2.moneymonster
+package com.mobdeve.s11.group2.moneymonster.com.mobdeve.s11.group2.moneymonster
 
 import android.os.Bundle
 import android.widget.TextView
 import androidx.activity.ComponentActivity
+import com.mobdeve.s11.group2.moneymonster.R
 
-class FinanceHistoryItemViewActivity : ComponentActivity() {
+class HistoryViewActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.finance_history_item_view)
+        setContentView(R.layout.history_record_view)
 
         val date = intent.getStringExtra("record_date") ?: ""
         val currency = intent.getStringExtra("record_currency") ?: ""

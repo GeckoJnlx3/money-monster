@@ -119,41 +119,52 @@ class FinanceActivity : ComponentActivity() {
     private fun saveTransaction() {
         val amount = amountInput.text.toString().toDoubleOrNull()
         val description = memoInput.text.toString()
-        val date = FinanceDatabaseHelper.DATE_FORMAT.parse(dateEt.text.toString())
-        val category = categorySpnr.selectedItem.toString()
-=======
-        if (amount != null && date != null) {
-            val record = FinanceRecord(
-                id = 0,
-                type = if (isLoggingExpense) "Expense" else "Income",
-                date = date,
-                currency = currencyText.text.toString(),
-                amount = amount.toString(),
-                category = category,
-                description = description
-            )
+        val dateText = dateEt.text.toString()
 
-            val dbHelper = FinanceDatabaseHelper(this)
-            dbHelper.recordExpense(record)
-            Log.d("FinanceActivity", "Transaction Saved: $record")
+        if (amount == null || dateText.isEmpty()) {
+            Toast.makeText(this, "Please fill in all fields correctly", Toast.LENGTH_SHORT).show()
+            return
+        }
 
-            amountInput.setText("")
-            memoInput.setText("")
-            dateEt.setText("")
-
-            imageView.setImageResource(
-                if (isLoggingExpense)
-                    R.drawable.sad_gwomp
-                else
-                    R.drawable.happy_gwomp
-            )
-
-            val transactionType = if (isLoggingExpense) "Expense" else "Income"
-            Toast.makeText(this, "$transactionType logged: $currency $amount", Toast.LENGTH_SHORT).show()
-
+        val date = if (dateText.isEmpty()) {
+            Calendar.getInstance().time
         } else {
-            Toast.makeText(this, "Please log your amount", Toast.LENGTH_SHORT).show()
-    >>>>>>> finance-record
+            try {
+                FinanceDatabaseHelper.DATE_FORMAT.parse(dateText)
+            } catch (e: Exception) {
+                Toast.makeText(this, "Invalid date format. Use dd-MM-yyyy.", Toast.LENGTH_SHORT).show()
+                return
+            }
+        }
+
+        val category = categorySpnr.selectedItem.toString()
+        val record = FinanceRecord(
+            id = 0,
+            type = if (isLoggingExpense) "Expense" else "Income",
+            date = date,
+            currency = currencyText.text.toString(),
+            amount = amount.toString(),
+            category = category,
+            description = description
+        )
+
+        val dbHelper = FinanceDatabaseHelper(this)
+        dbHelper.recordExpense(record)
+        Log.d("FinanceActivity", "Transaction Saved: $record")
+
+        amountInput.setText("")
+        memoInput.setText("")
+        dateEt.setText("")
+
+        imageView.setImageResource(
+            if (isLoggingExpense)
+                R.drawable.sad_gwomp
+            else
+                R.drawable.happy_gwomp
+        )
+
+        val transactionType = if (isLoggingExpense) "Expense" else "Income"
+        Toast.makeText(this, "$transactionType logged: $currency $amount", Toast.LENGTH_SHORT).show()
     }
 
     private fun loadCurrency() {
@@ -171,16 +182,15 @@ class FinanceActivity : ComponentActivity() {
         val day = c.get(Calendar.DAY_OF_MONTH)
 
         val datePickerDialog = DatePickerDialog(
-            this,R.style.DatePickerDialogStyle,
-            { view, year, monthOfYear, dayOfMonth ->
-                val dat = (dayOfMonth.toString() + "-" + (monthOfYear + 1) + "-" + year)
-                dateEt.setText(dat)
+            this, R.style.DatePickerDialogStyle,
+            { _, selectedYear, selectedMonth, selectedDay ->
+                val formattedDate = String.format(
+                    "%02d-%02d-%04d", selectedDay, selectedMonth + 1, selectedYear
+                )
+                dateEt.setText(formattedDate)
             },
-            year,
-            month,
-            day
+            year, month, day
         )
-
         datePickerDialog.show()
     }
 }

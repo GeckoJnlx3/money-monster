@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.activity.ComponentActivity
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.mobdeve.s11.group2.moneymonster.com.mobdeve.s11.group2.moneymonster.HistoryViewActivity
 import com.mobdeve.s11.group2.moneymonster.databinding.HistoryBinding
 
 class HistoryActivity : ComponentActivity() {
@@ -26,10 +27,10 @@ class HistoryActivity : ComponentActivity() {
         } else {
 
             adapter = FinanceRecordAdapter(records) { selectedRecord ->
-                val intent = Intent(this, FinanceHistoryItemViewActivity::class.java)
+                val intent = Intent(this, HistoryViewActivity::class.java)
                 intent.putExtra("record_id", selectedRecord.id)
                 intent.putExtra("record_type", selectedRecord.type)
-                intent.putExtra("record_date", selectedRecord.date)
+                intent.putExtra("record_date", FinanceDatabaseHelper.DATE_FORMAT.format(selectedRecord.date))
                 intent.putExtra("record_currency", selectedRecord.currency)
                 intent.putExtra("record_amount", selectedRecord.amount)
                 intent.putExtra("record_category", selectedRecord.category)
