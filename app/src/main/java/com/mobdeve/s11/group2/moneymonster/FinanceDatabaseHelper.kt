@@ -10,11 +10,11 @@ import android.util.Log
 class FinanceDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
     companion object {
         private const val DATABASE_NAME = "finance.db"
-        private const val DATABASE_VERSION = 4
+        private const val DATABASE_VERSION = 5
 
-        const val TABLE_NAME = "test_table"
-        const val COL_ID = "t_id"
-        const val COL_TYPE = "expense_type"
+        const val TABLE_NAME = "record"
+        const val COL_ID = "record_id"
+        const val COL_TYPE = "record_type"
         const val COL_CAT = "category"
         const val COL_AMT = "amount"
         const val COL_DESC = "description"
@@ -36,20 +36,20 @@ class FinanceDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABA
 
     override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
         Log.d("FinanceDatabaseHelper", "Database upgraded from version $oldVersion to $newVersion")
-//        if (oldVersion < 2) {
-//            //  db?.execSQL("DROP TABLE IF EXISTS $TABLE_NAME")
-//            //db?.execSQL("ALTER TABLE $TABLE_NAME ADD COLUMN $COL_DATE TEXT")
-//        }
-//        db?.execSQL("DROP TABLE IF EXISTS $TABLE_NAME")
-//        onCreate(db)
+        if (oldVersion < 5) {
+            //  db?.execSQL("DROP TABLE IF EXISTS $TABLE_NAME")
+            //db?.execSQL("ALTER TABLE $TABLE_NAME ADD COLUMN $COL_DATE TEXT")
+        }
+        db?.execSQL("DROP TABLE IF EXISTS $TABLE_NAME")
+        onCreate(db)
     }
 
     fun recordExpense(record: FinanceRecord): Long {
         val db = writableDatabase
         val values = ContentValues().apply {
             put(COL_TYPE, record.type)
-            put(COL_CAT, record.category)
             put(COL_AMT, record.amount?.toDoubleOrNull())
+            put(COL_CAT, record.category)
             put(COL_DESC, record.description)
             put(COL_DATE, record.date)
         }
@@ -73,8 +73,8 @@ class FinanceDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABA
             do {
                 val id = cursor.getInt(cursor.getColumnIndexOrThrow(COL_ID))
                 val type = cursor.getString(cursor.getColumnIndexOrThrow(COL_TYPE))
-                val category = cursor.getString(cursor.getColumnIndexOrThrow(COL_CAT))
                 val amount = cursor.getDoubleOrNull(cursor.getColumnIndexOrThrow(COL_AMT))
+                val category = cursor.getString(cursor.getColumnIndexOrThrow(COL_CAT))
                 val description = cursor.getString(cursor.getColumnIndexOrThrow(COL_DESC))
                 val date = cursor.getString(cursor.getColumnIndexOrThrow(COL_DATE))
 

@@ -38,12 +38,4 @@
         android:layout_margin="18px"
         android:text="TextView" />
 
-    <TextView
-        android:id="@+id/description"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:layout_margin="18px"
-        android:text="TextView" />
-
 </LinearLayout>

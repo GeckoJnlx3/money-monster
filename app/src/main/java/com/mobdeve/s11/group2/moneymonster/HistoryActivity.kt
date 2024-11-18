@@ -1,7 +1,6 @@
 package com.mobdeve.s11.group2.moneymonster
 
 import android.os.Bundle
-import android.os.PersistableBundle
 import android.view.View
 import androidx.activity.ComponentActivity
 import androidx.recyclerview.widget.LinearLayoutManager

@@ -14,7 +14,7 @@ class FinanceRecordAdapter(private val records: List<FinanceRecord>) :
         val amountText: TextView = view.findViewById(R.id.amount)
         val dateText: TextView = view.findViewById(R.id.date)
         val categoryText: TextView = view.findViewById(R.id.category)
-        val descriptionText: TextView = view.findViewById(R.id.description)
+        //val descriptionText: TextView = view.findViewById(R.id.description)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FinanceRecordViewHolder {
@@ -27,8 +27,8 @@ class FinanceRecordAdapter(private val records: List<FinanceRecord>) :
         //holder.typeText.text = record.type
         holder.amountText.text = "${record.amount}"
         holder.dateText.text = record.date
-        holder.categoryText.text = "${record.category}"
-        holder.descriptionText.text = record.description
+        holder.categoryText.text = record.category
+        //holder.descriptionText.text = record.description
     }
 
     override fun getItemCount() = records.size
