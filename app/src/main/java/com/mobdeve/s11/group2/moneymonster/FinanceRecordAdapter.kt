@@ -12,7 +12,8 @@ class FinanceRecordAdapter(private val records: List<FinanceRecord>) :
     class FinanceRecordViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         //val typeText: TextView = view.findViewById(R.id.typeText)
         val amountText: TextView = view.findViewById(R.id.amount)
-        val dateText: TextView = view.findViewById(R.id.date)
+        //val dateText: TextView = view.findViewById(R.id.date)
+        //val currencyText: TextView = view.findViewById(R.id.currency)
         val categoryText: TextView = view.findViewById(R.id.category)
         //val descriptionText: TextView = view.findViewById(R.id.description)
     }
@@ -25,8 +26,8 @@ class FinanceRecordAdapter(private val records: List<FinanceRecord>) :
     override fun onBindViewHolder(holder: FinanceRecordViewHolder, position: Int) {
         val record = records[position]
         //holder.typeText.text = record.type
-        holder.amountText.text = "${record.amount}"
-        holder.dateText.text = record.date
+        //holder.dateText.text = record.date
+        holder.amountText.text = "${record.currency} " + "${record.amount}"
         holder.categoryText.text = record.category
         //holder.descriptionText.text = record.description
     }

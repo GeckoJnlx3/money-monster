@@ -122,9 +122,10 @@ class FinanceActivity : ComponentActivity() {
         val record = FinanceRecord(
             id = 0,
             type = if (isLoggingExpense) "Expense" else "Income",
+            date = date,
+            currency = currencyText.text.toString(),
             amount = amount.toString(),
             category = category,
-            date = date,
             description = description
         )
 
