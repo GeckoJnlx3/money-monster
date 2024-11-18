@@ -21,7 +21,7 @@ class FinanceRecordAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FinanceRecordViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.finance_history_item, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.history_record, parent, false)
         return FinanceRecordViewHolder(view)
     }
 

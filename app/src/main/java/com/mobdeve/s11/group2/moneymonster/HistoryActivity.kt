@@ -26,10 +26,10 @@ class HistoryActivity : ComponentActivity() {
         } else {
 
             adapter = FinanceRecordAdapter(records) { selectedRecord ->
-                val intent = Intent(this, FinanceHistoryItemViewActivity::class.java)
+                val intent = Intent(this, HistoryViewActivity::class.java)
                 intent.putExtra("record_id", selectedRecord.id)
                 intent.putExtra("record_type", selectedRecord.type)
-                intent.putExtra("record_date", selectedRecord.date)
+                intent.putExtra("record_date", FinanceDatabaseHelper.DATE_FORMAT.format(selectedRecord.date))
                 intent.putExtra("record_currency", selectedRecord.currency)
                 intent.putExtra("record_amount", selectedRecord.amount)
                 intent.putExtra("record_category", selectedRecord.category)
