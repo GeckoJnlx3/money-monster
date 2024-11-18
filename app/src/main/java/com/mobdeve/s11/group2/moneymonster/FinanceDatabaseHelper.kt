@@ -29,7 +29,7 @@ class FinanceDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABA
     private val CREATE_TABLE = "CREATE TABLE IF NOT EXISTS $TABLE_NAME(" +
             "$COL_ID INTEGER PRIMARY KEY AUTOINCREMENT, " +
             "$COL_TYPE TEXT, " +
-            "$COL_DATE TEXT, " +
+            "$COL_DATE DATE, " +
             "$COL_CUR TEXT, " +
             "$COL_AMT REAL, " +
             "$COL_CAT TEXT, " +
