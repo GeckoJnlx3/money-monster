@@ -8,7 +8,8 @@ import androidx.recyclerview.widget.RecyclerView
 
 class HistoryRecordAdapter(
     private val records: List<FinanceRecord>,
-    private val onItemClick: (FinanceRecord) -> Unit
+    private val onItemClick: (FinanceRecord) -> Unit,
+    private val currency: String
 ) : RecyclerView.Adapter<HistoryRecordAdapter.HistoryRecordViewHolder>() {
 
     class HistoryRecordViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -23,7 +24,7 @@ class HistoryRecordAdapter(
 
     override fun onBindViewHolder(holder: HistoryRecordViewHolder, position: Int) {
         val record = records[position]
-        holder.amountText.text = "${record.currency} " + "${record.amount}"
+        holder.amountText.text = FormatUtils.formatAmount(record.amount?.toDoubleOrNull() ?: 0.00, record.currency)
         holder.categoryText.text = record.category
 
         holder.itemView.setOnClickListener {

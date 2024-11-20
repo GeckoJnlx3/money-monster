@@ -9,6 +9,9 @@ import androidx.recyclerview.widget.RecyclerView
 
 class HistoryRecordTypeAdapter(
     private val groupedByType: Map<String, List<FinanceRecord>>,
+    private val currency: String,
+    private val totalExpense: Double,
+    private val totalIncome: Double,
     private val onItemClick: (FinanceRecord) -> Unit
 ) : RecyclerView.Adapter<HistoryRecordTypeAdapter.TypeViewHolder>() {
 
@@ -16,6 +19,8 @@ class HistoryRecordTypeAdapter(
 
     inner class TypeViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val typeTextView: TextView = itemView.findViewById(R.id.type)
+        val expenseTotalTextView: TextView = itemView.findViewById(R.id.expenseTotal)
+        val incomeTotalTextView: TextView = itemView.findViewById(R.id.incomeTotal)
         val recordRecyclerView: RecyclerView = itemView.findViewById(R.id.historyTypeRecycler)
     }
 
@@ -29,14 +34,23 @@ class HistoryRecordTypeAdapter(
         val type = groupedByType.keys.elementAt(position)
         val recordsForType = groupedByType[type] ?: emptyList()
 
-        holder.typeTextView.text = type // Set the type (Income/Expense)
+        holder.typeTextView.text = type
+
+        if (type == "Expense") {
+            holder.expenseTotalTextView.visibility = View.VISIBLE
+            holder.expenseTotalTextView.text = FormatUtils.formatAmount(totalExpense, currency)
+            holder.incomeTotalTextView.visibility = View.GONE
+        } else if (type == "Income") {
+            holder.incomeTotalTextView.visibility = View.VISIBLE
+            holder.incomeTotalTextView.text = FormatUtils.formatAmount(totalIncome, currency)
+            holder.expenseTotalTextView.visibility = View.GONE
+        }
 
         holder.recordRecyclerView.apply {
             layoutManager = LinearLayoutManager(holder.itemView.context, RecyclerView.VERTICAL, false)
+            adapter = HistoryRecordAdapter(recordsForType, onItemClick, currency)
             setRecycledViewPool(sharedPool)
         }
-
-        holder.recordRecyclerView.adapter = HistoryRecordAdapter(recordsForType, onItemClick)
     }
 
     override fun getItemCount(): Int = groupedByType.size
