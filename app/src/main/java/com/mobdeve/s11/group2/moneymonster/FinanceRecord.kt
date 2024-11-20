@@ -11,3 +11,4 @@ data class FinanceRecord (
     val category: String,
     val description: String,
 )
+
