@@ -26,11 +26,24 @@ class SettingsActivity : ComponentActivity() {
         currencyAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         currencySpinner.adapter = currencyAdapter
 
+        val sharedPref = getSharedPreferences("com.mobdeve.s11.group2.moneymonster.PREFERENCE_FILE_KEY", Context.MODE_PRIVATE)
+        val savedCurrency = sharedPref.getString("CURRENCY", "PHP")
+        val selectedCurrencyPosition = currencies.indexOf(savedCurrency)
+        if (selectedCurrencyPosition >= 0) {
+            currencySpinner.setSelection(selectedCurrencyPosition)
+        }
+
         val timeSpinner: Spinner = binding.timeSpnr
         val timeOptions = arrayOf("Daily", "Weekly", "Monthly", "Yearly")
         val timeAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, timeOptions)
         timeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         timeSpinner.adapter = timeAdapter
+
+        val savedTime = sharedPref.getString("TIME", "Daily")
+        val selectedTimePosition = timeOptions.indexOf(savedTime)
+        if (selectedTimePosition >= 0) {
+            timeSpinner.setSelection(selectedTimePosition)
+        }
 
         binding.saveTargetBtn.setOnClickListener {
             val target = binding.setTarget.text.toString().toIntOrNull()
@@ -58,6 +71,16 @@ class SettingsActivity : ComponentActivity() {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                 val selectedCurrency = parent?.getItemAtPosition(position).toString()
                 saveToPreferences("CURRENCY", selectedCurrency)
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+            }
+        }
+
+        timeSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                val selectedTime = parent?.getItemAtPosition(position).toString()
+                saveToPreferences("TIME", selectedTime)
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
