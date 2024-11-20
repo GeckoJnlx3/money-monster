@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.mobdeve.s11.group2.moneymonster.com.mobdeve.s11.group2.moneymonster.HistoryViewActivity
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.text.get
+import java.util.Date
 
 class HistoryRecordDateAdapter(
     private val groupedByDateAndType: Map<Date, Map<String, List<FinanceRecord>>>
@@ -24,8 +24,7 @@ class HistoryRecordDateAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DateViewHolder {
-        val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.history_record_date, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.history_record_date, parent, false)
         return DateViewHolder(view)
     }
 
@@ -36,17 +35,11 @@ class HistoryRecordDateAdapter(
         val formattedDate = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(date)
         holder.dateTextView.text = formattedDate
 
-        val totalExpense = recordsForDate["Expense"]?.sumOf { it.amount?.toDoubleOrNull() ?: 0.00 } ?: 0.00
-        val totalIncome = recordsForDate["Income"]?.sumOf { it.amount?.toDoubleOrNull() ?: 0.00 } ?: 0.00
-
-        val currency = recordsForDate["Expense"]?.firstOrNull()?.currency ?:
-        recordsForDate["Income"]?.firstOrNull()?.currency ?: "PHP"
+        val allRecordsForDate = recordsForDate.values.flatten()
+        val allRecordsMap: Map<Date, List<FinanceRecord>> = mapOf(date to allRecordsForDate)
 
         val innerAdapter = HistoryRecordTypeAdapter(
-            groupedByType = recordsForDate,
-            currency = currency,
-            totalExpense = totalExpense,
-            totalIncome = totalIncome,
+            groupedByDate = allRecordsMap,
             onItemClick = { selectedRecord ->
                 val intent = Intent(holder.itemView.context, HistoryViewActivity::class.java).apply {
                     putExtra("record_id", selectedRecord.id)

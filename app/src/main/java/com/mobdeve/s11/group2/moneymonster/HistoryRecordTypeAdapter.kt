@@ -6,52 +6,46 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 class HistoryRecordTypeAdapter(
-    private val groupedByType: Map<String, List<FinanceRecord>>,
-    private val currency: String,
-    private val totalExpense: Double,
-    private val totalIncome: Double,
+    private val groupedByDate: Map<java.util.Date, List<FinanceRecord>>,
     private val onItemClick: (FinanceRecord) -> Unit
 ) : RecyclerView.Adapter<HistoryRecordTypeAdapter.TypeViewHolder>() {
 
     private val sharedPool = RecyclerView.RecycledViewPool()
 
     inner class TypeViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val typeTextView: TextView = itemView.findViewById(R.id.type)
-        val expenseTotalTextView: TextView = itemView.findViewById(R.id.expenseTotal)
-        val incomeTotalTextView: TextView = itemView.findViewById(R.id.incomeTotal)
+        val balanceTextView: TextView = itemView.findViewById(R.id.balance)
         val recordRecyclerView: RecyclerView = itemView.findViewById(R.id.historyTypeRecycler)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TypeViewHolder {
-        val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.history_record_type, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.history_record_type, parent, false)
         return TypeViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: TypeViewHolder, position: Int) {
-        val type = groupedByType.keys.elementAt(position)
-        val recordsForType = groupedByType[type] ?: emptyList()
+        val date = groupedByDate.keys.elementAt(position)
+        val recordsForDate = groupedByDate[date] ?: emptyList()
 
-        holder.typeTextView.text = type
+        val formattedDate = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(date)
+        holder.balanceTextView.text = formattedDate
 
-        if (type == "Expense") {
-            holder.expenseTotalTextView.visibility = View.VISIBLE
-            holder.expenseTotalTextView.text = FormatUtils.formatAmount(totalExpense, currency)
-            holder.incomeTotalTextView.visibility = View.GONE
-        } else if (type == "Income") {
-            holder.incomeTotalTextView.visibility = View.VISIBLE
-            holder.incomeTotalTextView.text = FormatUtils.formatAmount(totalIncome, currency)
-            holder.expenseTotalTextView.visibility = View.GONE
-        }
+        val groupedByType = recordsForDate.groupBy { it.type }
+
+        val totalExpense = groupedByType["Expense"]?.sumOf { it.amount?.toDoubleOrNull() ?: 0.00 } ?: 0.00
+        val totalIncome = groupedByType["Income"]?.sumOf { it.amount?.toDoubleOrNull() ?: 0.00 } ?: 0.00
+
+        val balance = totalIncome - totalExpense
+        holder.balanceTextView.text = FormatUtils.formatAmount(balance, "PHP")
 
         holder.recordRecyclerView.apply {
             layoutManager = LinearLayoutManager(holder.itemView.context, RecyclerView.VERTICAL, false)
-            adapter = HistoryRecordAdapter(recordsForType, onItemClick, currency)
+            adapter = HistoryRecordAdapter(recordsForDate, onItemClick, "PHP")
             setRecycledViewPool(sharedPool)
         }
     }
-
-    override fun getItemCount(): Int = groupedByType.size
+    override fun getItemCount(): Int = groupedByDate.size
 }
