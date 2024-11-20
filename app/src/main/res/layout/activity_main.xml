@@ -27,14 +27,6 @@
             android:textAlignment="center"
             android:padding="20dp"/>
 
-        <Spinner
-            android:id="@+id/dateRangeSpnr"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_margin="16sp"
-            android:gravity="center" />
-
         <LinearLayout
             android:id="@+id/savingGoal"
             android:layout_width="match_parent"
