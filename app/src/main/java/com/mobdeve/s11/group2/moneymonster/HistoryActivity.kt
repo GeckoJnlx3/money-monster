@@ -23,8 +23,10 @@ class HistoryActivity : ComponentActivity() {
 
         val groupedByDateAndType = records
             .groupBy { it.date }
+            .toSortedMap(compareByDescending { it })
             .mapValues { entry ->
                 entry.value.groupBy { it.type }
+                    .toSortedMap(compareBy { type -> type == "Income" })
             }
 
         val adapter = HistoryRecordDateAdapter(groupedByDateAndType)
