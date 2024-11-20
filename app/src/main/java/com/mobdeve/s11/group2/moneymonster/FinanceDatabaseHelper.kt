@@ -12,7 +12,7 @@ import java.util.Locale
 class FinanceDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
     companion object {
         private const val DATABASE_NAME = "finance.db"
-        private const val DATABASE_VERSION = 7
+        private const val DATABASE_VERSION = 8
 
         const val TABLE_NAME = "record"
         const val COL_ID = "record_id"
@@ -42,9 +42,8 @@ class FinanceDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABA
 
     override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
         Log.d("FinanceDatabaseHelper", "Database upgraded from version $oldVersion to $newVersion")
-        if (oldVersion < 7) {
-            //  db?.execSQL("DROP TABLE IF EXISTS $TABLE_NAME")
-            //db?.execSQL("ALTER TABLE $TABLE_NAME ADD COLUMN $COL_DATE TEXT")
+        if (oldVersion < 8) {
+            db?.execSQL("DROP TABLE IF EXISTS $TABLE_NAME")
         }
         db?.execSQL("DROP TABLE IF EXISTS $TABLE_NAME")
         onCreate(db)

@@ -15,11 +15,7 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.core.content.ContextCompat
 import com.mobdeve.s11.group2.moneymonster.databinding.FinanceBinding
-import java.sql.Date
-import java.text.SimpleDateFormat
-import java.time.LocalDateTime
 import java.util.Calendar
-import java.util.Locale
 
 class FinanceActivity : ComponentActivity() {
 
@@ -30,18 +26,19 @@ class FinanceActivity : ComponentActivity() {
     private lateinit var amountInput: EditText
     private lateinit var memoInput: EditText
     private lateinit var saveBtn: Button
-    private lateinit var categorySpnr: Spinner
+    private lateinit var expenseCategorySpnr: Spinner
+    private lateinit var incomeCategorySpnr: Spinner
     private lateinit var imageView: ImageView
     private lateinit var currencyText: TextView
 
     private var isLoggingExpense = true
 
-    private val categories = arrayOf(
-        "Food",
-        "Transport",
-        "Entertainment",
-        "Utilities",
-        "Other"
+    private val expenseCategories = arrayOf(
+        "Food", "Transport", "Entertainment", "Utilities", "Other"
+    )
+
+    private val incomeCategories = arrayOf(
+        "Salary", "Investment", "Gift", "Allowance", "Other"
     )
 
     private var currency: String = "PHP"
@@ -59,14 +56,20 @@ class FinanceActivity : ComponentActivity() {
         memoInput = viewBinding.memoInput
         saveBtn = viewBinding.saveBtn
         imageView = viewBinding.imageView
-        categorySpnr = viewBinding.categorySpnr
+        expenseCategorySpnr = viewBinding.expenseCategorySpnr
+        incomeCategorySpnr = viewBinding.incomeCategorySpnr
         currencyText = viewBinding.currencyText
 
-        val categoryAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, categories)
-        categoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        categorySpnr.adapter = categoryAdapter
+        val expenseCategoryAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, expenseCategories)
+        expenseCategoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        expenseCategorySpnr.adapter = expenseCategoryAdapter
 
-        imageView.setImageResource(R.drawable.gwomp_baby)
+        val incomeCategoryAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, incomeCategories)
+        incomeCategoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        incomeCategorySpnr.adapter = incomeCategoryAdapter
+
+        loadCurrency()
+        updateUI()
 
         logExpenseBtn.setOnClickListener {
             switchToExpense()
@@ -83,9 +86,6 @@ class FinanceActivity : ComponentActivity() {
         dateEt.setOnClickListener {
             displayDatePickerDialog()
         }
-
-        loadCurrency()
-        updateUI()
     }
 
     private fun switchToExpense() {
@@ -105,15 +105,18 @@ class FinanceActivity : ComponentActivity() {
     }
 
     private fun updateUI() {
-        typeText.text =
-            if (isLoggingExpense)
-                "Log Expense"
-            else
-                "Log Income"
+        typeText.text = if (isLoggingExpense) "Log Expense" else "Log Income"
         amountInput.setText("")
         currencyText.text = currency
         memoInput.setText("")
 
+        if (isLoggingExpense) {
+            expenseCategorySpnr.visibility = Spinner.VISIBLE
+            incomeCategorySpnr.visibility = Spinner.GONE
+        } else {
+            expenseCategorySpnr.visibility = Spinner.GONE
+            incomeCategorySpnr.visibility = Spinner.VISIBLE
+        }
     }
 
     private fun saveTransaction() {
@@ -126,18 +129,19 @@ class FinanceActivity : ComponentActivity() {
             return
         }
 
-        val date = if (dateText.isEmpty()) {
-            Calendar.getInstance().time
-        } else {
-            try {
-                FinanceDatabaseHelper.DATE_FORMAT.parse(dateText)
-            } catch (e: Exception) {
-                Toast.makeText(this, "Invalid date format. Use dd-MM-yyyy.", Toast.LENGTH_SHORT).show()
-                return
-            }
+        val date = try {
+            FinanceDatabaseHelper.DATE_FORMAT.parse(dateText)
+        } catch (e: Exception) {
+            Toast.makeText(this, "Invalid date format. Use dd-MM-yyyy.", Toast.LENGTH_SHORT).show()
+            return
         }
 
-        val category = categorySpnr.selectedItem.toString()
+        val category = if (isLoggingExpense) {
+            expenseCategorySpnr.selectedItem.toString()
+        } else {
+            incomeCategorySpnr.selectedItem.toString()
+        }
+
         val record = FinanceRecord(
             id = 0,
             type = if (isLoggingExpense) "Expense" else "Income",
@@ -173,10 +177,8 @@ class FinanceActivity : ComponentActivity() {
         currencyText.text = currency
     }
 
-    private fun displayDatePickerDialog(){
-        // https://www.geeksforgeeks.org/how-to-popup-datepicker-while-clicking-on-edittext-in-android/
+    private fun displayDatePickerDialog() {
         val c = Calendar.getInstance()
-
         val year = c.get(Calendar.YEAR)
         val month = c.get(Calendar.MONTH)
         val day = c.get(Calendar.DAY_OF_MONTH)
