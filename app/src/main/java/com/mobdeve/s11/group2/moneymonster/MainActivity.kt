@@ -39,21 +39,7 @@ MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val viewBinding: ActivityMainBinding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(viewBinding.root)
-
-        targetProgressBar = viewBinding.targetProgressBar
-        limitProgressBar = viewBinding.limitProgressBar
-        targetprogressText = viewBinding.targetProgressText
-        limitprogressText = viewBinding.limitProgressText
-        historyBtn = viewBinding.historyBtn
-        monsterpediaBtn = viewBinding.monsterpediaBtn
-        settingsBtn = viewBinding.settingsBtn
-        analyticsBtn = viewBinding.analyticsBtn
-        financeBtn = viewBinding.financeBtn
-        expenseGoal = viewBinding.expenseGoal
-        savingGoal = viewBinding.savingGoal
-        dateTodayTv = viewBinding.dateTodayTv
+        bindView()
 
         settingsBtn.setOnClickListener { openSettings() }
         expenseGoal.setOnClickListener { openSettings() }
@@ -88,6 +74,24 @@ MainActivity : ComponentActivity() {
     private fun openSettings() {
         val intent = Intent(this, SettingsActivity::class.java)
         startActivity(intent)
+    }
+
+    private fun bindView(){
+        val viewBinding: ActivityMainBinding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(viewBinding.root)
+
+        targetProgressBar = viewBinding.targetProgressBar
+        limitProgressBar = viewBinding.limitProgressBar
+        targetprogressText = viewBinding.targetProgressText
+        limitprogressText = viewBinding.limitProgressText
+        historyBtn = viewBinding.historyBtn
+        monsterpediaBtn = viewBinding.monsterpediaBtn
+        settingsBtn = viewBinding.settingsBtn
+        analyticsBtn = viewBinding.analyticsBtn
+        financeBtn = viewBinding.financeBtn
+        expenseGoal = viewBinding.expenseGoal
+        savingGoal = viewBinding.savingGoal
+        dateTodayTv = viewBinding.dateTodayTv
     }
 
     private fun loadAndDisplayProgress() {
