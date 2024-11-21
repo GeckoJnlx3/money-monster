@@ -20,23 +20,23 @@ class MonsterpediaActivity : ComponentActivity() {
         recyclerView = findViewById(R.id.monsterpediaRVG)
         recyclerView.layoutManager = GridLayoutManager(this, 3 )
 
-        var gwompList = listOf(
-            Monster("Gwomp", R.drawable.gwomp_baby),
-            Monster("Gwompor", R.drawable.gwomp_teen),
-            Monster("Wompagwom", R.drawable.gwomp_adult)
-        )
-
-        var mamooList = listOf(
-            Monster("Mamoo", R.drawable.mamoo_baby),
-            Monster("Moomie", R.drawable.mamoo_teen),
-            Monster("Mamoolah", R.drawable.mamoo_adult)
-        )
-
-        var aveList = listOf(
-            Monster("Ave", R.drawable.ave_baby),
-            Monster("Evale", R.drawable.ave_teen),
-            Monster("Alvirose", R.drawable.ave_adult)
-        )
+//        var gwompList = listOf(
+//            Monster("Gwomp", R.drawable.gwomp_baby),
+//            Monster("Gwompor", R.drawable.gwomp_teen),
+//            Monster("Wompagwom", R.drawable.gwomp_adult)
+//        )
+//
+//        var mamooList = listOf(
+//            Monster("Mamoo", R.drawable.mamoo_baby),
+//            Monster("Moomie", R.drawable.mamoo_teen),
+//            Monster("Mamoolah", R.drawable.mamoo_adult)
+//        )
+//
+//        var aveList = listOf(
+//            Monster("Ave", R.drawable.ave_baby),
+//            Monster("Evale", R.drawable.ave_teen),
+//            Monster("Alvirose", R.drawable.ave_adult)
+//        )
 
         recyclerView1 = findViewById(R.id.monsterpediaRVM)
         recyclerView1.layoutManager = GridLayoutManager(this, 3 )
@@ -44,12 +44,12 @@ class MonsterpediaActivity : ComponentActivity() {
         recyclerView2 = findViewById(R.id.monsterpediaRVA)
         recyclerView2.layoutManager = GridLayoutManager(this, 3 )
 
-        var adapterG = MonsterpediaAdapter(gwompList)
-        var adapterM = MonsterpediaAdapter(mamooList)
-        var adapterA = MonsterpediaAdapter(aveList)
-        recyclerView.adapter = adapterG
-        recyclerView1.adapter = adapterM
-        recyclerView2.adapter = adapterA
+//        var adapterG = MonsterpediaAdapter(gwompList)
+//        var adapterM = MonsterpediaAdapter(mamooList)
+//        var adapterA = MonsterpediaAdapter(aveList)
+//        recyclerView.adapter = adapterG
+//        recyclerView1.adapter = adapterM
+//        recyclerView2.adapter = adapterA
 
     }
 }

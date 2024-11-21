@@ -24,14 +24,14 @@ class MonsterpediaAdapter(private val monsterList: List<Monster>) : RecyclerView
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val monster = monsterList[position]
-        holder.imageView.setImageResource(monster.imageResource)
+        holder.imageView.setImageResource(monster.image)
         holder.textView.text = monster.name
 
         holder.itemView.setOnClickListener {
             val context = holder.itemView.context
             val intent = Intent(context, MonsterpediaEntryActivity::class.java).apply {
                 putExtra("monster_name", monster.name)
-                putExtra("monster_image", monster.imageResource)
+                putExtra("monster_image", monster.image)
             }
             context.startActivity(intent)
         }

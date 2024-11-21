@@ -5,9 +5,10 @@ import java.sql.Date
 
 data class Monster(
     val monsterId: id,
-    val image: Int,
     val name: String,
+    val image: Int,
     val adoptionDate: Date,
-    val stats: Int,
+    val statSaved: Int,
+    val statSpent: Int,
     val description: String,
 )
