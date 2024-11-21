@@ -38,7 +38,7 @@ class MonsterpediaEntryActivity : ComponentActivity() {
 
             monsterNameTextView.text = name
             monsterDescriptionTextView.text = description
-            monsterImageView.setImageResource(image) // Assumes the image is a drawable resource ID
+            monsterImageView.setImageResource(image)
         }
 
         cursor.close()

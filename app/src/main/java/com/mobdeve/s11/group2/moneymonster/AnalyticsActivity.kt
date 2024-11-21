@@ -7,14 +7,10 @@ import android.widget.Spinner
 import androidx.activity.ComponentActivity
 import androidx.core.content.ContextCompat
 import com.github.mikephil.charting.charts.PieChart
-import com.github.mikephil.charting.data.PieEntry
-import com.github.mikephil.charting.components.Legend
-import com.github.mikephil.charting.data.PieData
-import com.github.mikephil.charting.data.PieDataSet
 import com.github.mikephil.charting.charts.LineChart
-import com.github.mikephil.charting.data.Entry
-import com.github.mikephil.charting.data.LineData
-import com.github.mikephil.charting.data.LineDataSet
+import com.github.mikephil.charting.components.Legend
+import com.github.mikephil.charting.data.*
+import com.github.mikephil.charting.formatter.ValueFormatter
 import com.mobdeve.s11.group2.moneymonster.databinding.AnalyticsBinding
 import java.text.SimpleDateFormat
 import java.util.*
@@ -36,7 +32,6 @@ class AnalyticsActivity : ComponentActivity() {
 
         databaseHelper = DatabaseHelper(this)
 
-        // Initialize components
         dateRangeSpinner = viewBinding.dateRangeSpnr
         expensePc = viewBinding.expensePc
         overviewLc = viewBinding.overviewLc
@@ -44,7 +39,7 @@ class AnalyticsActivity : ComponentActivity() {
         setupDateRangeSpinner()
         setupColors()
         displayExpensePieChart()
-        //displayOverviewLineChart()
+        displayOverviewLineChart()
     }
 
     private fun setupDateRangeSpinner() {
@@ -114,7 +109,7 @@ class AnalyticsActivity : ComponentActivity() {
             expenseEntries.add(PieEntry(totalAmount, category))
         }
 
-        val expensePds = PieDataSet(expenseEntries, "Expense Categories")
+        val expensePds = PieDataSet(expenseEntries, "Categories")
         expensePds.sliceSpace = 3f
         expensePds.colors = colors
 
@@ -122,54 +117,50 @@ class AnalyticsActivity : ComponentActivity() {
         expensePc.data = data
         expensePc.invalidate()
     }
+
+    private fun displayOverviewLineChart() {
+        overviewLc.xAxis.valueFormatter = LineChartXAxisValueFormatter()
+        overviewLc.description.isEnabled = false
+
+        val records = databaseHelper.getAllRecords()
+        val expenseOverview = ArrayList<Entry>()
+        val savingOverview = ArrayList<Entry>()
+
+        records.forEach { record ->
+            val date = record.date.time.toFloat()
+            val amount = record.amount?.toFloatOrNull() ?: 0f
+            if (record.type == "Expense") {
+                expenseOverview.add(Entry(date, amount))
+            } else if (record.type == "Income") {
+                savingOverview.add(Entry(date, amount))
+            }
+        }
+
+        val expenseDataSet = LineDataSet(expenseOverview, "Expenses").apply {
+            color = ContextCompat.getColor(this@AnalyticsActivity, R.color.holo_red_light)
+            lineWidth = 3f
+            setCircleColor(ContextCompat.getColor(this@AnalyticsActivity, R.color.black))
+            setDrawCircleHole(false)
+        }
+
+        val savingDataSet = LineDataSet(savingOverview, "Income").apply {
+            color = ContextCompat.getColor(this@AnalyticsActivity, R.color.holo_green_light)
+            lineWidth = 3f
+            setCircleColor(ContextCompat.getColor(this@AnalyticsActivity, R.color.black))
+            setDrawCircleHole(false)
+        }
+
+        val lineData = LineData(expenseDataSet, savingDataSet)
+        overviewLc.data = lineData
+        overviewLc.invalidate()
+    }
+
+    private class LineChartXAxisValueFormatter : ValueFormatter() {
+        private val dateFormat = SimpleDateFormat("MMM d", Locale("en"))
+
+        override fun getFormattedValue(value: Float): String {
+            val date = Date(value.toLong())
+            return dateFormat.format(date)
+        }
+    }
 }
-//    private fun displayOverviewLineChart() {
-//        overviewLc.xAxis.valueFormatter = LineChartXAxisValueFormatter()
-//        overviewLc.description.isEnabled = false
-//
-//        var expenseOverview: ArrayList<Entry> = ArrayList()
-//        expenseOverview.add(Entry(1725120000000f, 0f))
-//        expenseOverview.add(Entry(1725206400000f, 100f))
-//        expenseOverview.add(Entry(1726006400000f, 3000f))
-//        expenseOverview.add(Entry(1726806400000f, 5000f))
-//
-//        val expenseOverviewDs = LineDataSet(expenseOverview, "Expenses")
-//        expenseOverviewDs.color = ContextCompat.getColor(this, R.color.holo_purple)
-//        expenseOverviewDs.lineWidth = 3f
-//        expenseOverviewDs.setCircleColor(ContextCompat.getColor(this, R.color.black))
-//        expenseOverviewDs.setDrawCircleHole(false)
-//
-//        var savingOverview: ArrayList<Entry> = ArrayList()
-//        savingOverview.add(Entry(1725120000000f, 10000f))
-//        savingOverview.add(Entry(1725206400000f, 9900f))
-//        savingOverview.add(Entry(1726006400000f, 6900f))
-//        savingOverview.add(Entry(1726806400000f, 1900f))
-//
-//        val savingOverviewDs = LineDataSet(savingOverview, "Savings")
-//        savingOverviewDs.color = ContextCompat.getColor(this, R.color.holo_green_light)
-//        savingOverviewDs.lineWidth = 3f
-//        savingOverviewDs.setCircleColor(ContextCompat.getColor(this, R.color.black))
-//        savingOverviewDs.setDrawCircleHole(false)
-//
-//        val data = LineData()
-//        data.addDataSet(expenseOverviewDs)
-//        data.addDataSet(savingOverviewDs)
-//
-//        overviewLc.data = data
-//
-//        overviewLc.invalidate()
-//    }
-//
-//    private class LineChartXAxisValueFormatter: IndexAxisValueFormatter(){
-//        override fun getFormattedValue(value: Float): String? {
-//            //https://stackoverflow.com/questions/41426021/how-to-add-x-axis-as-datetime-label-in-mpandroidchart
-//            val msSince1970 = TimeUnit.DAYS.toMillis(value.toLong())
-//            val timeMs: Date = Date(msSince1970)
-//            val loc: Locale = Locale("en")
-//            val dateTimeFormat:SimpleDateFormat = SimpleDateFormat("MM-dd-yy", loc)
-////            val format: SimpleDateFormat = SimpleDateFormat("MM-dd")
-//
-//            return dateTimeFormat.format(timeMs)
-//        }
-//    }
-//}
