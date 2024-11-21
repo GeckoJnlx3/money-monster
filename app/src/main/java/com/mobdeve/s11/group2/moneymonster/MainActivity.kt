@@ -13,8 +13,13 @@ import com.mobdeve.s11.group2.moneymonster.databinding.ActivityMainBinding
 import com.mobdeve.s11.group2.moneymonster.finance.FinanceActivity
 import com.mobdeve.s11.group2.moneymonster.history.HistoryActivity
 import com.mobdeve.s11.group2.moneymonster.monsterpedia.MonsterActivity
+import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.util.Calendar
 
-class MainActivity : ComponentActivity() {
+class
+
+MainActivity : ComponentActivity() {
 
     private lateinit var targetProgressBar: ProgressBar
     private lateinit var limitProgressBar: ProgressBar
@@ -27,6 +32,7 @@ class MainActivity : ComponentActivity() {
     private lateinit var analyticsBtn: Button
     private lateinit var financeBtn: Button
     private lateinit var historyBtn: Button
+    private lateinit var dateTodayTv: TextView
     private val handler = Handler()
 
     private var currency: String = "PHP"
@@ -47,10 +53,13 @@ class MainActivity : ComponentActivity() {
         financeBtn = viewBinding.financeBtn
         expenseGoal = viewBinding.expenseGoal
         savingGoal = viewBinding.savingGoal
+        dateTodayTv = viewBinding.dateTodayTv
 
         settingsBtn.setOnClickListener { openSettings() }
         expenseGoal.setOnClickListener { openSettings() }
         savingGoal.setOnClickListener { openSettings() }
+
+        setDateToday()
 
         historyBtn.setOnClickListener{
             val intent = Intent(this, HistoryActivity::class.java)
@@ -113,6 +122,12 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }.start()
+    }
+
+    private fun setDateToday(){
+        val dateToday = Calendar.getInstance().time
+        val formatter = SimpleDateFormat("MMM dd, yyyy")
+        dateTodayTv.text = formatter.format(dateToday)
     }
 
     override fun onResume() {
