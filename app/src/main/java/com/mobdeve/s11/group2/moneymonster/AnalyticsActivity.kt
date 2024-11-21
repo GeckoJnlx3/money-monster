@@ -4,6 +4,8 @@ import android.R
 import android.icu.text.DateFormat
 import android.icu.text.SimpleDateFormat
 import android.os.Bundle
+import android.widget.ArrayAdapter
+import android.widget.Spinner
 import com.github.mikephil.charting.charts.PieChart
 import com.github.mikephil.charting.data.PieEntry
 import androidx.activity.ComponentActivity
@@ -31,6 +33,7 @@ class AnalyticsActivity: ComponentActivity() {
     lateinit var expensePc: PieChart
     lateinit var overviewLc: LineChart
     private var colors: ArrayList<Int> = ArrayList()
+    private lateinit var dateRangeSpinner: Spinner
 
     // TODO: create a line graph for expenses/savings through time
     // TODO: the other thing i forgot what it was!!
@@ -39,6 +42,13 @@ class AnalyticsActivity: ComponentActivity() {
         super.onCreate(savedInstanceState)
         var viewBinding: AnalyticsBinding = AnalyticsBinding.inflate(layoutInflater)
         setContentView(viewBinding.root)
+
+        dateRangeSpinner = viewBinding.dateRangeSpnr
+
+        val weekRanges = generateWeekRanges()
+        val adapter = ArrayAdapter(this, R.layout.simple_spinner_item, weekRanges)
+        adapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item)
+        dateRangeSpinner.adapter = adapter
 
         colors.add(resources.getColor(R.color.holo_purple))
         colors.add(resources.getColor(R.color.holo_green_dark))
@@ -51,7 +61,16 @@ class AnalyticsActivity: ComponentActivity() {
 
         overviewLc = viewBinding.overviewLc
         displayOverviewLineChart()
+    }
 
+    private fun generateWeekRanges(): List<String> {
+        return listOf(
+            "October 1 - October 7",
+            "October 8 - October 14",
+            "October 15 - October 21",
+            "October 22 - October 28",
+            "October 29 - November 4"
+        )
     }
 
     private fun displayExpensePieChart(){

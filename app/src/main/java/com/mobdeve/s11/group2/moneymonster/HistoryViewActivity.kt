@@ -3,6 +3,7 @@ package com.mobdeve.s11.group2.moneymonster.com.mobdeve.s11.group2.moneymonster
 import android.os.Bundle
 import android.widget.TextView
 import androidx.activity.ComponentActivity
+import com.mobdeve.s11.group2.moneymonster.FormatUtils
 import com.mobdeve.s11.group2.moneymonster.R
 
 class HistoryViewActivity : ComponentActivity() {
@@ -13,7 +14,7 @@ class HistoryViewActivity : ComponentActivity() {
 
         val date = intent.getStringExtra("record_date") ?: ""
         val currency = intent.getStringExtra("record_currency") ?: ""
-        val amount = intent.getStringExtra("record_amount") ?: "0.0"
+        val amount = intent.getStringExtra("record_amount") ?: "0.00"
         val category = intent.getStringExtra("record_category") ?: ""
         val description = intent.getStringExtra("record_description") ?: ""
 
@@ -23,7 +24,7 @@ class HistoryViewActivity : ComponentActivity() {
         val descriptionTextView: TextView = findViewById(R.id.description)
 
         dateTextView.text = date
-        amountTextView.text = "$currency " + "$amount"
+        amountTextView.text = FormatUtils.formatAmount(amount.toDouble(), currency)
         categoryTextView.text = category
         descriptionTextView.text = description
 

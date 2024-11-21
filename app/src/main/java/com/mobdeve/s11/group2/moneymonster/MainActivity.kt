@@ -15,7 +15,6 @@ import com.mobdeve.s11.group2.moneymonster.databinding.ActivityMainBinding
 
 class MainActivity : ComponentActivity() {
 
-    private lateinit var dateRangeSpinner: Spinner
     private lateinit var targetProgressBar: ProgressBar
     private lateinit var limitProgressBar: ProgressBar
     private lateinit var targetprogressText: TextView
@@ -36,7 +35,6 @@ class MainActivity : ComponentActivity() {
         val viewBinding: ActivityMainBinding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(viewBinding.root)
 
-        dateRangeSpinner = viewBinding.dateRangeSpnr
         targetProgressBar = viewBinding.targetProgressBar
         limitProgressBar = viewBinding.limitProgressBar
         targetprogressText = viewBinding.targetProgressText
@@ -48,11 +46,6 @@ class MainActivity : ComponentActivity() {
         financeBtn = viewBinding.financeBtn
         expenseGoal = viewBinding.expenseGoal
         savingGoal = viewBinding.savingGoal
-
-        val weekRanges = generateWeekRanges()
-        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, weekRanges)
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        dateRangeSpinner.adapter = adapter
 
         settingsBtn.setOnClickListener { openSettings() }
         expenseGoal.setOnClickListener { openSettings() }
@@ -85,16 +78,6 @@ class MainActivity : ComponentActivity() {
     private fun openSettings() {
         val intent = Intent(this, SettingsActivity::class.java)
         startActivity(intent)
-    }
-
-    private fun generateWeekRanges(): List<String> {
-        return listOf(
-            "October 1 - October 7",
-            "October 8 - October 14",
-            "October 15 - October 21",
-            "October 22 - October 28",
-            "October 29 - November 4"
-        )
     }
 
     private fun loadAndDisplayProgress() {
