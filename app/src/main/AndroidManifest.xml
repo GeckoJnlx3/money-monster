@@ -23,12 +23,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".RegisterActivity"
+        <activity android:name=".login.RegisterActivity"
             android:exported="false"
             android:theme="@style/Theme.AppCompat.Light">
         </activity>
         <activity
-            android:name=".LoginActivity"
+            android:name=".login.LoginActivity"
             android:exported="false"
             android:theme="@style/Theme.AppCompat.Light">
         </activity>
@@ -38,27 +38,27 @@
             android:theme="@style/Theme.AppCompat.Light">
         </activity>
         <activity
-            android:name=".MonsterActivity"
+            android:name=".monsterpedia.MonsterActivity"
             android:exported="false"
             android:theme="@style/Theme.AppCompat.Light">
         </activity>
 
         <activity
-            android:name=".HistoryActivity"
+            android:name=".history.HistoryActivity"
             android:exported="false"
             android:theme="@style/Theme.AppCompat.Light">
         </activity>
 
         <activity
-            android:name=".com.mobdeve.s11.group2.moneymonster.HistoryViewActivity">
+            android:name=".history.HistoryViewActivity">
         </activity>
 
         <activity
-            android:name=".MonsterEntryActivity">
+            android:name=".monsterpedia.MonsterEntryActivity">
         </activity>
 
         <activity
-            android:name=".FinanceActivity">
+            android:name=".finance.FinanceActivity">
         </activity>
 
         <activity

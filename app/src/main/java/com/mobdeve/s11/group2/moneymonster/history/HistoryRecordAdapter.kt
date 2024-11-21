@@ -1,4 +1,4 @@
-package com.mobdeve.s11.group2.moneymonster
+package com.mobdeve.s11.group2.moneymonster.history
 
 import android.view.LayoutInflater
 import android.view.View
@@ -6,6 +6,9 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import androidx.core.content.ContextCompat
+import com.mobdeve.s11.group2.moneymonster.finance.FinanceRecord
+import com.mobdeve.s11.group2.moneymonster.finance.FormatUtils
+import com.mobdeve.s11.group2.moneymonster.R
 
 class HistoryRecordAdapter(
     private val records: List<FinanceRecord>,
@@ -26,15 +29,20 @@ class HistoryRecordAdapter(
     override fun onBindViewHolder(holder: HistoryRecordViewHolder, position: Int) {
         val record = records[position]
 
-        val amountFormatted = FormatUtils.formatAmount(record.amount?.toDoubleOrNull() ?: 0.00, record.currency)
+        val amountFormatted =
+            FormatUtils.formatAmount(record.amount?.toDoubleOrNull() ?: 0.00, record.currency)
         holder.amountText.text = amountFormatted
         holder.categoryText.text = record.category
 
         if (record.type == "Expense") {
-            holder.amountText.setTextColor(ContextCompat.getColor(holder.itemView.context, R.color.red))
+            holder.amountText.setTextColor(ContextCompat.getColor(holder.itemView.context,
+                R.color.red
+            ))
             holder.amountText.text = "- $amountFormatted"
         } else if (record.type == "Income") {
-            holder.amountText.setTextColor(ContextCompat.getColor(holder.itemView.context, R.color.green_btn))
+            holder.amountText.setTextColor(ContextCompat.getColor(holder.itemView.context,
+                R.color.green_btn
+            ))
             holder.amountText.text = "+ $amountFormatted"
         }
 
