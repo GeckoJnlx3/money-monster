@@ -22,3 +22,4 @@ class MonsterpediaEntryActivity : ComponentActivity() {
         monsterImageView.setImageResource(monsterImageRes)
     }
 }
+

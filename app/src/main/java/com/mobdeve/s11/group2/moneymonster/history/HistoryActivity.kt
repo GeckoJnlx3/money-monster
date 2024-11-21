@@ -6,14 +6,14 @@ import android.widget.Spinner
 import androidx.activity.ComponentActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.mobdeve.s11.group2.moneymonster.finance.FinanceDatabaseHelper
+import com.mobdeve.s11.group2.moneymonster.DatabaseHelper
 import com.mobdeve.s11.group2.moneymonster.R
 
 class HistoryActivity : ComponentActivity() {
 
     private lateinit var dateRangeSpinner2: Spinner
     private lateinit var recyclerView: RecyclerView
-    private lateinit var databaseHelper: FinanceDatabaseHelper
+    private lateinit var databaseHelper: DatabaseHelper
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,7 +26,7 @@ class HistoryActivity : ComponentActivity() {
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         dateRangeSpinner2.adapter = spinnerAdapter
 
-        databaseHelper = FinanceDatabaseHelper(this)
+        databaseHelper = DatabaseHelper(this)
 
         recyclerView = findViewById(R.id.historyRecycler)
         recyclerView.layoutManager = LinearLayoutManager(this)

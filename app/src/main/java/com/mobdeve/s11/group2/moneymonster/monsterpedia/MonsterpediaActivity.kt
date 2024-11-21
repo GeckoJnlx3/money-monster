@@ -2,54 +2,37 @@ package com.mobdeve.s11.group2.moneymonster.monsterpedia
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
-import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.mobdeve.s11.group2.moneymonster.R
-import com.mobdeve.s11.group2.moneymonster.monster.Monster
+import com.mobdeve.s11.group2.moneymonster.DatabaseHelper
+import android.util.Log
 
 class MonsterpediaActivity : ComponentActivity() {
 
-    private lateinit var recyclerView: RecyclerView
-    private lateinit var recyclerView1: RecyclerView
-    private lateinit var recyclerView2: RecyclerView
+    private lateinit var speciesRecyclerView: RecyclerView
+    private lateinit var databaseHelper: DatabaseHelper
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.monsterpedia_main)
+        setContentView(R.layout.monsterpedia)
 
-        recyclerView = findViewById(R.id.monsterpediaRVG)
-        recyclerView.layoutManager = GridLayoutManager(this, 3 )
+        databaseHelper = DatabaseHelper(this)
 
-//        var gwompList = listOf(
-//            Monster("Gwomp", R.drawable.gwomp_baby),
-//            Monster("Gwompor", R.drawable.gwomp_teen),
-//            Monster("Wompagwom", R.drawable.gwomp_adult)
-//        )
-//
-//        var mamooList = listOf(
-//            Monster("Mamoo", R.drawable.mamoo_baby),
-//            Monster("Moomie", R.drawable.mamoo_teen),
-//            Monster("Mamoolah", R.drawable.mamoo_adult)
-//        )
-//
-//        var aveList = listOf(
-//            Monster("Ave", R.drawable.ave_baby),
-//            Monster("Evale", R.drawable.ave_teen),
-//            Monster("Alvirose", R.drawable.ave_adult)
-//        )
+        val monsters = databaseHelper.getAllMonsters()
 
-        recyclerView1 = findViewById(R.id.monsterpediaRVM)
-        recyclerView1.layoutManager = GridLayoutManager(this, 3 )
+        val gwompList = monsters.filter { it.species.contains("gwomp", ignoreCase = true) }
+        val mamooList = monsters.filter { it.species.contains("mamoo", ignoreCase = true) }
+        val aveList = monsters.filter { it.species.contains("ave", ignoreCase = true) }
 
-        recyclerView2 = findViewById(R.id.monsterpediaRVA)
-        recyclerView2.layoutManager = GridLayoutManager(this, 3 )
+        val speciesList = listOf(
+            Species("Gwomp", gwompList),
+            Species("Mamoo", mamooList),
+            Species("Ave", aveList)
+        )
 
-//        var adapterG = MonsterpediaAdapter(gwompList)
-//        var adapterM = MonsterpediaAdapter(mamooList)
-//        var adapterA = MonsterpediaAdapter(aveList)
-//        recyclerView.adapter = adapterG
-//        recyclerView1.adapter = adapterM
-//        recyclerView2.adapter = adapterA
-
+        speciesRecyclerView = findViewById(R.id.speciesRV)
+        speciesRecyclerView.layoutManager = LinearLayoutManager(this)
+        speciesRecyclerView.adapter = MonsterpediaSpeciesAdapter(speciesList)
     }
 }

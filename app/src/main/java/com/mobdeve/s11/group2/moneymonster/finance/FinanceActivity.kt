@@ -15,6 +15,7 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.compose.ui.text.font.FontVariation
 import androidx.core.content.ContextCompat
+import com.mobdeve.s11.group2.moneymonster.DatabaseHelper
 import com.mobdeve.s11.group2.moneymonster.R
 import com.mobdeve.s11.group2.moneymonster.SettingsActivity
 import com.mobdeve.s11.group2.moneymonster.databinding.FinanceBinding
@@ -141,7 +142,7 @@ class FinanceActivity : ComponentActivity() {
         }
 
         val date = try {
-            FinanceDatabaseHelper.DATE_FORMAT.parse(dateText)
+            DatabaseHelper.DATE_FORMAT.parse(dateText)
         } catch (e: Exception) {
             Toast.makeText(this, "Invalid date format. Use dd-MM-yyyy.", Toast.LENGTH_SHORT).show()
             return
@@ -163,7 +164,7 @@ class FinanceActivity : ComponentActivity() {
             description = description
         )
 
-        val dbHelper = FinanceDatabaseHelper(this)
+        val dbHelper = DatabaseHelper(this)
         dbHelper.recordExpense(record)
         Log.d("FinanceActivity", "Transaction Saved: $record")
 

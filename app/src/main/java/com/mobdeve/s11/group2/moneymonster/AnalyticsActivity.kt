@@ -4,54 +4,78 @@ import android.R
 import android.os.Bundle
 import android.widget.ArrayAdapter
 import android.widget.Spinner
-import com.github.mikephil.charting.charts.PieChart
-import com.github.mikephil.charting.data.PieEntry
 import androidx.activity.ComponentActivity
 import androidx.core.content.ContextCompat
+import com.github.mikephil.charting.charts.PieChart
+import com.github.mikephil.charting.data.PieEntry
 import com.github.mikephil.charting.components.Legend
 import com.github.mikephil.charting.data.PieData
 import com.github.mikephil.charting.data.PieDataSet
+import com.github.mikephil.charting.charts.LineChart
+import com.github.mikephil.charting.data.Entry
+import com.github.mikephil.charting.data.LineData
+import com.github.mikephil.charting.data.LineDataSet
 import com.mobdeve.s11.group2.moneymonster.databinding.AnalyticsBinding
-import com.mobdeve.s11.group2.moneymonster.finance.FinanceDatabaseHelper
+import java.text.SimpleDateFormat
+import java.util.*
+import java.util.concurrent.TimeUnit
+import kotlin.collections.ArrayList
 
 class AnalyticsActivity : ComponentActivity() {
 
-    lateinit var expensePc: PieChart
+    private lateinit var expensePc: PieChart
+    private lateinit var overviewLc: LineChart
     private lateinit var dateRangeSpinner: Spinner
     private var colors: ArrayList<Int> = ArrayList()
-    private lateinit var databaseHelper: FinanceDatabaseHelper
+    private lateinit var databaseHelper: DatabaseHelper
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val viewBinding: AnalyticsBinding = AnalyticsBinding.inflate(layoutInflater)
         setContentView(viewBinding.root)
 
-        databaseHelper = FinanceDatabaseHelper(this)
+        databaseHelper = DatabaseHelper(this)
 
+        // Initialize components
         dateRangeSpinner = viewBinding.dateRangeSpnr
-        val weekRanges = generateWeekRanges()
+        expensePc = viewBinding.expensePc
+        overviewLc = viewBinding.overviewLc
+
+        setupDateRangeSpinner()
+        setupColors()
+        displayExpensePieChart()
+        //displayOverviewLineChart()
+    }
+
+    private fun setupDateRangeSpinner() {
+        val weekRanges = generateDynamicWeekRanges()
         val adapter = ArrayAdapter(this, R.layout.simple_spinner_item, weekRanges)
         adapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item)
         dateRangeSpinner.adapter = adapter
+    }
 
+    private fun generateDynamicWeekRanges(): List<String> {
+        val calendar = Calendar.getInstance()
+        val sdf = SimpleDateFormat("MMM d", Locale("en"))
+        val weekRanges = mutableListOf<String>()
+
+        for (i in 0 until 5) {
+            val endDate = calendar.time
+            calendar.add(Calendar.DAY_OF_YEAR, -6)
+            val startDate = calendar.time
+            weekRanges.add("${sdf.format(startDate)} - ${sdf.format(endDate)}")
+            calendar.add(Calendar.DAY_OF_YEAR, -1)
+        }
+
+        return weekRanges
+    }
+
+    private fun setupColors() {
         colors.add(ContextCompat.getColor(this, R.color.holo_purple))
         colors.add(ContextCompat.getColor(this, R.color.holo_green_dark))
         colors.add(ContextCompat.getColor(this, R.color.holo_red_light))
         colors.add(ContextCompat.getColor(this, R.color.holo_orange_light))
         colors.add(ContextCompat.getColor(this, R.color.holo_blue_light))
-
-        expensePc = viewBinding.expensePc
-        displayExpensePieChart()
-    }
-
-    private fun generateWeekRanges(): List<String> {
-        return listOf(
-            "October 1 - October 7",
-            "October 8 - October 14",
-            "October 15 - October 21",
-            "October 22 - October 28",
-            "October 29 - November 4"
-        )
     }
 
     private fun displayExpensePieChart() {
@@ -74,8 +98,15 @@ class AnalyticsActivity : ComponentActivity() {
             if (record.type == "Expense") {
                 val category = record.category
                 val amount = record.amount?.toFloatOrNull() ?: 0f
-                categoryExpenseMap[category] = categoryExpenseMap.getOrDefault(category, 0f) + amount
+                categoryExpenseMap[category] =
+                    categoryExpenseMap.getOrDefault(category, 0f) + amount
             }
+        }
+
+        if (categoryExpenseMap.isEmpty()) {
+            expensePc.clear()
+            expensePc.centerText = "No expense data available"
+            return
         }
 
         val expenseEntries = ArrayList<PieEntry>()
@@ -88,7 +119,7 @@ class AnalyticsActivity : ComponentActivity() {
         expensePds.colors = colors
 
         val data = PieData(expensePds)
-        expensePc.setData(data)
+        expensePc.data = data
         expensePc.invalidate()
     }
 }

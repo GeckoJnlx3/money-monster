@@ -8,29 +8,32 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.mobdeve.s11.group2.moneymonster.R
-import com.mobdeve.s11.group2.moneymonster.databinding.MonsterItemBinding
 import com.mobdeve.s11.group2.moneymonster.monster.Monster
 
-class MonsterpediaAdapter(private val monsterList: List<Monster>) :
-    RecyclerView.Adapter<MonsterpediaAdapter.MonsterViewHolder>() {
+class MonsterpediaMonsterAdapter(private val monsterList: List<Monster>) :
+    RecyclerView.Adapter<MonsterpediaMonsterAdapter.MonsterViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MonsterViewHolder {
-        val binding = MonsterItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return MonsterViewHolder(binding)
+        val view = LayoutInflater.from(parent.context)
+            .inflate(R.layout.monster_item, parent, false)
+        return MonsterViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: MonsterViewHolder, position: Int) {
         val monster = monsterList[position]
-        holder.binding.monsterName.text = monster.name
-        holder.binding.monsterImage.setImageResource(monster.image)
+        holder.nameTextView.text = monster.name
+        holder.imageView.setImageResource(monster.image)
     }
 
     override fun getItemCount(): Int = monsterList.size
 
-    inner class MonsterViewHolder(val binding: MonsterItemBinding) : RecyclerView.ViewHolder(binding.root) {
+    inner class MonsterViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val nameTextView: TextView = itemView.findViewById(R.id.monsterName)
+        val imageView: ImageView = itemView.findViewById(R.id.monsterImage)
+
         init {
-            binding.root.setOnClickListener {
-                val context = it.context
+            itemView.setOnClickListener {
+                val context = itemView.context
                 val position = adapterPosition
                 if (position != RecyclerView.NO_POSITION) {
                     val selectedMonster = monsterList[position]
