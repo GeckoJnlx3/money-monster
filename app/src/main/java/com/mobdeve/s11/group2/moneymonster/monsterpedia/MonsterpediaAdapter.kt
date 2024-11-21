@@ -37,6 +37,7 @@ class MonsterpediaAdapter(private val monsterList: List<Monster>) :
                     val intent = Intent(context, MonsterpediaEntryActivity::class.java).apply {
                         putExtra("monster_name", selectedMonster.name)
                         putExtra("monster_image", selectedMonster.image)
+                        putExtra("monster_description", selectedMonster.description)
                     }
                     context.startActivity(intent)
                 }
