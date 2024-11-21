@@ -1,4 +1,4 @@
-package com.mobdeve.s11.group2.moneymonster
+package com.mobdeve.s11.group2.moneymonster.history
 
 import android.os.Bundle
 import android.widget.ArrayAdapter
@@ -6,6 +6,8 @@ import android.widget.Spinner
 import androidx.activity.ComponentActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.mobdeve.s11.group2.moneymonster.finance.FinanceDatabaseHelper
+import com.mobdeve.s11.group2.moneymonster.R
 
 class HistoryActivity : ComponentActivity() {
 

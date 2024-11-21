@@ -4,14 +4,15 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
-import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.ProgressBar
-import android.widget.Spinner
 import android.widget.TextView
 import android.view.View
 import androidx.activity.ComponentActivity
 import com.mobdeve.s11.group2.moneymonster.databinding.ActivityMainBinding
+import com.mobdeve.s11.group2.moneymonster.finance.FinanceActivity
+import com.mobdeve.s11.group2.moneymonster.history.HistoryActivity
+import com.mobdeve.s11.group2.moneymonster.monsterpedia.MonsterActivity
 
 class MainActivity : ComponentActivity() {
 

@@ -10,6 +10,7 @@ import android.widget.Spinner
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import com.mobdeve.s11.group2.moneymonster.databinding.SettingsBinding
+import com.mobdeve.s11.group2.moneymonster.login.LoginActivity
 
 class SettingsActivity : ComponentActivity() {
 

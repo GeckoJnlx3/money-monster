@@ -1,33 +1,18 @@
 package com.mobdeve.s11.group2.moneymonster
 
 import android.R
-import android.icu.text.DateFormat
-import android.icu.text.SimpleDateFormat
 import android.os.Bundle
 import android.widget.ArrayAdapter
 import android.widget.Spinner
 import com.github.mikephil.charting.charts.PieChart
 import com.github.mikephil.charting.data.PieEntry
 import androidx.activity.ComponentActivity
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.Typeface
 import androidx.core.content.ContextCompat
-import com.github.mikephil.charting.charts.LineChart
-import com.github.mikephil.charting.components.Description
 import com.github.mikephil.charting.components.Legend
-import com.github.mikephil.charting.data.DataSet
-import com.github.mikephil.charting.data.Entry
-import com.github.mikephil.charting.data.LineData
-import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.data.PieData
 import com.github.mikephil.charting.data.PieDataSet
-import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.mobdeve.s11.group2.moneymonster.databinding.AnalyticsBinding
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
-import java.util.Date
-import java.util.Locale
-import java.util.concurrent.TimeUnit
+import com.mobdeve.s11.group2.moneymonster.finance.FinanceDatabaseHelper
 
 class AnalyticsActivity : ComponentActivity() {
 

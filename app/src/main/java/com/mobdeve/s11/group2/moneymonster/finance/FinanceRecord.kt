@@ -1,4 +1,4 @@
-package com.mobdeve.s11.group2.moneymonster
+package com.mobdeve.s11.group2.moneymonster.finance
 
 import java.util.Date
 

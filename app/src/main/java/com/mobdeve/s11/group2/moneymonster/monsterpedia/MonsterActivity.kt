@@ -1,9 +1,10 @@
-package com.mobdeve.s11.group2.moneymonster
+package com.mobdeve.s11.group2.moneymonster.monsterpedia
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.mobdeve.s11.group2.moneymonster.R
 
 class MonsterActivity : ComponentActivity() {
 

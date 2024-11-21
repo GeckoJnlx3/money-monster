@@ -1,4 +1,4 @@
-package com.mobdeve.s11.group2.moneymonster
+package com.mobdeve.s11.group2.moneymonster.finance
 
 import android.content.ContentValues
 import android.content.Context
@@ -87,7 +87,7 @@ class FinanceDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABA
                 val description = cursor.getString(cursor.getColumnIndexOrThrow(COL_DESC))
 
                 val date = try {
-                    FinanceDatabaseHelper.DATE_FORMAT.parse(dateString)
+                    DATE_FORMAT.parse(dateString)
                 } catch (e: Exception) {
                     null
                 }

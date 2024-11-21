@@ -1,4 +1,4 @@
-package com.mobdeve.s11.group2.moneymonster
+package com.mobdeve.s11.group2.moneymonster.history
 
 import android.content.Intent
 import android.view.LayoutInflater
@@ -7,7 +7,9 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.mobdeve.s11.group2.moneymonster.com.mobdeve.s11.group2.moneymonster.HistoryViewActivity
+import com.mobdeve.s11.group2.moneymonster.finance.FinanceDatabaseHelper
+import com.mobdeve.s11.group2.moneymonster.finance.FinanceRecord
+import com.mobdeve.s11.group2.moneymonster.R
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.Date
