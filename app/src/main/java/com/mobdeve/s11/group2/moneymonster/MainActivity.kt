@@ -95,9 +95,9 @@ MainActivity : ComponentActivity() {
     }
 
     private fun loadAndDisplayProgress() {
-        val sharedPref = getSharedPreferences("com.mobdeve.s11.group2.moneymonster.PREFERENCE_FILE_KEY", Context.MODE_PRIVATE)
-        val target = sharedPref.getInt("TARGET", 500)
-        val limit = sharedPref.getInt("LIMIT", 300)
+        val sharedPref = getSharedPreferences(SettingsActivity.PREFERENCE_FILE, Context.MODE_PRIVATE)
+        val target = sharedPref.getInt(SettingsActivity.TARGET, 500)
+        val limit = sharedPref.getInt(SettingsActivity.LIMIT, 300)
 
         targetProgressBar.max = target
         targetprogressText.text = "$currency 0/$target"

@@ -16,6 +16,15 @@ class SettingsActivity : ComponentActivity() {
 
     private lateinit var binding: SettingsBinding
 
+    companion object {
+        const val CURRENCY = "CURRENCY"
+        const val TARGET = "TARGET"
+        const val LIMIT = "LIMIT"
+        const val TIME = "TIME"
+
+        const val PREFERENCE_FILE = "com.mobdeve.s11.group2.moneymonster.PREFERENCE_FILE_KEY"
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = SettingsBinding.inflate(layoutInflater)
@@ -27,8 +36,8 @@ class SettingsActivity : ComponentActivity() {
         currencyAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         currencySpinner.adapter = currencyAdapter
 
-        val sharedPref = getSharedPreferences("com.mobdeve.s11.group2.moneymonster.PREFERENCE_FILE_KEY", Context.MODE_PRIVATE)
-        val savedCurrency = sharedPref.getString("CURRENCY", "PHP")
+        val sharedPref = getSharedPreferences(PREFERENCE_FILE, Context.MODE_PRIVATE)
+        val savedCurrency = sharedPref.getString(CURRENCY, "PHP")
         val selectedCurrencyPosition = currencies.indexOf(savedCurrency)
         if (selectedCurrencyPosition >= 0) {
             currencySpinner.setSelection(selectedCurrencyPosition)
@@ -40,7 +49,7 @@ class SettingsActivity : ComponentActivity() {
         timeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         timeSpinner.adapter = timeAdapter
 
-        val savedTime = sharedPref.getString("TIME", "Daily")
+        val savedTime = sharedPref.getString(TIME, "Daily")
         val selectedTimePosition = timeOptions.indexOf(savedTime)
         if (selectedTimePosition >= 0) {
             timeSpinner.setSelection(selectedTimePosition)
@@ -49,7 +58,7 @@ class SettingsActivity : ComponentActivity() {
         binding.saveTargetBtn.setOnClickListener {
             val target = binding.setTarget.text.toString().toIntOrNull()
             if (target != null) {
-                saveToPreferences("TARGET", target)
+                saveToPreferences(TARGET, target)
                 Toast.makeText(this, "Target set", Toast.LENGTH_SHORT).show()
                 binding.setTarget.text.clear()
             } else {
@@ -60,7 +69,7 @@ class SettingsActivity : ComponentActivity() {
         binding.expenseLimitBtn.setOnClickListener {
             val limit = binding.setLimit.text.toString().toIntOrNull()
             if (limit != null) {
-                saveToPreferences("LIMIT", limit)
+                saveToPreferences(LIMIT, limit)
                 Toast.makeText(this, "Limit set", Toast.LENGTH_SHORT).show()
                 binding.setLimit.text.clear()
             } else {
@@ -71,7 +80,7 @@ class SettingsActivity : ComponentActivity() {
         currencySpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                 val selectedCurrency = parent?.getItemAtPosition(position).toString()
-                saveToPreferences("CURRENCY", selectedCurrency)
+                saveToPreferences(CURRENCY, selectedCurrency)
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
@@ -81,7 +90,7 @@ class SettingsActivity : ComponentActivity() {
         timeSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                 val selectedTime = parent?.getItemAtPosition(position).toString()
-                saveToPreferences("TIME", selectedTime)
+                saveToPreferences(TIME, selectedTime)
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
@@ -95,7 +104,7 @@ class SettingsActivity : ComponentActivity() {
     }
 
     private fun saveToPreferences(key: String, value: Int) {
-        val sharedPref = getSharedPreferences("com.mobdeve.s11.group2.moneymonster.PREFERENCE_FILE_KEY", Context.MODE_PRIVATE)
+        val sharedPref = getSharedPreferences(PREFERENCE_FILE, Context.MODE_PRIVATE)
         with(sharedPref.edit()) {
             putInt(key, value)
             apply()
@@ -103,7 +112,7 @@ class SettingsActivity : ComponentActivity() {
     }
 
     private fun saveToPreferences(key: String, value: String) {
-        val sharedPref = getSharedPreferences("com.mobdeve.s11.group2.moneymonster.PREFERENCE_FILE_KEY", Context.MODE_PRIVATE)
+        val sharedPref = getSharedPreferences(PREFERENCE_FILE, Context.MODE_PRIVATE)
         with(sharedPref.edit()) {
             putString(key, value)
             apply()

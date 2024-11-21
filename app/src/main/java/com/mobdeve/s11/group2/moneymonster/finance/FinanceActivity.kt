@@ -13,8 +13,10 @@ import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.ComponentActivity
+import androidx.compose.ui.text.font.FontVariation
 import androidx.core.content.ContextCompat
 import com.mobdeve.s11.group2.moneymonster.R
+import com.mobdeve.s11.group2.moneymonster.SettingsActivity
 import com.mobdeve.s11.group2.moneymonster.databinding.FinanceBinding
 import java.util.Calendar
 
@@ -181,8 +183,8 @@ class FinanceActivity : ComponentActivity() {
     }
 
     private fun loadCurrency() {
-        val sharedPref = getSharedPreferences("com.mobdeve.s11.group2.moneymonster.PREFERENCE_FILE_KEY", Context.MODE_PRIVATE)
-        currency = sharedPref.getString("CURRENCY", "PHP") ?: "PHP"
+        val sharedPref = getSharedPreferences(SettingsActivity.PREFERENCE_FILE, Context.MODE_PRIVATE)
+        currency = sharedPref.getString(SettingsActivity.CURRENCY, "PHP") ?: "PHP"
         currencyText.text = currency
     }
 
