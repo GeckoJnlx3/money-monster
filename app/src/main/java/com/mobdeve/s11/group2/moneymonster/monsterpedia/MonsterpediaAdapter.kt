@@ -8,8 +8,9 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import android.content.Intent
 import com.mobdeve.s11.group2.moneymonster.R
+import com.mobdeve.s11.group2.moneymonster.monster.Monster
 
-class MonsterAdapter(private val monsterList: List<Monster>) : RecyclerView.Adapter<MonsterAdapter.ViewHolder>() {
+class MonsterpediaAdapter(private val monsterList: List<Monster>) : RecyclerView.Adapter<MonsterpediaAdapter.ViewHolder>() {
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val imageView: ImageView = itemView.findViewById(R.id.monsterpediaSquare)
@@ -28,7 +29,7 @@ class MonsterAdapter(private val monsterList: List<Monster>) : RecyclerView.Adap
 
         holder.itemView.setOnClickListener {
             val context = holder.itemView.context
-            val intent = Intent(context, MonsterEntryActivity::class.java).apply {
+            val intent = Intent(context, MonsterpediaEntryActivity::class.java).apply {
                 putExtra("monster_name", monster.name)
                 putExtra("monster_image", monster.imageResource)
             }

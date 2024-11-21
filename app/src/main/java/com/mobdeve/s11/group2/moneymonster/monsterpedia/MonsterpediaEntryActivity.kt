@@ -6,7 +6,7 @@ import android.widget.TextView
 import androidx.activity.ComponentActivity
 import com.mobdeve.s11.group2.moneymonster.R
 
-class MonsterEntryActivity : ComponentActivity() {
+class MonsterpediaEntryActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

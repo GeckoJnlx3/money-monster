@@ -5,8 +5,9 @@ import androidx.activity.ComponentActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.mobdeve.s11.group2.moneymonster.R
+import com.mobdeve.s11.group2.moneymonster.monster.Monster
 
-class MonsterActivity : ComponentActivity() {
+class MonsterpediaActivity : ComponentActivity() {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var recyclerView1: RecyclerView
@@ -43,9 +44,9 @@ class MonsterActivity : ComponentActivity() {
         recyclerView2 = findViewById(R.id.monsterpediaRVA)
         recyclerView2.layoutManager = GridLayoutManager(this, 3 )
 
-        var adapterG = MonsterAdapter(gwompList)
-        var adapterM = MonsterAdapter(mamooList)
-        var adapterA = MonsterAdapter(aveList)
+        var adapterG = MonsterpediaAdapter(gwompList)
+        var adapterM = MonsterpediaAdapter(mamooList)
+        var adapterA = MonsterpediaAdapter(aveList)
         recyclerView.adapter = adapterG
         recyclerView1.adapter = adapterM
         recyclerView2.adapter = adapterA

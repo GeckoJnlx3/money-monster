@@ -38,7 +38,7 @@
             android:theme="@style/Theme.AppCompat.Light">
         </activity>
         <activity
-            android:name=".monsterpedia.MonsterActivity"
+            android:name=".monsterpedia.MonsterpediaActivity"
             android:exported="false"
             android:theme="@style/Theme.AppCompat.Light">
         </activity>
@@ -54,7 +54,7 @@
         </activity>
 
         <activity
-            android:name=".monsterpedia.MonsterEntryActivity">
+            android:name=".monsterpedia.MonsterpediaEntryActivity">
         </activity>
 
         <activity
