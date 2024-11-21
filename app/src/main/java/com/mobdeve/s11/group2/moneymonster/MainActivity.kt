@@ -13,7 +13,6 @@ import com.mobdeve.s11.group2.moneymonster.databinding.ActivityMainBinding
 import com.mobdeve.s11.group2.moneymonster.finance.FinanceActivity
 import com.mobdeve.s11.group2.moneymonster.history.HistoryActivity
 import com.mobdeve.s11.group2.moneymonster.monsterpedia.MonsterpediaActivity
-import com.mobdeve.s11.group2.moneymonster.monsterpedia.MonsterActivity
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.util.Calendar
