@@ -13,8 +13,13 @@ import com.mobdeve.s11.group2.moneymonster.databinding.ActivityMainBinding
 import com.mobdeve.s11.group2.moneymonster.finance.FinanceActivity
 import com.mobdeve.s11.group2.moneymonster.history.HistoryActivity
 import com.mobdeve.s11.group2.moneymonster.monsterpedia.MonsterActivity
+import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.util.Calendar
 
-class MainActivity : ComponentActivity() {
+class
+
+MainActivity : ComponentActivity() {
 
     private lateinit var targetProgressBar: ProgressBar
     private lateinit var limitProgressBar: ProgressBar
@@ -27,30 +32,20 @@ class MainActivity : ComponentActivity() {
     private lateinit var analyticsBtn: Button
     private lateinit var financeBtn: Button
     private lateinit var historyBtn: Button
+    private lateinit var dateTodayTv: TextView
     private val handler = Handler()
 
     private var currency: String = "PHP"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val viewBinding: ActivityMainBinding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(viewBinding.root)
-
-        targetProgressBar = viewBinding.targetProgressBar
-        limitProgressBar = viewBinding.limitProgressBar
-        targetprogressText = viewBinding.targetProgressText
-        limitprogressText = viewBinding.limitProgressText
-        historyBtn = viewBinding.historyBtn
-        monsterpediaBtn = viewBinding.monsterpediaBtn
-        settingsBtn = viewBinding.settingsBtn
-        analyticsBtn = viewBinding.analyticsBtn
-        financeBtn = viewBinding.financeBtn
-        expenseGoal = viewBinding.expenseGoal
-        savingGoal = viewBinding.savingGoal
+        bindView()
 
         settingsBtn.setOnClickListener { openSettings() }
         expenseGoal.setOnClickListener { openSettings() }
         savingGoal.setOnClickListener { openSettings() }
+
+        setDateToday()
 
         historyBtn.setOnClickListener{
             val intent = Intent(this, HistoryActivity::class.java)
@@ -81,10 +76,28 @@ class MainActivity : ComponentActivity() {
         startActivity(intent)
     }
 
+    private fun bindView(){
+        val viewBinding: ActivityMainBinding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(viewBinding.root)
+
+        targetProgressBar = viewBinding.targetProgressBar
+        limitProgressBar = viewBinding.limitProgressBar
+        targetprogressText = viewBinding.targetProgressText
+        limitprogressText = viewBinding.limitProgressText
+        historyBtn = viewBinding.historyBtn
+        monsterpediaBtn = viewBinding.monsterpediaBtn
+        settingsBtn = viewBinding.settingsBtn
+        analyticsBtn = viewBinding.analyticsBtn
+        financeBtn = viewBinding.financeBtn
+        expenseGoal = viewBinding.expenseGoal
+        savingGoal = viewBinding.savingGoal
+        dateTodayTv = viewBinding.dateTodayTv
+    }
+
     private fun loadAndDisplayProgress() {
-        val sharedPref = getSharedPreferences("com.mobdeve.s11.group2.moneymonster.PREFERENCE_FILE_KEY", Context.MODE_PRIVATE)
-        val target = sharedPref.getInt("TARGET", 500)
-        val limit = sharedPref.getInt("LIMIT", 300)
+        val sharedPref = getSharedPreferences(SettingsActivity.PREFERENCE_FILE, Context.MODE_PRIVATE)
+        val target = sharedPref.getInt(SettingsActivity.TARGET, 500)
+        val limit = sharedPref.getInt(SettingsActivity.LIMIT, 300)
 
         targetProgressBar.max = target
         targetprogressText.text = "$currency 0/$target"
@@ -113,6 +126,12 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }.start()
+    }
+
+    private fun setDateToday(){
+        val dateToday = Calendar.getInstance().time
+        val formatter = SimpleDateFormat("MMM dd, yyyy")
+        dateTodayTv.text = formatter.format(dateToday)
     }
 
     override fun onResume() {
