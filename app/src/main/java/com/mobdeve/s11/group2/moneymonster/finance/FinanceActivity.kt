@@ -1,7 +1,6 @@
 package com.mobdeve.s11.group2.moneymonster.finance
 
 import android.app.DatePickerDialog
-import android.content.Context
 import android.content.res.ColorStateList
 import android.os.Bundle
 import android.util.Log
@@ -72,9 +71,6 @@ class FinanceActivity : ComponentActivity() {
         incomeCategoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         incomeCategorySpnr.adapter = incomeCategoryAdapter
 
-        loadCurrency()
-        updateUI()
-
         logExpenseBtn.setOnClickListener {
             switchToExpense()
         }
@@ -90,6 +86,9 @@ class FinanceActivity : ComponentActivity() {
         dateEt.setOnClickListener {
             displayDatePickerDialog()
         }
+
+        loadCurrency()
+        updateUI()
     }
 
     private fun switchToExpense() {
@@ -165,7 +164,15 @@ class FinanceActivity : ComponentActivity() {
         )
 
         val dbHelper = DatabaseHelper(this)
-        dbHelper.recordExpense(record)
+        val result = dbHelper.recordExpense(record)
+
+        if (result != -1L) {
+            updateProgress(amount, isLoggingExpense) // Update progress based on transaction type
+
+            Toast.makeText(this, "Transaction saved successfully.", Toast.LENGTH_SHORT).show()
+        } else {
+            Toast.makeText(this, "Failed to save transaction.", Toast.LENGTH_SHORT).show()
+        }
         Log.d("FinanceActivity", "Transaction Saved: $record")
 
         amountInput.setText("")
@@ -183,13 +190,32 @@ class FinanceActivity : ComponentActivity() {
         Toast.makeText(this, "$transactionType logged: $currency $amount", Toast.LENGTH_SHORT).show()
     }
 
+    private fun updateProgress(amount: Double, isExpense: Boolean) {
+        val sharedPref = getSharedPreferences(SettingsActivity.PREFERENCE_FILE,
+            MODE_PRIVATE
+        )
+        val editor = sharedPref.edit()
+
+        val currentExpense = sharedPref.getFloat("CURRENT_EXPENSE", 0f).toDouble()
+        val currentIncome = sharedPref.getFloat("CURRENT_INCOME", 0f).toDouble()
+
+        if (isExpense) {
+            editor.putFloat("CURRENT_EXPENSE", (currentExpense + amount).toFloat())
+        } else {
+            editor.putFloat("CURRENT_INCOME", (currentIncome + amount).toFloat())
+        }
+
+        editor.apply()
+    }
+
     private fun loadCurrency() {
-        val sharedPref = getSharedPreferences(SettingsActivity.PREFERENCE_FILE, Context.MODE_PRIVATE)
+        val sharedPref = getSharedPreferences(SettingsActivity.PREFERENCE_FILE, MODE_PRIVATE)
         currency = sharedPref.getString(SettingsActivity.CURRENCY, "PHP") ?: "PHP"
         currencyText.text = currency
     }
 
-    private fun displayDatePickerDialog() {
+    private fun displayDatePickerDialog(){
+        // https://www.geeksforgeeks.org/how-to-popup-datepicker-while-clicking-on-edittext-in-android/
         val c = Calendar.getInstance()
         val year = c.get(Calendar.YEAR)
         val month = c.get(Calendar.MONTH)

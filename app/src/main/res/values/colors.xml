@@ -19,4 +19,6 @@
     <color name="brown_accent">#DA8359</color>
     <color name="brown_header">#784934</color>
     <color name="brown_shadow">#a7856c</color>
+    <color name="orange">#ff8c00</color>
+    <color name="green">#1D9E00</color>
 </resources>
