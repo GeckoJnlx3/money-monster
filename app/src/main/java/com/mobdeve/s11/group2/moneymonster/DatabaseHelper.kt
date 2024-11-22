@@ -15,7 +15,7 @@ import java.util.Locale
 class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
     companion object {
         private const val DATABASE_NAME = "moneymonster.db"
-        private const val DATABASE_VERSION = 6
+        private const val DATABASE_VERSION = 7
 
         const val FINANCE_TABLE_NAME = "finance"
         const val COL_FINANCE_ID = "record_id"
@@ -32,11 +32,15 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         const val COL_NAME = "name"
         const val COL_IMAGE = "image"
         const val COL_ADOPTION_DATE = "adoption_date"
+        const val COL_STAGE = "stage"
+        const val COL_UP_TICK = "up_tick"
+        const val COL_REQ_EXP = "req_exp"
         const val COL_LEVEL = "level"
         const val COL_STAT_SAVED = "stat_saved"
         const val COL_STAT_SPENT = "stat_spent"
         const val COL_DESCRIPTION = "description"
         const val COL_UNLOCKED = "unlocked"
+        const val COL_ON_FIELD = "on_field"
 
         val DATE_FORMAT = SimpleDateFormat("dd-MM-yyyy", Locale("en-PH"))
     }
@@ -60,18 +64,22 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
             $COL_NAME TEXT,
             $COL_IMAGE INTEGER,
             $COL_ADOPTION_DATE DATE,
+            $COL_STAGE INTEGER,
+            $COL_UP_TICK INTEGER,
+            $COL_REQ_EXP INTEGER,
             $COL_LEVEL INTEGER,
             $COL_STAT_SAVED INTEGER,
             $COL_STAT_SPENT INTEGER,
             $COL_DESCRIPTION TEXT,
-            $COL_UNLOCKED INTEGER
+            $COL_UNLOCKED INTEGER,
+            $COL_ON_FIELD INTEGER
         );
     """.trimIndent()
 
     override fun onCreate(db: SQLiteDatabase?) {
         db?.execSQL(CREATE_FINANCE_TABLE)
         db?.execSQL(CREATE_MONSTER_TABLE)
-        populateMonsterTable(db)
+        MonsterDataHelper.populateMonsterTable(db)
     }
 
     override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
@@ -79,37 +87,6 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         db?.execSQL("DROP TABLE IF EXISTS $FINANCE_TABLE_NAME")
         db?.execSQL("DROP TABLE IF EXISTS $MONSTER_TABLE_NAME")
         onCreate(db)
-    }
-
-    private fun populateMonsterTable(db: SQLiteDatabase?) {
-        val monsters = listOf(
-            Monster(1, "gwomp", "Gwomp", R.drawable.gwomp_baby, Date(System.currentTimeMillis()), 1, 0, 0, "A baby Gwomp.", true),
-            Monster(2, "mamoo", "Mamoo", R.drawable.mamoo_baby, Date(System.currentTimeMillis()), 1, 0, 0, "A baby Mamoo.", false),
-            Monster(3, "ave", "Ave", R.drawable.ave_baby, Date(System.currentTimeMillis()), 1, 0, 0, "A baby Ave.", false),
-
-            Monster(4, "gwomp", "Gwompor", R.drawable.gwomp_teen, Date(System.currentTimeMillis()), 2, 0, 0, "The teenage Gwomp.", false),
-            Monster(5, "mamoo", "Moomie", R.drawable.mamoo_teen, Date(System.currentTimeMillis()), 2, 0, 0, "The teenage Mamoo.", false),
-            Monster(6, "ave", "Evale", R.drawable.ave_teen, Date(System.currentTimeMillis()), 2, 0, 0, "The teenage Ave.", false),
-
-            Monster(7, "gwomp", "Wompagwom", R.drawable.gwomp_adult, Date(System.currentTimeMillis()), 3, 0, 0, "The adult Gwomp.", false),
-            Monster(8, "mamoo", "Mamoolah", R.drawable.mamoo_adult, Date(System.currentTimeMillis()), 3, 0, 0, "The adult Mamoo.", false),
-            Monster(9, "ave", "Alvirose", R.drawable.ave_adult, Date(System.currentTimeMillis()), 3, 0, 0, "The adult Ave.", false)
-        )
-
-        monsters.forEach { monster ->
-            val values = ContentValues().apply {
-                put(COL_NAME, monster.name)
-                put(COL_SPECIES, monster.species)
-                put(COL_IMAGE, monster.image)
-                put(COL_ADOPTION_DATE, DATE_FORMAT.format(monster.adoptionDate))
-                put(COL_LEVEL, monster.level)
-                put(COL_STAT_SAVED, monster.statSaved)
-                put(COL_STAT_SPENT, monster.statSpent)
-                put(COL_DESCRIPTION, monster.description)
-                put(COL_UNLOCKED, if (monster.unlocked) 1 else 0)
-            }
-            db?.insert(MONSTER_TABLE_NAME, null, values)
-        }
     }
 
     fun recordExpense(record: FinanceRecord): Long {
@@ -174,11 +151,15 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
                 val name = cursor.getString(cursor.getColumnIndexOrThrow(COL_NAME))
                 val image = cursor.getInt(cursor.getColumnIndexOrThrow(COL_IMAGE))
                 val adoptionDateStr = cursor.getString(cursor.getColumnIndexOrThrow(COL_ADOPTION_DATE))
+                val stage = cursor.getString(cursor.getColumnIndexOrThrow(COL_STAGE))
+                val upTick = cursor.getInt(cursor.getColumnIndexOrThrow(COL_UP_TICK))
+                val reqExp = cursor.getInt(cursor.getColumnIndexOrThrow(COL_REQ_EXP))
                 val level = cursor.getInt(cursor.getColumnIndexOrThrow(COL_LEVEL))
                 val statSaved = cursor.getInt(cursor.getColumnIndexOrThrow(COL_STAT_SAVED))
                 val statSpent = cursor.getInt(cursor.getColumnIndexOrThrow(COL_STAT_SPENT))
                 val description = cursor.getString(cursor.getColumnIndexOrThrow(COL_DESCRIPTION))
                 val unlocked = cursor.getInt(cursor.getColumnIndexOrThrow(COL_UNLOCKED)) == 1
+                val onField = cursor.getInt(cursor.getColumnIndexOrThrow(COL_ON_FIELD)) == 1
 
                 val adoptionDate = try {
                     DATE_FORMAT.parse(adoptionDateStr)
@@ -188,7 +169,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
 
                 if (adoptionDate != null) {
                     monsters.add(Monster(monsterId, species, name, image,
-                        adoptionDate, level, statSaved, statSpent, description, unlocked))
+                        adoptionDate, stage, upTick, reqExp, level, statSaved, statSpent, description, unlocked, onField))
                 }
             } while (cursor.moveToNext())
         } else {

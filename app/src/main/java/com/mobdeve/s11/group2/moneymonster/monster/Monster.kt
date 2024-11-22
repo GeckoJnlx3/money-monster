@@ -8,9 +8,13 @@ data class Monster(
     val name: String,
     val image: Int,
     val adoptionDate: Date?,
+    val stage: String,
+    val upTick: Int,
+    val reqExp: Int,
     val level: Int = 1,
     val statSaved: Int = 0,
     val statSpent: Int = 0,
     val description: String,
-    val unlocked: Boolean
+    val unlocked: Boolean,
+    val onField: Boolean
 )
