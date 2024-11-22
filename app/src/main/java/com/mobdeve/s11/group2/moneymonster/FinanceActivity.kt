@@ -4,14 +4,7 @@ import android.app.DatePickerDialog
 import android.content.Context
 import android.content.res.ColorStateList
 import android.os.Bundle
-import android.util.Log
-import android.widget.ArrayAdapter
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ImageView
-import android.widget.Spinner
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import androidx.activity.ComponentActivity
 import androidx.core.content.ContextCompat
 import com.mobdeve.s11.group2.moneymonster.databinding.FinanceBinding
@@ -31,15 +24,8 @@ class FinanceActivity : ComponentActivity() {
     private lateinit var currencyText: TextView
 
     private var isLoggingExpense = true
-
-    private val categories = arrayOf(
-        "Food",
-        "Transport",
-        "Entertainment",
-        "Utilities",
-        "Other"
-    )
-
+    private lateinit var databaseHelper: FinanceDatabaseHelper // Database helper instance
+    private val categories = arrayOf("Food", "Transport", "Entertainment", "Utilities", "Other")
     private var currency: String = "PHP"
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -47,6 +33,10 @@ class FinanceActivity : ComponentActivity() {
         val viewBinding: FinanceBinding = FinanceBinding.inflate(layoutInflater)
         setContentView(viewBinding.root)
 
+        // Initialize database helper
+        databaseHelper = FinanceDatabaseHelper(this)
+
+        // Initialize UI components
         logExpenseBtn = viewBinding.logExpenseBtn
         logIncomeBtn = viewBinding.logIncomeBtn
         typeText = viewBinding.typeText
@@ -58,6 +48,7 @@ class FinanceActivity : ComponentActivity() {
         categorySpnr = viewBinding.categorySpnr
         currencyText = viewBinding.currencyText
 
+        // Set up category spinner
         val categoryAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, categories)
         categoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         categorySpnr.adapter = categoryAdapter
@@ -102,14 +93,10 @@ class FinanceActivity : ComponentActivity() {
 
     private fun updateUI() {
         typeText.text =
-            if (isLoggingExpense)
-                "Log Expense"
-            else
-                "Log Income"
+            if (isLoggingExpense) "Log Expense" else "Log Income"
         amountInput.setText("")
         currencyText.text = currency
         memoInput.setText("")
-
     }
 
     private fun saveTransaction() {
@@ -118,45 +105,58 @@ class FinanceActivity : ComponentActivity() {
         val date = dateEt.text.toString()
         val category = categorySpnr.selectedItem.toString()
 
-    if (amount != null) {
-        val record = FinanceRecord(
-            id = 0,
-            type = if (isLoggingExpense) "Expense" else "Income",
-            amount = amount.toString(),
-            category = category,
-            date = date,
-            description = description
-        )
+        if (amount != null) {
+            val record = FinanceRecord(
+                id = 0,
+                type = if (isLoggingExpense) "Expense" else "Income",
+                amount = amount.toString(),
+                category = category,
+                date = date,
+                description = description
+            )
 
-        val dbHelper = FinanceDatabaseHelper(this)
-        dbHelper.recordExpense(record)
-//
-//        if (result == -1L) {
-//            Toast.makeText(this, "Failed to save transaction", Toast.LENGTH_SHORT).show()
-//        } else {
-//            Toast.makeText(this, "Transaction saved successfully", Toast.LENGTH_SHORT).show()
-//        }
+            val databaseHelper = FinanceDatabaseHelper(this)
+            val result = databaseHelper.recordExpense(record)
 
-        Log.d("FinanceActivity", "Transaction Saved: $record")
+            if (result != -1L) {
+                updateProgress(amount, isLoggingExpense) // Update progress based on transaction type
 
-        amountInput.setText("")
-        memoInput.setText("")
-        dateEt.setText("")
+                Toast.makeText(this, "Transaction saved successfully.", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(this, "Failed to save transaction.", Toast.LENGTH_SHORT).show()
+            }
 
-        imageView.setImageResource(
-            if (isLoggingExpense)
-                R.drawable.sad_gwomp
-            else
-                R.drawable.happy_gwomp
-        )
+            amountInput.setText("")
+            memoInput.setText("")
+            dateEt.setText("")
 
-        val transactionType = if (isLoggingExpense) "Expense" else "Income"
-        Toast.makeText(this, "$transactionType logged: $currency $amount", Toast.LENGTH_SHORT).show()
+            imageView.setImageResource(
+                if (isLoggingExpense)
+                    R.drawable.sad_gwomp
+                else
+                    R.drawable.happy_gwomp
+            )
 
-    } else {
-        Toast.makeText(this, "Please log your amount", Toast.LENGTH_SHORT).show()
+        } else {
+            Toast.makeText(this, "Please log your amount", Toast.LENGTH_SHORT).show()
+        }
     }
-}
+
+    private fun updateProgress(amount: Double, isExpense: Boolean) {
+        val sharedPref = getSharedPreferences("com.mobdeve.s11.group2.moneymonster.PREFERENCE_FILE_KEY", Context.MODE_PRIVATE)
+        val editor = sharedPref.edit()
+
+        val currentExpense = sharedPref.getFloat("CURRENT_EXPENSE", 0f).toDouble()
+        val currentIncome = sharedPref.getFloat("CURRENT_INCOME", 0f).toDouble()
+
+        if (isExpense) {
+            editor.putFloat("CURRENT_EXPENSE", (currentExpense + amount).toFloat())
+        } else {
+            editor.putFloat("CURRENT_INCOME", (currentIncome + amount).toFloat())
+        }
+
+        editor.apply()
+    }
 
     private fun loadCurrency() {
         val sharedPref = getSharedPreferences("com.mobdeve.s11.group2.moneymonster.PREFERENCE_FILE_KEY", Context.MODE_PRIVATE)
@@ -164,8 +164,7 @@ class FinanceActivity : ComponentActivity() {
         currencyText.text = currency
     }
 
-    private fun displayDatePickerDialog(){
-        // https://www.geeksforgeeks.org/how-to-popup-datepicker-while-clicking-on-edittext-in-android/
+    private fun displayDatePickerDialog() {
         val c = Calendar.getInstance()
 
         val year = c.get(Calendar.YEAR)
@@ -174,9 +173,9 @@ class FinanceActivity : ComponentActivity() {
 
         val datePickerDialog = DatePickerDialog(
             this,
-            { view, year, monthOfYear, dayOfMonth ->
-                val dat = (dayOfMonth.toString() + "-" + (monthOfYear + 1) + "-" + year)
-                dateEt.setText(dat)
+            { _, selectedYear, selectedMonth, selectedDay ->
+                val formattedDate = "$selectedDay-${selectedMonth + 1}-$selectedYear"
+                dateEt.setText(formattedDate)
             },
             year,
             month,

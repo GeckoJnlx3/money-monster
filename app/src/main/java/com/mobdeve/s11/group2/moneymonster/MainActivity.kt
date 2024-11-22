@@ -99,37 +99,63 @@ class MainActivity : ComponentActivity() {
 
     private fun loadAndDisplayProgress() {
         val sharedPref = getSharedPreferences("com.mobdeve.s11.group2.moneymonster.PREFERENCE_FILE_KEY", Context.MODE_PRIVATE)
-        val target = sharedPref.getInt("TARGET", 500)
-        val limit = sharedPref.getInt("LIMIT", 300)
+        val target = sharedPref.getInt("TARGET", 500) // Default target value
+        val limit = sharedPref.getInt("LIMIT", 300)   // Default limit value
 
+        // Get current expense and income from shared preferences
+        val currentExpense = sharedPref.getFloat("CURRENT_EXPENSE", 0f).toDouble()
+        val currentIncome = sharedPref.getFloat("CURRENT_INCOME", 0f).toDouble()
+
+        // Update the progress bar and text
         targetProgressBar.max = target
-        targetprogressText.text = "$currency 0/$target"
+        targetProgressBar.progress = currentIncome.toInt()
+        targetprogressText.text = "$currency $currentIncome/$target"
 
         limitProgressBar.max = limit
-        limitprogressText.text = "$currency 0/$limit"
+        limitProgressBar.progress = currentExpense.toInt()
+        limitprogressText.text = "$currency $currentExpense/$limit"
     }
+
 
     private fun loadAndDisplayCurrency() {
         val sharedPref = getSharedPreferences("com.mobdeve.s11.group2.moneymonster.PREFERENCE_FILE_KEY", Context.MODE_PRIVATE)
         currency = sharedPref.getString("CURRENCY", "PHP") ?: "PHP"
 
-        targetprogressText.text = "$currency 0/${targetProgressBar.max}"
-        limitprogressText.text = "$currency 0/${limitProgressBar.max}"
+        // Get current progress for target and limit
+        val currentIncome = sharedPref.getFloat("CURRENT_INCOME", 0f).toDouble()
+        val currentExpense = sharedPref.getFloat("CURRENT_EXPENSE", 0f).toDouble()
+
+        // Update text views with current values
+        targetprogressText.text = "$currency $currentIncome/${targetProgressBar.max}"
+        limitprogressText.text = "$currency $currentExpense/${limitProgressBar.max}"
     }
 
-    private fun startProgress(target: Int) {
+
+    private fun startProgress(target: Int, currentIncome: Double) {
         targetProgressBar.progress = 0
         val maxProgress = target
 
+        // Update the text initially to show progress is 0
+        targetprogressText.text = "$currency 0/$maxProgress"
+
         Thread {
             for (progress in 0..maxProgress) {
+                // Update progress bar and text
                 handler.post {
                     targetProgressBar.progress = progress
                     targetprogressText.text = "$currency $progress/$maxProgress"
                 }
+                try {
+                    Thread.sleep(10) // Add delay to simulate progress
+                } catch (e: InterruptedException) {
+                    e.printStackTrace()
+                }
             }
         }.start()
     }
+
+
+
 
     override fun onResume() {
         super.onResume()
