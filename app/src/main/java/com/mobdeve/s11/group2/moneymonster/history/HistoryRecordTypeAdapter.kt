@@ -3,6 +3,7 @@ package com.mobdeve.s11.group2.moneymonster.history
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -22,6 +23,7 @@ class HistoryRecordTypeAdapter(
     inner class TypeViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val balanceTextView: TextView = itemView.findViewById(R.id.balance)
         val recordRecyclerView: RecyclerView = itemView.findViewById(R.id.historyTypeRecycler)
+        val balanceArrow: ImageView = itemView.findViewById(R.id.balanceArrow)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TypeViewHolder {
@@ -43,6 +45,20 @@ class HistoryRecordTypeAdapter(
 
         val balance = totalIncome - totalExpense
         holder.balanceTextView.text = FormatUtils.formatAmount(balance, "PHP")
+
+        when {
+            balance > 0 -> {
+                holder.balanceArrow.setImageResource(R.drawable.up_arrow) // Ensure up_arrow exists in res/drawable
+                holder.balanceArrow.visibility = View.VISIBLE
+            }
+            balance < 0 -> {
+                holder.balanceArrow.setImageResource(R.drawable.down_arrow) // Ensure down_arrow exists in res/drawable
+                holder.balanceArrow.visibility = View.VISIBLE
+            }
+            else -> {
+                holder.balanceArrow.visibility = View.GONE
+            }
+        }
 
         holder.recordRecyclerView.apply {
             layoutManager = LinearLayoutManager(holder.itemView.context, RecyclerView.VERTICAL, false)
