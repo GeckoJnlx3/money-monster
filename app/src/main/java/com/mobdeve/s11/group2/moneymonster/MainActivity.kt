@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.view.View
@@ -13,6 +14,7 @@ import com.mobdeve.s11.group2.moneymonster.databinding.ActivityMainBinding
 import com.mobdeve.s11.group2.moneymonster.finance.FinanceActivity
 import com.mobdeve.s11.group2.moneymonster.history.HistoryActivity
 import com.mobdeve.s11.group2.moneymonster.monsterpedia.MonsterpediaActivity
+import com.mobdeve.s11.group2.moneymonster.monster.MonsterStatActivity
 import java.text.SimpleDateFormat
 import java.util.Calendar
 
@@ -30,6 +32,7 @@ class MainActivity : ComponentActivity() {
     private lateinit var financeBtn: Button
     private lateinit var historyBtn: Button
     private lateinit var dateTodayTv: TextView
+    private lateinit var monsterImageView: ImageView
     private val handler = Handler()
 
     private var currency: String = "PHP"
@@ -64,6 +67,11 @@ class MainActivity : ComponentActivity() {
             startActivity(intent)
         }
 
+        monsterImageView.setOnClickListener {
+            val intent = Intent(this, MonsterStatActivity::class.java)
+            startActivity(intent)
+        }
+
         loadAndDisplayProgress()
         loadAndDisplayCurrency()
     }
@@ -89,6 +97,7 @@ class MainActivity : ComponentActivity() {
         expenseGoal = viewBinding.expenseGoal
         savingGoal = viewBinding.savingGoal
         dateTodayTv = viewBinding.dateTodayTv
+        monsterImageView = viewBinding.monsterImage
     }
 
     private fun loadAndDisplayProgress() {
