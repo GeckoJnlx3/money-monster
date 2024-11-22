@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
-import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.ProgressBar
 import android.widget.Spinner
@@ -12,11 +11,10 @@ import android.widget.TextView
 import android.view.View
 import androidx.activity.ComponentActivity
 import com.mobdeve.s11.group2.moneymonster.databinding.ActivityMainBinding
-import com.mobdeve.s11.group2.moneymonster.finance.FinanceActivity
 import com.mobdeve.s11.group2.moneymonster.history.HistoryActivity
+import com.mobdeve.s11.group2.moneymonster.finance.FinanceActivity
 import com.mobdeve.s11.group2.moneymonster.monsterpedia.MonsterpediaActivity
 import java.text.SimpleDateFormat
-import java.time.LocalDate
 import java.util.Calendar
 
 class MainActivity : ComponentActivity() {
@@ -96,7 +94,7 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun loadAndDisplayProgress() {
-        val sharedPref = getSharedPreferences(SettingsActivity.PREFERENCE_FILE, Context.MODE_PRIVATE)
+        val sharedPref = getSharedPreferences(SettingsActivity.PREFERENCE_FILE, MODE_PRIVATE)
         val target = sharedPref.getInt(SettingsActivity.TARGET, 500)
         val limit = sharedPref.getInt(SettingsActivity.LIMIT, 300)
 
@@ -114,8 +112,8 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun loadAndDisplayCurrency() {
-        val sharedPref = getSharedPreferences("com.mobdeve.s11.group2.moneymonster.PREFERENCE_FILE_KEY", Context.MODE_PRIVATE)
-        currency = sharedPref.getString("CURRENCY", "PHP") ?: "PHP"
+        val sharedPref = getSharedPreferences(SettingsActivity.PREFERENCE_FILE, MODE_PRIVATE)
+        currency = sharedPref.getString(SettingsActivity.CURRENCY, "PHP") ?: "PHP"
 
         // Get current progress for target and limit
         val currentIncome = sharedPref.getFloat("CURRENT_INCOME", 0f).toDouble()
