@@ -1,9 +1,10 @@
-package com.mobdeve.s11.group2.moneymonster
+package com.mobdeve.s11.group2.moneymonster.login
 
 import android.content.Intent
 import android.os.Bundle
 import android.widget.TextView
 import androidx.activity.ComponentActivity
+import com.mobdeve.s11.group2.moneymonster.MainActivity
 import com.mobdeve.s11.group2.moneymonster.databinding.LoginBinding
 
 class LoginActivity : ComponentActivity() {

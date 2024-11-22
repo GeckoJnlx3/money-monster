@@ -8,7 +8,7 @@
 
     <TextView
         android:id="@+id/financeTitle"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="0"
         android:fontFamily="@font/baloo_bhai"
@@ -137,9 +137,17 @@
                 android:textSize="18sp" />
 
             <Spinner
-                android:id="@+id/categorySpnr"
+                android:id="@+id/expenseCategorySpnr"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:visibility="gone" />
+
+            <Spinner
+                android:id="@+id/incomeCategorySpnr"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone" />
+
         </LinearLayout>
 
         <TextView

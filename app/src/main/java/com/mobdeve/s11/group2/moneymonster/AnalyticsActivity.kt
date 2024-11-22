@@ -1,135 +1,166 @@
 package com.mobdeve.s11.group2.moneymonster
 
 import android.R
-import android.icu.text.DateFormat
-import android.icu.text.SimpleDateFormat
 import android.os.Bundle
-import com.github.mikephil.charting.charts.PieChart
-import com.github.mikephil.charting.data.PieEntry
+import android.widget.ArrayAdapter
+import android.widget.Spinner
 import androidx.activity.ComponentActivity
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.Typeface
 import androidx.core.content.ContextCompat
+import com.github.mikephil.charting.charts.PieChart
 import com.github.mikephil.charting.charts.LineChart
-import com.github.mikephil.charting.components.Description
 import com.github.mikephil.charting.components.Legend
-import com.github.mikephil.charting.data.DataSet
-import com.github.mikephil.charting.data.Entry
-import com.github.mikephil.charting.data.LineData
-import com.github.mikephil.charting.data.LineDataSet
-import com.github.mikephil.charting.data.PieData
-import com.github.mikephil.charting.data.PieDataSet
-import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
+import com.github.mikephil.charting.data.*
+import com.github.mikephil.charting.formatter.ValueFormatter
 import com.mobdeve.s11.group2.moneymonster.databinding.AnalyticsBinding
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
-import java.util.Date
-import java.util.Locale
+import java.text.SimpleDateFormat
+import java.util.*
 import java.util.concurrent.TimeUnit
+import kotlin.collections.ArrayList
 
-class AnalyticsActivity: ComponentActivity() {
-    lateinit var expensePc: PieChart
-    lateinit var overviewLc: LineChart
+class AnalyticsActivity : ComponentActivity() {
+
+    private lateinit var expensePc: PieChart
+    private lateinit var overviewLc: LineChart
+    private lateinit var dateRangeSpinner: Spinner
     private var colors: ArrayList<Int> = ArrayList()
-
-    // TODO: create a line graph for expenses/savings through time
-    // TODO: the other thing i forgot what it was!!
+    private lateinit var databaseHelper: DatabaseHelper
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        var viewBinding: AnalyticsBinding = AnalyticsBinding.inflate(layoutInflater)
+        val viewBinding: AnalyticsBinding = AnalyticsBinding.inflate(layoutInflater)
         setContentView(viewBinding.root)
 
-        colors.add(resources.getColor(R.color.holo_purple))
-        colors.add(resources.getColor(R.color.holo_green_dark))
-        colors.add(resources.getColor(R.color.holo_red_light))
-        colors.add(resources.getColor(R.color.holo_orange_light))
-        colors.add(resources.getColor(R.color.holo_blue_light))
+        databaseHelper = DatabaseHelper(this)
 
+        dateRangeSpinner = viewBinding.dateRangeSpnr
         expensePc = viewBinding.expensePc
-        displayExpensePieChart()
-
         overviewLc = viewBinding.overviewLc
-        displayOverviewLineChart()
 
+        setupDateRangeSpinner()
+        setupColors()
+        displayExpensePieChart()
+        displayOverviewLineChart()
     }
 
-    private fun displayExpensePieChart(){
+    private fun setupDateRangeSpinner() {
+        val weekRanges = generateDynamicWeekRanges()
+        val adapter = ArrayAdapter(this, R.layout.simple_spinner_item, weekRanges)
+        adapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item)
+        dateRangeSpinner.adapter = adapter
+    }
+
+    private fun generateDynamicWeekRanges(): List<String> {
+        val calendar = Calendar.getInstance()
+        val sdf = SimpleDateFormat("MMM d", Locale("en"))
+        val weekRanges = mutableListOf<String>()
+
+        for (i in 0 until 5) {
+            val endDate = calendar.time
+            calendar.add(Calendar.DAY_OF_YEAR, -6)
+            val startDate = calendar.time
+            weekRanges.add("${sdf.format(startDate)} - ${sdf.format(endDate)}")
+            calendar.add(Calendar.DAY_OF_YEAR, -1)
+        }
+
+        return weekRanges
+    }
+
+    private fun setupColors() {
+        colors.add(ContextCompat.getColor(this, R.color.holo_purple))
+        colors.add(ContextCompat.getColor(this, R.color.holo_green_dark))
+        colors.add(ContextCompat.getColor(this, R.color.holo_red_light))
+        colors.add(ContextCompat.getColor(this, R.color.holo_orange_light))
+        colors.add(ContextCompat.getColor(this, R.color.holo_blue_light))
+    }
+
+    private fun displayExpensePieChart() {
         expensePc.extraRightOffset = 30f
         expensePc.isDrawHoleEnabled = false
         expensePc.setUsePercentValues(false)
         expensePc.setDrawEntryLabels(false)
         expensePc.description.isEnabled = false
 
-        var expenseLegend:Legend = expensePc.legend
+        val expenseLegend = expensePc.legend
         expenseLegend.form = Legend.LegendForm.CIRCLE
         expenseLegend.horizontalAlignment = Legend.LegendHorizontalAlignment.RIGHT
         expenseLegend.verticalAlignment = Legend.LegendVerticalAlignment.CENTER
         expenseLegend.orientation = Legend.LegendOrientation.VERTICAL
 
-        // TODO: separate this into a parameter "data" so that it can change when needed
-        var expenseList:ArrayList<PieEntry> = ArrayList()
-        expenseList.add(PieEntry(70f, "Food"))
-        expenseList.add(PieEntry(10f, "Transport"))
-        expenseList.add(PieEntry(100f, "Meds"))
+        val records = databaseHelper.getAllRecords()
 
-        var expensePds = PieDataSet(expenseList, "")
+        val categoryExpenseMap = mutableMapOf<String, Float>()
+        records.forEach { record ->
+            if (record.type == "Expense") {
+                val category = record.category
+                val amount = record.amount?.toFloatOrNull() ?: 0f
+                categoryExpenseMap[category] =
+                    categoryExpenseMap.getOrDefault(category, 0f) + amount
+            }
+        }
+
+        if (categoryExpenseMap.isEmpty()) {
+            expensePc.clear()
+            expensePc.centerText = "No expense data available"
+            return
+        }
+
+        val expenseEntries = ArrayList<PieEntry>()
+        categoryExpenseMap.forEach { (category, totalAmount) ->
+            expenseEntries.add(PieEntry(totalAmount, category))
+        }
+
+        val expensePds = PieDataSet(expenseEntries, "Categories")
         expensePds.sliceSpace = 3f
         expensePds.colors = colors
 
         val data = PieData(expensePds)
-        expensePc.setData(data)
-
-        expensePc.highlightValues(null)
+        expensePc.data = data
         expensePc.invalidate()
     }
+
     private fun displayOverviewLineChart() {
         overviewLc.xAxis.valueFormatter = LineChartXAxisValueFormatter()
         overviewLc.description.isEnabled = false
 
-        var expenseOverview: ArrayList<Entry> = ArrayList()
-        expenseOverview.add(Entry(1725120000000f, 0f))
-        expenseOverview.add(Entry(1725206400000f, 100f))
-        expenseOverview.add(Entry(1726006400000f, 3000f))
-        expenseOverview.add(Entry(1726806400000f, 5000f))
+        val records = databaseHelper.getAllRecords()
+        val expenseOverview = ArrayList<Entry>()
+        val savingOverview = ArrayList<Entry>()
 
-        val expenseOverviewDs = LineDataSet(expenseOverview, "Expenses")
-        expenseOverviewDs.color = ContextCompat.getColor(this, R.color.holo_purple)
-        expenseOverviewDs.lineWidth = 3f
-        expenseOverviewDs.setCircleColor(ContextCompat.getColor(this, R.color.black))
-        expenseOverviewDs.setDrawCircleHole(false)
+        records.forEach { record ->
+            val date = record.date.time.toFloat()
+            val amount = record.amount?.toFloatOrNull() ?: 0f
+            if (record.type == "Expense") {
+                expenseOverview.add(Entry(date, amount))
+            } else if (record.type == "Income") {
+                savingOverview.add(Entry(date, amount))
+            }
+        }
 
-        var savingOverview: ArrayList<Entry> = ArrayList()
-        savingOverview.add(Entry(1725120000000f, 10000f))
-        savingOverview.add(Entry(1725206400000f, 9900f))
-        savingOverview.add(Entry(1726006400000f, 6900f))
-        savingOverview.add(Entry(1726806400000f, 1900f))
+        val expenseDataSet = LineDataSet(expenseOverview, "Expenses").apply {
+            color = ContextCompat.getColor(this@AnalyticsActivity, R.color.holo_red_light)
+            lineWidth = 3f
+            setCircleColor(ContextCompat.getColor(this@AnalyticsActivity, R.color.black))
+            setDrawCircleHole(false)
+        }
 
-        val savingOverviewDs = LineDataSet(savingOverview, "Savings")
-        savingOverviewDs.color = ContextCompat.getColor(this, R.color.holo_green_light)
-        savingOverviewDs.lineWidth = 3f
-        savingOverviewDs.setCircleColor(ContextCompat.getColor(this, R.color.black))
-        savingOverviewDs.setDrawCircleHole(false)
+        val savingDataSet = LineDataSet(savingOverview, "Income").apply {
+            color = ContextCompat.getColor(this@AnalyticsActivity, R.color.holo_green_light)
+            lineWidth = 3f
+            setCircleColor(ContextCompat.getColor(this@AnalyticsActivity, R.color.black))
+            setDrawCircleHole(false)
+        }
 
-        val data = LineData()
-        data.addDataSet(expenseOverviewDs)
-        data.addDataSet(savingOverviewDs)
-
-        overviewLc.data = data
-
+        val lineData = LineData(expenseDataSet, savingDataSet)
+        overviewLc.data = lineData
         overviewLc.invalidate()
     }
 
-    private class LineChartXAxisValueFormatter: IndexAxisValueFormatter(){
-        override fun getFormattedValue(value: Float): String? {
-            //https://stackoverflow.com/questions/41426021/how-to-add-x-axis-as-datetime-label-in-mpandroidchart
-            val msSince1970 = TimeUnit.DAYS.toMillis(value.toLong())
-            val timeMs: Date = Date(msSince1970)
-            val loc: Locale = Locale("en")
-            val dateTimeFormat:SimpleDateFormat = SimpleDateFormat("MM-dd-yy", loc)
-//            val format: SimpleDateFormat = SimpleDateFormat("MM-dd")
+    private class LineChartXAxisValueFormatter : ValueFormatter() {
+        private val dateFormat = SimpleDateFormat("MMM d", Locale("en"))
 
-            return dateTimeFormat.format(timeMs)
+        override fun getFormattedValue(value: Float): String {
+            val date = Date(value.toLong())
+            return dateFormat.format(date)
         }
     }
 }
