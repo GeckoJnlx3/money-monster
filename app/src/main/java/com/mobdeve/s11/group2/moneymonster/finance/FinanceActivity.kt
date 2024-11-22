@@ -1,7 +1,6 @@
-package com.mobdeve.s11.group2.moneymonster
+package com.mobdeve.s11.group2.moneymonster.finance
 
 import android.app.DatePickerDialog
-import android.content.Context
 import android.content.res.ColorStateList
 import android.os.Bundle
 import android.util.Log
@@ -71,9 +70,6 @@ class FinanceActivity : ComponentActivity() {
         val incomeCategoryAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, incomeCategories)
         incomeCategoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         incomeCategorySpnr.adapter = incomeCategoryAdapter
-
-        loadCurrency()
-        updateUI()
 
         logExpenseBtn.setOnClickListener {
             switchToExpense()
@@ -168,7 +164,15 @@ class FinanceActivity : ComponentActivity() {
         )
 
         val dbHelper = DatabaseHelper(this)
-        dbHelper.recordExpense(record)
+        val result = dbHelper.recordExpense(record)
+
+        if (result != -1L) {
+            updateProgress(amount, isLoggingExpense) // Update progress based on transaction type
+
+            Toast.makeText(this, "Transaction saved successfully.", Toast.LENGTH_SHORT).show()
+        } else {
+            Toast.makeText(this, "Failed to save transaction.", Toast.LENGTH_SHORT).show()
+        }
         Log.d("FinanceActivity", "Transaction Saved: $record")
 
         amountInput.setText("")
@@ -187,7 +191,9 @@ class FinanceActivity : ComponentActivity() {
     }
 
     private fun updateProgress(amount: Double, isExpense: Boolean) {
-        val sharedPref = getSharedPreferences("com.mobdeve.s11.group2.moneymonster.PREFERENCE_FILE_KEY", Context.MODE_PRIVATE)
+        val sharedPref = getSharedPreferences(SettingsActivity.PREFERENCE_FILE,
+            MODE_PRIVATE
+        )
         val editor = sharedPref.edit()
 
         val currentExpense = sharedPref.getFloat("CURRENT_EXPENSE", 0f).toDouble()
@@ -203,7 +209,7 @@ class FinanceActivity : ComponentActivity() {
     }
 
     private fun loadCurrency() {
-        val sharedPref = getSharedPreferences(SettingsActivity.PREFERENCE_FILE, Context.MODE_PRIVATE)
+        val sharedPref = getSharedPreferences(SettingsActivity.PREFERENCE_FILE, MODE_PRIVATE)
         currency = sharedPref.getString(SettingsActivity.CURRENCY, "PHP") ?: "PHP"
         currencyText.text = currency
     }
