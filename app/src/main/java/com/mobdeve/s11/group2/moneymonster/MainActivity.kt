@@ -14,6 +14,10 @@ import com.mobdeve.s11.group2.moneymonster.databinding.ActivityMainBinding
 import com.mobdeve.s11.group2.moneymonster.history.HistoryActivity
 import com.mobdeve.s11.group2.moneymonster.finance.FinanceActivity
 import com.mobdeve.s11.group2.moneymonster.monsterpedia.MonsterpediaActivity
+import android.database.sqlite.SQLiteDatabase
+import com.mobdeve.s11.group2.moneymonster.MonsterProgressionHelper
+import com.mobdeve.s11.group2.moneymonster.DatabaseHelper
+import com.mobdeve.s11.group2.moneymonster.MonsterDataHelper
 import java.text.SimpleDateFormat
 import java.util.Calendar
 
@@ -36,9 +40,14 @@ class MainActivity : ComponentActivity() {
 
     private var currency: String = "PHP"
 
+    private lateinit var db: SQLiteDatabase  // Reference to your database
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         bindView()
+
+        // Initialize the database (adjust this as needed)
+        db = DatabaseHelper(this).writableDatabase
 
         settingsBtn.setOnClickListener { openSettings() }
         expenseGoal.setOnClickListener { openSettings() }
@@ -68,6 +77,7 @@ class MainActivity : ComponentActivity() {
 
         loadAndDisplayProgress()
         loadAndDisplayCurrency()
+        checkAndLevelUpMonster()  // Check if the monster should level up
     }
 
     private fun openSettings() {
@@ -124,6 +134,15 @@ class MainActivity : ComponentActivity() {
         limitprogressText.text = "$currency $currentExpense/${limitProgressBar.max}"
     }
 
+    private fun checkAndLevelUpMonster() {
+        val monsterId = 1  // Example monster ID to level up (replace with actual monster ID)
+
+        // Assume we gain some experience here (this can come from any in-game event)
+        val gainedExp = 20  // Example: Gaining 20 experience points
+
+        // Level up the monster if needed
+        MonsterProgressionHelper.levelUpMonster(db, monsterId, gainedExp)
+    }
 
     private fun startProgress(target: Int, currentIncome: Double) {
         targetProgressBar.progress = 0

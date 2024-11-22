@@ -23,6 +23,7 @@ import com.mobdeve.s11.group2.moneymonster.monster.Monster
 import java.sql.Date
 
 object MonsterDataHelper {
+
     fun populateMonsterTable(db: SQLiteDatabase?) {
         val monsters = listOf(
             Monster(1, "gwomp", "Gwomp", R.drawable.gwomp_baby, Date(System.currentTimeMillis()), "baby", 0, 5, 1, 0, 0, "A baby Gwomp.", true, true),
@@ -56,5 +57,65 @@ object MonsterDataHelper {
             }
             db?.insert(MONSTER_TABLE_NAME, null, values)
         }
+    }
+
+    // Step 1: Method to update monster's level and change its image accordingly
+    fun updateMonsterLevel(db: SQLiteDatabase, monsterId: Int, newLevel: Int) {
+        val values = ContentValues().apply {
+            put(COL_LEVEL, newLevel)
+            put(COL_IMAGE, getImageForLevel(newLevel))  // Update image based on level
+        }
+
+        val whereClause = "${DatabaseHelper.Companion.COL_SPECIES} = ?"
+        val whereArgs = arrayOf(monsterId.toString())
+
+        db.update(MONSTER_TABLE_NAME, values, whereClause, whereArgs)
+    }
+
+    // Step 1: Helper method to get the image corresponding to the monster's level
+    private fun getImageForLevel(level: Int): Int {
+        return when (level) {
+            1 -> R.drawable.gwomp_baby   // Image for level 1 (Baby)
+            2 -> R.drawable.gwomp_teen   // Image for level 2 (Teen)
+            3 -> R.drawable.gwomp_adult  // Image for level 3 (Adult)
+            else -> R.drawable.gwomp_baby  // Default fallback image
+        }
+    }
+
+    // Method to retrieve a monster's details including the level and image
+    fun getMonsterDetails(db: SQLiteDatabase, monsterId: Int): Monster? {
+        val cursor = db.query(
+            MONSTER_TABLE_NAME,
+            null, // Select all columns
+            "${DatabaseHelper.Companion.COL_SPECIES} = ?", // WHERE clause
+            arrayOf(monsterId.toString()), // Selection args
+            null, // No GROUP BY
+            null, // No HAVING
+            null  // No ORDER BY
+        )
+
+        var monster: Monster? = null
+        if (cursor != null && cursor.moveToFirst()) {
+            val speciesIndex = cursor.getColumnIndex(DatabaseHelper.Companion.COL_SPECIES)
+            val nameIndex = cursor.getColumnIndex(DatabaseHelper.Companion.COL_NAME)
+            val imageIndex = cursor.getColumnIndex(DatabaseHelper.Companion.COL_IMAGE)
+            val levelIndex = cursor.getColumnIndex(DatabaseHelper.Companion.COL_LEVEL)
+
+            val species = cursor.getString(speciesIndex)
+            val name = cursor.getString(nameIndex)
+            val imageResId = cursor.getInt(imageIndex)
+            val level = cursor.getInt(levelIndex)
+
+            monster = Monster(
+                id = monsterId,
+                species = species,
+                name = name,
+                image = imageResId,
+                level = level
+            )
+        }
+        cursor?.close()
+
+        return monster
     }
 }
