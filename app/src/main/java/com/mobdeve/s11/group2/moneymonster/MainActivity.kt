@@ -14,12 +14,9 @@ import com.mobdeve.s11.group2.moneymonster.finance.FinanceActivity
 import com.mobdeve.s11.group2.moneymonster.history.HistoryActivity
 import com.mobdeve.s11.group2.moneymonster.monsterpedia.MonsterpediaActivity
 import java.text.SimpleDateFormat
-import java.time.LocalDate
 import java.util.Calendar
 
-class
-
-MainActivity : ComponentActivity() {
+class MainActivity : ComponentActivity() {
 
     private lateinit var targetProgressBar: ProgressBar
     private lateinit var limitProgressBar: ProgressBar
@@ -47,7 +44,7 @@ MainActivity : ComponentActivity() {
 
         setDateToday()
 
-        historyBtn.setOnClickListener{
+        historyBtn.setOnClickListener {
             val intent = Intent(this, HistoryActivity::class.java)
             startActivity(intent)
         }
@@ -76,7 +73,7 @@ MainActivity : ComponentActivity() {
         startActivity(intent)
     }
 
-    private fun bindView(){
+    private fun bindView() {
         val viewBinding: ActivityMainBinding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(viewBinding.root)
 
@@ -100,18 +97,18 @@ MainActivity : ComponentActivity() {
         val limit = sharedPref.getInt(SettingsActivity.LIMIT, 300)
 
         targetProgressBar.max = target
-        targetprogressText.text = "$currency 0/$target"
+        targetprogressText.text = "$currency %.2f/%.2f".format(0.0, target.toDouble())
 
         limitProgressBar.max = limit
-        limitprogressText.text = "$currency 0/$limit"
+        limitprogressText.text = "$currency %.2f/%.2f".format(0.0, limit.toDouble())
     }
 
     private fun loadAndDisplayCurrency() {
         val sharedPref = getSharedPreferences("com.mobdeve.s11.group2.moneymonster.PREFERENCE_FILE_KEY", Context.MODE_PRIVATE)
         currency = sharedPref.getString("CURRENCY", "PHP") ?: "PHP"
 
-        targetprogressText.text = "$currency 0/${targetProgressBar.max}"
-        limitprogressText.text = "$currency 0/${limitProgressBar.max}"
+        targetprogressText.text = "$currency %.2f/%.2f".format(0.0, targetProgressBar.max.toDouble())
+        limitprogressText.text = "$currency %.2f/%.2f".format(0.0, limitProgressBar.max.toDouble())
     }
 
     private fun startProgress(target: Int) {
@@ -122,13 +119,13 @@ MainActivity : ComponentActivity() {
             for (progress in 0..maxProgress) {
                 handler.post {
                     targetProgressBar.progress = progress
-                    targetprogressText.text = "$currency $progress/$maxProgress"
+                    targetprogressText.text = "$currency %.2f/%.2f".format(progress.toDouble(), maxProgress.toDouble())
                 }
             }
         }.start()
     }
 
-    private fun setDateToday(){
+    private fun setDateToday() {
         val dateToday = Calendar.getInstance().time
         val formatter = SimpleDateFormat("MMM dd, yyyy")
         dateTodayTv.text = formatter.format(dateToday)

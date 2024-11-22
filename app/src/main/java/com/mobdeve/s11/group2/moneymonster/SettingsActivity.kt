@@ -56,24 +56,24 @@ class SettingsActivity : ComponentActivity() {
         }
 
         binding.saveTargetBtn.setOnClickListener {
-            val target = binding.setTarget.text.toString().toIntOrNull()
+            val target = binding.setTarget.text.toString().toDoubleOrNull()
             if (target != null) {
                 saveToPreferences(TARGET, target)
-                Toast.makeText(this, "Target set", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Target set to $target", Toast.LENGTH_SHORT).show()
                 binding.setTarget.text.clear()
             } else {
-                Toast.makeText(this, "Please enter a target", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Please enter a valid target (e.g., 500.00)", Toast.LENGTH_SHORT).show()
             }
         }
 
         binding.expenseLimitBtn.setOnClickListener {
-            val limit = binding.setLimit.text.toString().toIntOrNull()
+            val limit = binding.setLimit.text.toString().toDoubleOrNull()
             if (limit != null) {
                 saveToPreferences(LIMIT, limit)
-                Toast.makeText(this, "Limit set", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Limit set to $limit", Toast.LENGTH_SHORT).show()
                 binding.setLimit.text.clear()
             } else {
-                Toast.makeText(this, "Please enter a limit", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Please enter a valid limit (e.g., 300.00)", Toast.LENGTH_SHORT).show()
             }
         }
 
@@ -103,10 +103,10 @@ class SettingsActivity : ComponentActivity() {
         }
     }
 
-    private fun saveToPreferences(key: String, value: Int) {
+    private fun saveToPreferences(key: String, value: Double) {
         val sharedPref = getSharedPreferences(PREFERENCE_FILE, Context.MODE_PRIVATE)
         with(sharedPref.edit()) {
-            putInt(key, value)
+            putFloat(key, value.toFloat()) // Store double as float due to SharedPreferences limitation
             apply()
         }
     }
