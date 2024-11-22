@@ -11,8 +11,8 @@ import android.widget.TextView
 import androidx.activity.ComponentActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.mobdeve.s11.group2.moneymonster.DatabaseHelper
 import com.mobdeve.s11.group2.moneymonster.MonthYearPickerDialog
-import com.mobdeve.s11.group2.moneymonster.finance.FinanceDatabaseHelper
 import com.mobdeve.s11.group2.moneymonster.R
 import com.mobdeve.s11.group2.moneymonster.SettingsActivity
 import com.mobdeve.s11.group2.moneymonster.databinding.HistoryBinding
@@ -28,9 +28,9 @@ class HistoryActivity : ComponentActivity() {
     private lateinit var dateRangeSpinner2: Spinner
     private lateinit var timePeriodTv: TextView
     private lateinit var recyclerView: RecyclerView
-    private lateinit var databaseHelper: FinanceDatabaseHelper
+    private lateinit var databaseHelper: DatabaseHelper
     private lateinit var timePeriod: String
-
+  
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         var viewBinding: HistoryBinding = HistoryBinding.inflate(layoutInflater)
@@ -58,7 +58,7 @@ class HistoryActivity : ComponentActivity() {
 //        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
 //        dateRangeSpinner2.adapter = spinnerAdapter
 
-        databaseHelper = FinanceDatabaseHelper(this)
+        databaseHelper = DatabaseHelper(this)
 
         recyclerView = findViewById(R.id.historyRecycler)
         recyclerView.layoutManager = LinearLayoutManager(this)

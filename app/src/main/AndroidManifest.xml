@@ -38,7 +38,7 @@
             android:theme="@style/Theme.AppCompat.Light">
         </activity>
         <activity
-            android:name=".monsterpedia.MonsterActivity"
+            android:name=".monsterpedia.MonsterpediaActivity"
             android:exported="false"
             android:theme="@style/Theme.AppCompat.Light">
         </activity>
@@ -54,7 +54,7 @@
         </activity>
 
         <activity
-            android:name=".monsterpedia.MonsterEntryActivity">
+            android:name=".monsterpedia.MonsterpediaEntryActivity">
         </activity>
 
         <activity
@@ -64,6 +64,15 @@
         <activity
             android:name=".SettingsActivity">
         </activity>
+
+<!--        <activity-->
+<!--            android:name=".CalculatorActivity"-->
+<!--            android:exported="true">-->
+<!--            <intent-filter>-->
+<!--                <action android:name="android.intent.action.MAIN" />-->
+<!--                <category android:name="android.intent.category.LAUNCHER" />-->
+<!--            </intent-filter>-->
+<!--        </activity>-->
 
     </application>
 

@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.mobdeve.s11.group2.moneymonster.finance.FinanceDatabaseHelper
+import com.mobdeve.s11.group2.moneymonster.DatabaseHelper
 import com.mobdeve.s11.group2.moneymonster.finance.FinanceRecord
 import com.mobdeve.s11.group2.moneymonster.R
 import java.text.SimpleDateFormat
@@ -46,7 +46,7 @@ class HistoryRecordDateAdapter(
                 val intent = Intent(holder.itemView.context, HistoryViewActivity::class.java).apply {
                     putExtra("record_id", selectedRecord.id)
                     putExtra("record_type", selectedRecord.type)
-                    putExtra("record_date", FinanceDatabaseHelper.DATE_FORMAT.format(selectedRecord.date))
+                    putExtra("record_date", DatabaseHelper.DATE_FORMAT.format(selectedRecord.date))
                     putExtra("record_currency", selectedRecord.currency)
                     putExtra("record_amount", selectedRecord.amount)
                     putExtra("record_category", selectedRecord.category)
