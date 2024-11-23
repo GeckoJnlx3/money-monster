@@ -3,7 +3,7 @@ package com.mobdeve.s11.group2.moneymonster.monster
 import java.sql.Date
 
 data class Monster(
-    val id: Int,
+    val monsterId: Int,
     val species: String,
     val name: String,
     val image: Int,

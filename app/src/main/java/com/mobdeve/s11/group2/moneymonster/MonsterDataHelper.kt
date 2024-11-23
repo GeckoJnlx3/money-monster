@@ -61,25 +61,57 @@ object MonsterDataHelper {
     }
 
     fun updateMonsterLevel(db: SQLiteDatabase, monsterId: Int, newLevel: Int) {
-        val values = ContentValues().apply {
-            put(COL_LEVEL, newLevel)
-            put(COL_IMAGE, getImageForLevel(newLevel))
+        val cursor = db.query(
+            MONSTER_TABLE_NAME,
+            arrayOf(COL_SPECIES),
+            "$COL_MONSTER_ID = ?",
+            arrayOf(monsterId.toString()),
+            null,
+            null,
+            null
+        )
+
+        var species: String? = null
+        if (cursor != null && cursor.moveToFirst()) {
+            val speciesIndex = cursor.getColumnIndex(COL_SPECIES)
+            species = cursor.getString(speciesIndex)
         }
+        cursor?.close()
 
-        val whereClause = "${COL_MONSTER_ID} = ?"
-        val whereArgs = arrayOf(monsterId.toString())
+        if (species != null) {
+            val values = ContentValues().apply {
+                put(COL_LEVEL, newLevel)
+                put(COL_IMAGE, getImageForLevel(species, newLevel))
+            }
 
-        db.update(MONSTER_TABLE_NAME, values, whereClause, whereArgs)
+            db.update(MONSTER_TABLE_NAME, values, "$COL_MONSTER_ID = ?", arrayOf(monsterId.toString()))
+        } else {
+            throw IllegalArgumentException("Species not found for monster with ID: $monsterId")
+        }
     }
 
-    private fun getImageForLevel(level: Int): Int {
-        return when {
-            level <= 5 -> R.drawable.gwomp_baby
-            level in 6..15 -> R.drawable.gwomp_teen
-            level in 16..25 -> R.drawable.gwomp_adult
-            else -> R.drawable.gwomp_baby
+    private fun getImageForLevel(species: String, level: Int): Int {
+        return when (species) {
+            "gwomp" -> when {
+                level <= 5 -> R.drawable.gwomp_baby
+                level in 6..15 -> R.drawable.gwomp_teen
+                else -> R.drawable.gwomp_adult
+            }
+            "mamoo" -> when {
+                level <= 5 -> R.drawable.mamoo_baby
+                level in 6..15 -> R.drawable.mamoo_teen
+                else -> R.drawable.mamoo_adult
+            }
+            "ave" -> when {
+                level <= 5 -> R.drawable.ave_baby
+                level in 6..15 -> R.drawable.ave_teen
+                else -> R.drawable.ave_adult
+            }
+            else -> throw IllegalArgumentException("Unknown species: $species")
         }
     }
+
+
 
     fun getMonsterDetails(db: SQLiteDatabase, monsterId: Int): Monster? {
         val cursor = db.query(
@@ -131,7 +163,7 @@ object MonsterDataHelper {
 
             if (adoptionDate != null) {
                 monster = Monster(
-                    id = monsterId,
+                    monsterId = monsterId,
                     species = species,
                     name = name,
                     image = imageResId,
