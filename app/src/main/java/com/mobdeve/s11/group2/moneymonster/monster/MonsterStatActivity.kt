@@ -1,12 +1,22 @@
 package com.mobdeve.s11.group2.moneymonster.monster
 
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.activity.ComponentActivity
-import com.mobdeve.s11.group2.moneymonster.databinding.MonsterStatBinding
+import androidx.core.content.ContextCompat
+import com.mobdeve.s11.group2.moneymonster.R
 import com.mobdeve.s11.group2.moneymonster.DatabaseHelper
+import com.mobdeve.s11.group2.moneymonster.MonsterDataHelper
+import com.mobdeve.s11.group2.moneymonster.databinding.MonsterStatBinding
+import com.mobdeve.s11.group2.moneymonster.finance.FormatUtils
+import com.mobdeve.s11.group2.moneymonster.SettingsActivity
 
 class MonsterStatActivity : ComponentActivity() {
 
@@ -17,13 +27,26 @@ class MonsterStatActivity : ComponentActivity() {
     private lateinit var moneySpentValue: TextView
     private lateinit var adoptedOnValue: TextView
     private lateinit var monsterImageView: ImageView
+    private lateinit var levelNumberText: TextView
 
     private lateinit var databaseHelper: DatabaseHelper
+
+    private val statsUpdateReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            loadMonsterData()
+        }
+    }
+
+    private lateinit var currency: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val binding = MonsterStatBinding.inflate(layoutInflater)
+        val filter = IntentFilter("com.mobdeve.s11.group2.moneymonster.UPDATE_MONSTER_STATS")
+
+        ContextCompat.registerReceiver(this, statsUpdateReceiver, filter, ContextCompat.RECEIVER_NOT_EXPORTED)
+
+        val binding: MonsterStatBinding = MonsterStatBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         levelProgressBar = binding.levelProgressBar
@@ -33,33 +56,45 @@ class MonsterStatActivity : ComponentActivity() {
         moneySpentValue = binding.moneySpentValue
         adoptedOnValue = binding.adoptedOnValue
         monsterImageView = binding.monsterImage
+        levelNumberText = binding.levelNumber
 
         databaseHelper = DatabaseHelper(this)
 
+        loadCurrency()
         loadMonsterData()
     }
 
+    private fun loadCurrency() {
+        val sharedPref: SharedPreferences = getSharedPreferences(SettingsActivity.PREFERENCE_FILE, Context.MODE_PRIVATE)
+        currency = sharedPref.getString(SettingsActivity.CURRENCY, "PHP") ?: "PHP"  // Default to "PHP" if not set
+    }
+
     private fun loadMonsterData() {
-        val activeMonster = getActiveMonster()
+        val db = databaseHelper.readableDatabase
+
+        val activeMonster = MonsterDataHelper.getActiveMonster(db)
 
         if (activeMonster != null) {
             monsterNameText.text = activeMonster.name
-            moneySavedValue.text = "Php ${activeMonster.statSaved}"
-            moneySpentValue.text = "Php ${activeMonster.statSpent}"
-            adoptedOnValue.text = activeMonster.adoptionDate.toString()
 
-            val maxLevel = 100
-            levelProgressBar.max = maxLevel
+            moneySavedValue.text = FormatUtils.formatAmount(activeMonster.statSaved, currency)
+            moneySpentValue.text = FormatUtils.formatAmount(activeMonster.statSpent, currency)
+            adoptedOnValue.text = "${activeMonster.adoptionDate}"
+            levelNumberText.text = "${activeMonster.level}"
+            levelProgressText.text = "EXP ${activeMonster.upTick}/${activeMonster.reqExp}"
             levelProgressBar.progress = activeMonster.level
-            levelProgressText.text = "${activeMonster.level}/$maxLevel"
 
-            monsterImageView.setImageResource(activeMonster.image)
+//            monsterImageView.setImageResource(
+//                if (activeMonster.statSaved >= activeMonster.levelUpThreshold)
+//                    R.drawable.level_up_monster_image
+//                else
+//                    R.drawable.normal_monster_image
+//            )
         }
     }
 
-    private fun getActiveMonster(): Monster? {
-        val monsters = databaseHelper.getAllMonsters()
-
-        return monsters.find { it.onField }
+    override fun onDestroy() {
+        super.onDestroy()
+        unregisterReceiver(statsUpdateReceiver)
     }
 }

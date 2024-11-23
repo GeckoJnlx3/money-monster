@@ -1,7 +1,9 @@
 package com.mobdeve.s11.group2.moneymonster.finance
 
 import android.app.DatePickerDialog
+import android.content.BroadcastReceiver
 import android.content.Context
+import android.content.Intent
 import android.content.res.ColorStateList
 import android.os.Bundle
 import android.util.Log
@@ -15,9 +17,11 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.core.content.ContextCompat
 import com.mobdeve.s11.group2.moneymonster.DatabaseHelper
+import com.mobdeve.s11.group2.moneymonster.MonsterDataHelper
 import com.mobdeve.s11.group2.moneymonster.R
 import com.mobdeve.s11.group2.moneymonster.SettingsActivity
 import com.mobdeve.s11.group2.moneymonster.databinding.FinanceBinding
+import com.mobdeve.s11.group2.moneymonster.monster.Monster
 import java.util.Calendar
 
 class FinanceActivity : ComponentActivity() {
@@ -46,6 +50,12 @@ class FinanceActivity : ComponentActivity() {
 
     private var currency: String = "PHP"
 
+    private val statsUpdateReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            loadMonsterData()  // Call to loadMonsterData when the broadcast is received
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val viewBinding: FinanceBinding = FinanceBinding.inflate(layoutInflater)
@@ -71,9 +81,6 @@ class FinanceActivity : ComponentActivity() {
         incomeCategoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         incomeCategorySpnr.adapter = incomeCategoryAdapter
 
-        loadCurrency()
-        updateUI()
-
         logExpenseBtn.setOnClickListener {
             switchToExpense()
         }
@@ -88,6 +95,24 @@ class FinanceActivity : ComponentActivity() {
 
         dateEt.setOnClickListener {
             displayDatePickerDialog()
+        }
+    }
+
+    private fun loadMonsterData() {
+        val dbHelper = DatabaseHelper(this)
+        val db = dbHelper.readableDatabase
+
+        val activeMonster = MonsterDataHelper.getActiveMonster(db)
+
+        if (activeMonster != null) {
+            // You can update the UI with the active monster's data, for example:
+            // Update the UI with monster stats like level, money saved, money spent, etc.
+            // You may want to use TextViews or other UI elements to show this data.
+            Log.d("FinanceActivity", "Monster data loaded: ${activeMonster.name}")
+            // Example of how you might update the UI:
+            // nameTextView.text = activeMonster.name
+            // savedTextView.text = "Money Saved: ${activeMonster.statSaved}"
+            // levelTextView.text = "Level: ${activeMonster.level}"
         }
     }
 
@@ -120,6 +145,22 @@ class FinanceActivity : ComponentActivity() {
             expenseCategorySpnr.visibility = Spinner.GONE
             incomeCategorySpnr.visibility = Spinner.VISIBLE
         }
+    }
+
+    private fun updateProgress(amount: Double, isExpense: Boolean) {
+        val sharedPref = getSharedPreferences(SettingsActivity.PREFERENCE_FILE, MODE_PRIVATE)
+        val editor = sharedPref.edit()
+
+        val currentExpense = sharedPref.getFloat("CURRENT_EXPENSE", 0f).toDouble()
+        val currentIncome = sharedPref.getFloat("CURRENT_INCOME", 0f).toDouble()
+
+        if (isExpense) {
+            editor.putFloat("CURRENT_EXPENSE", (currentExpense + amount).toFloat())
+        } else {
+            editor.putFloat("CURRENT_INCOME", (currentIncome + amount).toFloat())
+        }
+
+        editor.apply()
     }
 
     private fun saveTransaction() {
@@ -156,14 +197,19 @@ class FinanceActivity : ComponentActivity() {
         )
 
         val dbHelper = DatabaseHelper(this)
-        dbHelper.recordExpense(record)
+        val result = dbHelper.recordExpense(record)
 
-        if (isLoggingExpense) {
-            dbHelper.updateMonsterStatSpent(amount)
+        if (result != -1L) {
+            updateProgress(amount, isLoggingExpense)
+            updateMonsterStats(amount, isLoggingExpense)
+
+            val intent = Intent("com.mobdeve.s11.group2.moneymonster.UPDATE_MONSTER_STATS")
+            sendBroadcast(intent)
+
+            Toast.makeText(this, "Transaction saved successfully.", Toast.LENGTH_SHORT).show()
         } else {
-            dbHelper.updateMonsterStatSaved(amount)
+            Toast.makeText(this, "Failed to save transaction.", Toast.LENGTH_SHORT).show()
         }
-
         Log.d("FinanceActivity", "Transaction Saved: $record")
 
         amountInput.setText("")
@@ -179,6 +225,63 @@ class FinanceActivity : ComponentActivity() {
 
         val transactionType = if (isLoggingExpense) "Expense" else "Income"
         Toast.makeText(this, "$transactionType logged: $currency $amount", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun updateMonsterStats(amount: Double, isExpense: Boolean) {
+        val dbHelper = DatabaseHelper(this)
+        val db = dbHelper.readableDatabase
+
+        val activeMonster = MonsterDataHelper.getActiveMonster(db)
+
+        if (activeMonster != null) {
+            if (isExpense) {
+                activeMonster.statSpent += amount
+            } else {
+                activeMonster.statSaved += amount
+            }
+
+            // Check for level-up based on the new level thresholds
+            if (shouldLevelUp(activeMonster)) {
+                levelUpMonster(activeMonster)
+            }
+
+            val result = dbHelper.updateMonster(activeMonster)
+            if (result > 0) {
+                Log.d("FinanceActivity", "Monster stats updated successfully.")
+            } else {
+                Log.e("FinanceActivity", "Failed to update monster stats.")
+            }
+        }
+    }
+
+    private fun shouldLevelUp(monster: Monster): Boolean {
+        return when (monster.stage) {
+            "baby" -> monster.level >= 5
+            "teen" -> monster.level >= 15
+            else -> false
+        }
+    }
+
+    private fun levelUpMonster(monster: Monster) {
+        val dbHelper = DatabaseHelper(this)
+        val db = dbHelper.writableDatabase
+
+        val newLevel = when (monster.stage) {
+            "baby" -> 5
+            "teen" -> 15
+            else -> return
+        }
+
+        monster.level = newLevel
+        monster.stage = when (newLevel) {
+            5 -> "teen"
+            15 -> "adult"
+            else -> monster.stage
+        }
+
+        // Update monster image and level
+        MonsterDataHelper.updateMonsterLevel(db, monster.monsterId, newLevel)
+        Log.d("FinanceActivity", "Monster leveled up to ${monster.stage}.")
     }
 
     private fun loadCurrency() {
