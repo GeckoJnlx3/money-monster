@@ -208,26 +208,32 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         return records
     }
 
-    private fun generateRecordQuery(db:SQLiteDatabase, month:Int?, year:Int?): Cursor {
-        if (year == null){
+    private fun generateRecordQuery(db: SQLiteDatabase, month: Int?, year: Int?): Cursor {
+        if (year == null) {
             return db.rawQuery("SELECT * FROM $FINANCE_TABLE_NAME", null)
         } else {
-            val startDate:String
-            val endDate:String
+            val startDate: String
+            val endDate: String
 
-            if (month != null){
-                startDate = "$year-$month-01"
+            if (month != null) {
+                val formattedMonth = String.format("%02d", month)
+
                 val lastDayOfMonth = getLastDayOfMonthYear(month, year)
-                endDate = "$year-$month-$lastDayOfMonth"
+
+                startDate = "$year-$formattedMonth-01"
+                endDate = "$year-$formattedMonth-${String.format("%02d", lastDayOfMonth)}"
             } else {
                 startDate = "$year-01-01"
                 endDate = "$year-12-31"
             }
+
             return db.rawQuery(
-                "SELECT * FROM $FINANCE_TABLE_NAME WHERE $COL_DATE BETWEEN ? AND  ?",
-                arrayOf(startDate, endDate))
+                "SELECT * FROM $FINANCE_TABLE_NAME WHERE $COL_DATE BETWEEN ? AND ?",
+                arrayOf(startDate, endDate)
+            )
         }
     }
+
 
     private fun getLastDayOfMonthYear(month:Int, year:Int): Int{
         when (month){
