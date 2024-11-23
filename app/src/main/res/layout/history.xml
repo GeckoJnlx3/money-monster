@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/offwhite_bg"
     android:orientation="vertical">
 
     <TextView
@@ -22,12 +23,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="0"
-        android:text="TextView"
+        android:text="Click for spinner"
         android:textAlignment="center"
         android:textSize="16sp" />
 
     <Spinner
-        android:id="@+id/dateRangeSpnr2"
+        android:id="@+id/timePeriodSpinner"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
