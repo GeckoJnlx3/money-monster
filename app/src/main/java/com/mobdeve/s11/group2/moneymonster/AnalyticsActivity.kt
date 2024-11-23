@@ -1,8 +1,14 @@
 package com.mobdeve.s11.group2.moneymonster
 
 import android.R
+import android.app.DatePickerDialog
+import android.content.SharedPreferences
 import android.os.Bundle
+import android.util.Log
+import android.view.View
+import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import android.widget.Button
 import android.widget.Spinner
 import androidx.activity.ComponentActivity
 import androidx.core.content.ContextCompat
@@ -11,17 +17,29 @@ import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.Legend
 import com.github.mikephil.charting.data.*
 import com.github.mikephil.charting.formatter.ValueFormatter
+import com.mobdeve.s11.group2.moneymonster.SettingsActivity.Companion.TIME
 import com.mobdeve.s11.group2.moneymonster.databinding.AnalyticsBinding
+import com.mobdeve.s11.group2.moneymonster.history.HistoryRecordDateAdapter
+import com.mobdeve.s11.group2.moneymonster.history.dialog.MonthYearPickerDialog
+import com.mobdeve.s11.group2.moneymonster.history.dialog.YearPickerDIalog
+import kotlinx.coroutines.selects.select
 import java.text.SimpleDateFormat
+import java.time.Period
 import java.util.*
-import java.util.concurrent.TimeUnit
 import kotlin.collections.ArrayList
 
 class AnalyticsActivity : ComponentActivity() {
 
     private lateinit var expensePc: PieChart
     private lateinit var overviewLc: LineChart
-    private lateinit var dateRangeSpinner: Spinner
+    private lateinit var timePeriodBtn: Button
+    private lateinit var timePeriodSpnr: Spinner
+
+    private lateinit var timePeriod: String
+    private var selectedMonth: Int? = null
+    private var selectedYear: Int? = null
+    private var selectedDay: Int? = null
+
     private var colors: ArrayList<Int> = ArrayList()
     private lateinit var databaseHelper: DatabaseHelper
 
@@ -30,40 +48,149 @@ class AnalyticsActivity : ComponentActivity() {
         val viewBinding: AnalyticsBinding = AnalyticsBinding.inflate(layoutInflater)
         setContentView(viewBinding.root)
 
-        databaseHelper = DatabaseHelper(this)
-
-        dateRangeSpinner = viewBinding.dateRangeSpnr
+        timePeriodSpnr = viewBinding.timePeriodSpinner
+        timePeriodBtn = viewBinding.timePeriodBtn
         expensePc = viewBinding.expensePc
         overviewLc = viewBinding.overviewLc
 
-        setupDateRangeSpinner()
+        databaseHelper = DatabaseHelper(this)
+
+        // setting time period preference
+        var sharedPref = getSharedPreferences(SettingsActivity.PREFERENCE_FILE, MODE_PRIVATE)
+        timePeriod = sharedPref.getString(SettingsActivity.TIME, "Monthly") ?: "Monthly"
+
+        // setting up functionality
+        setTimePeriodSpinner(sharedPref)
+        setTimePeriodTv()
+
         setupColors()
         displayExpensePieChart()
         displayOverviewLineChart()
     }
 
-    private fun setupDateRangeSpinner() {
-        val weekRanges = generateDynamicWeekRanges()
-        val adapter = ArrayAdapter(this, R.layout.simple_spinner_item, weekRanges)
-        adapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item)
-        dateRangeSpinner.adapter = adapter
-    }
+    private fun setTimePeriodSpinner(sharedPref: SharedPreferences){
+        // setting up spinner for time period
+        val spinnerAdapter = ArrayAdapter(this,
+            android.R.layout.simple_spinner_item,
+            TimePeriodUtils.TIME_PERIOD_LIST)
+        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        timePeriodSpnr.adapter = spinnerAdapter
 
-    private fun generateDynamicWeekRanges(): List<String> {
-        val calendar = Calendar.getInstance()
-        val sdf = SimpleDateFormat("MMM d", Locale("en"))
-        val weekRanges = mutableListOf<String>()
-
-        for (i in 0 until 5) {
-            val endDate = calendar.time
-            calendar.add(Calendar.DAY_OF_YEAR, -6)
-            val startDate = calendar.time
-            weekRanges.add("${sdf.format(startDate)} - ${sdf.format(endDate)}")
-            calendar.add(Calendar.DAY_OF_YEAR, -1)
+        // setting up shared preference
+        val savedTime = sharedPref.getString(TIME, "Daily")
+        val selectedTimePosition = SettingsActivity.TIME_OPTIONS.indexOf(savedTime)
+        if (selectedTimePosition >= 0) {
+            timePeriodSpnr.setSelection(selectedTimePosition)
         }
 
-        return weekRanges
+        // change UI on click
+        timePeriodSpnr.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                val selectedTime = parent?.getItemAtPosition(position).toString()
+                val sp = getSharedPreferences(SettingsActivity.PREFERENCE_FILE, MODE_PRIVATE)
+                with(sp.edit()) {
+                    putString(TIME, selectedTime)
+                    apply()
+                }
+                timePeriod = timePeriodSpnr.selectedItem.toString()
+                timePeriodBtn.text = setDefaultTimePeriod()
+
+                displayExpensePieChart()
+                displayOverviewLineChart()
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+            }
+        }
     }
+
+    private fun setTimePeriodTv(){
+        // displaying the correct format depending on time period preference
+        timePeriodBtn.text = setDefaultTimePeriod()
+
+        // listener that displays dialog depending on time period value
+        timePeriodBtn.setOnClickListener() {
+            if (timePeriod == "Monthly"){
+                val monthYearPickerDialog = MonthYearPickerDialog(
+                    this,
+                    {month, year ->
+                        val formattedDate = String.format(Locale.getDefault(),
+                            "%02d-%04d", month, year)
+                        selectedMonth = month
+                        selectedYear = year
+                        timePeriodBtn.text = formattedDate
+
+                        displayExpensePieChart()
+                        displayOverviewLineChart()
+                    }
+
+                )
+                monthYearPickerDialog.show()
+            } else if (timePeriod == "Yearly"){
+                val yearPickerDialog = YearPickerDIalog(
+                    this,
+                    {year ->
+                        val formattedDate = String.format(Locale.getDefault(),
+                            "%04d", year)
+                        selectedMonth = null
+                        selectedYear = year
+                        timePeriodBtn.text = formattedDate
+                        displayExpensePieChart()
+                        displayOverviewLineChart()
+                    })
+                yearPickerDialog.show()
+            } else {
+                val c = Calendar.getInstance()
+                val year = c.get(Calendar.YEAR)
+                val month = c.get(Calendar.MONTH)
+                val day = c.get(Calendar.DAY_OF_MONTH)
+
+                val datePickerDialog = DatePickerDialog(
+                    this, com.mobdeve.s11.group2.moneymonster.R.style.DatePickerDialogStyle,
+                    { _, selectedYear, selectedMonth, selectedDay ->
+                        val formattedDate = String.format(Locale.getDefault(),
+                            "%04d-%02d-%02d",  selectedYear, selectedMonth + 1,selectedDay
+                        )
+                        this.selectedYear = selectedYear
+                        this.selectedMonth = selectedMonth + 1
+                        this.selectedDay = selectedDay
+                        timePeriodBtn.text = formattedDate
+                        displayExpensePieChart()
+                        displayOverviewLineChart()
+                    },
+                    year, month, day
+                )
+                datePickerDialog.show()
+
+            }
+            Log.d("time period on click", selectedMonth.toString() + selectedYear.toString())
+
+        }
+    }
+
+    private fun setDefaultTimePeriod(): String {
+        val dateToday = Calendar.getInstance().time
+        when (timePeriod){
+            "Daily" -> {
+                selectedDay = Calendar.getInstance().get(Calendar.DAY_OF_MONTH) + 1
+                selectedMonth = Calendar.getInstance().get(Calendar.MONTH) + 1
+                selectedYear = Calendar.getInstance().get(Calendar.YEAR)
+                return TimePeriodUtils.DATE_FORMATTER.format(dateToday)
+            }
+            "Monthly" -> {
+                selectedMonth = Calendar.getInstance().get(Calendar.MONTH) + 1
+                selectedYear = Calendar.getInstance().get(Calendar.YEAR)
+                return TimePeriodUtils.MONTH_YEAR_FORMATTER.format(dateToday)
+            }
+            "Yearly" -> {
+                selectedMonth = null
+                selectedYear = Calendar.getInstance().get(Calendar.YEAR)
+                return TimePeriodUtils.YEAR_FORMATTER.format(dateToday)
+            }
+            else -> return "Invalid time period"
+        }
+    }
+
 
     private fun setupColors() {
         colors.add(ContextCompat.getColor(this, R.color.holo_purple))
@@ -86,7 +213,7 @@ class AnalyticsActivity : ComponentActivity() {
         expenseLegend.verticalAlignment = Legend.LegendVerticalAlignment.CENTER
         expenseLegend.orientation = Legend.LegendOrientation.VERTICAL
 
-        val records = databaseHelper.getAllRecords()
+        val records = databaseHelper.getAllRecords(selectedMonth, selectedYear)
 
         val categoryExpenseMap = mutableMapOf<String, Float>()
         records.forEach { record ->
@@ -122,7 +249,8 @@ class AnalyticsActivity : ComponentActivity() {
         overviewLc.xAxis.valueFormatter = LineChartXAxisValueFormatter()
         overviewLc.description.isEnabled = false
 
-        val records = databaseHelper.getAllRecords()
+        // TODO: create getAllRecords that accomodates for a date selected
+        val records = databaseHelper.getAllRecords(selectedMonth, selectedYear)
         val expenseOverview = ArrayList<Entry>()
         val savingOverview = ArrayList<Entry>()
 

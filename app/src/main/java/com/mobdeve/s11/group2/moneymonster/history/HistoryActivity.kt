@@ -6,8 +6,8 @@ import android.util.Log
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import android.widget.Button
 import android.widget.Spinner
-import android.widget.TextView
 import androidx.activity.ComponentActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -15,29 +15,24 @@ import com.mobdeve.s11.group2.moneymonster.DatabaseHelper
 import com.mobdeve.s11.group2.moneymonster.history.dialog.MonthYearPickerDialog
 import com.mobdeve.s11.group2.moneymonster.SettingsActivity
 import com.mobdeve.s11.group2.moneymonster.SettingsActivity.Companion.TIME
+import com.mobdeve.s11.group2.moneymonster.TimePeriodUtils
 import com.mobdeve.s11.group2.moneymonster.history.dialog.YearPickerDIalog
 import com.mobdeve.s11.group2.moneymonster.databinding.HistoryBinding
 import java.text.SimpleDateFormat
 import java.util.Calendar
-import java.util.Date
 import java.util.Locale
 
 class HistoryActivity : ComponentActivity() {
 
     private lateinit var timePeriodSpnr: Spinner
-    private lateinit var timePeriodTv: TextView
+    private lateinit var timePeriodBtn: Button
     private lateinit var recyclerView: RecyclerView
     private lateinit var databaseHelper: DatabaseHelper
     private lateinit var timePeriod: String
     private var selectedMonth: Int? = null
     private var selectedYear: Int? = null
 
-    private val timePeriodList = listOf<String>("Daily", "Monthly", "Yearly")
 
-    companion object {
-        private val MONTH_YEAR_FORMATTER =  SimpleDateFormat("MM yyyy", Locale("en-PH(*)"))
-        private val YEAR_FORMATTER = SimpleDateFormat("yyyy", Locale("en-PH(*)"))
-    }
   
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,7 +40,7 @@ class HistoryActivity : ComponentActivity() {
         var viewBinding: HistoryBinding = HistoryBinding.inflate(layoutInflater)
         setContentView(viewBinding.root)
 
-        timePeriodTv = viewBinding.TimePeriodTv
+        timePeriodBtn = viewBinding.timePeriodBtn
         timePeriodSpnr = viewBinding.timePeriodSpinner
         recyclerView = viewBinding.historyRecycler
 
@@ -53,10 +48,8 @@ class HistoryActivity : ComponentActivity() {
         var sharedPref = getSharedPreferences(SettingsActivity.PREFERENCE_FILE, MODE_PRIVATE)
         timePeriod = sharedPref.getString(SettingsActivity.TIME, "Monthly") ?: "Monthly"
 
-        Log.d("start up history", selectedMonth.toString()+selectedYear.toString())
         // setting up default values and onClickListeners
         setTimePeriodTv()
-        Log.d("set time period", selectedMonth.toString()+selectedYear.toString())
         setTimePeriodSpinner(sharedPref)
 
         recyclerView.layoutManager = LinearLayoutManager(this)
@@ -65,31 +58,11 @@ class HistoryActivity : ComponentActivity() {
         updateRv()
     }
 
-    private fun setDefaultTimePeriod(): String {
-        val dateToday = Calendar.getInstance().time
-        when (timePeriod){
-            "Daily" -> {
-                selectedYear = null
-                selectedMonth = null
-                return "Latest logs."
-            }
-            "Monthly" -> {
-                selectedMonth = Calendar.getInstance().get(Calendar.MONTH) + 1
-                selectedYear = Calendar.getInstance().get(Calendar.YEAR)
-                return MONTH_YEAR_FORMATTER.format(dateToday)
-            }
-            "Yearly" -> {
-                selectedMonth = null
-                selectedYear = Calendar.getInstance().get(Calendar.YEAR)
-                return YEAR_FORMATTER.format(dateToday)
-            }
-            else -> return "Invalid time period"
-        }
-    }
-
     private fun setTimePeriodSpinner(sharedPref: SharedPreferences){
         // setting up spinner for time period
-        val spinnerAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, timePeriodList)
+        val spinnerAdapter = ArrayAdapter(this,
+            android.R.layout.simple_spinner_item,
+            TimePeriodUtils.TIME_PERIOD_LIST)
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         timePeriodSpnr.adapter = spinnerAdapter
 
@@ -110,7 +83,7 @@ class HistoryActivity : ComponentActivity() {
                     apply()
                 }
                 timePeriod = timePeriodSpnr.selectedItem.toString()
-                timePeriodTv.text = setDefaultTimePeriod()
+                timePeriodBtn.text = setDefaultTimePeriod()
 
                 updateRv()
             }
@@ -122,10 +95,10 @@ class HistoryActivity : ComponentActivity() {
 
     private fun setTimePeriodTv(){
         // displaying the correct format depending on time period preference
-        timePeriodTv.text = setDefaultTimePeriod()
+        timePeriodBtn.text = setDefaultTimePeriod()
 
         // listener that displays dialog depending on time period value
-        timePeriodTv.setOnClickListener() {
+        timePeriodBtn.setOnClickListener() {
             if (timePeriod == "Monthly"){
                 val monthYearPickerDialog = MonthYearPickerDialog(
                     this,
@@ -134,7 +107,7 @@ class HistoryActivity : ComponentActivity() {
                             "%02d-%04d", month, year)
                         selectedMonth = month
                         selectedYear = year
-                        timePeriodTv.text = formattedDate
+                        timePeriodBtn.text = formattedDate
                         updateRv()
                     }
 
@@ -148,7 +121,7 @@ class HistoryActivity : ComponentActivity() {
                             "%04d", year)
                         selectedMonth = null
                         selectedYear = year
-                        timePeriodTv.text = formattedDate
+                        timePeriodBtn.text = formattedDate
                         updateRv()
                     })
                 yearPickerDialog.show()
@@ -159,6 +132,28 @@ class HistoryActivity : ComponentActivity() {
             }
             Log.d("time period on click", selectedMonth.toString() + selectedYear.toString())
 
+        }
+    }
+
+    private fun setDefaultTimePeriod(): String {
+        val dateToday = Calendar.getInstance().time
+        when (timePeriod){
+            "Daily" -> {
+                selectedYear = null
+                selectedMonth = null
+                return "Latest logs."
+            }
+            "Monthly" -> {
+                selectedMonth = Calendar.getInstance().get(Calendar.MONTH) + 1
+                selectedYear = Calendar.getInstance().get(Calendar.YEAR)
+                return TimePeriodUtils.MONTH_YEAR_FORMATTER.format(dateToday)
+            }
+            "Yearly" -> {
+                selectedMonth = null
+                selectedYear = Calendar.getInstance().get(Calendar.YEAR)
+                return TimePeriodUtils.YEAR_FORMATTER.format(dateToday)
+            }
+            else -> return "Invalid time period"
         }
     }
 
