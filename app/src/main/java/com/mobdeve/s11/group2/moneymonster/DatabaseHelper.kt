@@ -109,6 +109,26 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         return result
     }
 
+    fun updateMonsterStatSaved(amount: Double) {
+        val db = writableDatabase
+        db.execSQL("""
+            UPDATE $MONSTER_TABLE_NAME
+            SET $COL_STAT_SAVED = $COL_STAT_SAVED + ?
+            WHERE $COL_ON_FIELD = 1
+        """, arrayOf(amount))
+        Log.d("DatabaseHelper", "Updated stat_saved by $amount for active monster.")
+    }
+
+    fun updateMonsterStatSpent(amount: Double) {
+        val db = writableDatabase
+        db.execSQL("""
+            UPDATE $MONSTER_TABLE_NAME
+            SET $COL_STAT_SPENT = $COL_STAT_SPENT + ?
+            WHERE $COL_ON_FIELD = 1
+        """, arrayOf(amount))
+        Log.d("DatabaseHelper", "Updated stat_spent by $amount for active monster.")
+    }
+
     fun getAllRecords(): List<FinanceRecord> {
         val records = mutableListOf<FinanceRecord>()
         val db = readableDatabase
