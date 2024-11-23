@@ -66,11 +66,13 @@ class AnalyticsActivity : ComponentActivity() {
         displayOverviewLineChart()
     }
 
-    private fun setTimePeriodSpinner(sharedPref: SharedPreferences){
+    private fun setTimePeriodSpinner(sharedPref: SharedPreferences) {
         // setting up spinner for time period
-        val spinnerAdapter = ArrayAdapter(this,
+        val spinnerAdapter = ArrayAdapter(
+            this,
             android.R.layout.simple_spinner_item,
-            TimePeriodUtils.TIME_PERIOD_LIST)
+            TimePeriodUtils.TIME_PERIOD_LIST
+        )
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         timePeriodSpnr.adapter = spinnerAdapter
 
@@ -83,7 +85,12 @@ class AnalyticsActivity : ComponentActivity() {
 
         // change UI on click
         timePeriodSpnr.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
                 val selectedTime = parent?.getItemAtPosition(position).toString()
                 val sp = getSharedPreferences(SettingsActivity.PREFERENCE_FILE, MODE_PRIVATE)
                 with(sp.edit()) {
@@ -102,18 +109,20 @@ class AnalyticsActivity : ComponentActivity() {
         }
     }
 
-    private fun setTimePeriodTv(){
+    private fun setTimePeriodTv() {
         // displaying the correct format depending on time period preference
         timePeriodBtn.text = setDefaultTimePeriod()
 
         // listener that displays dialog depending on time period value
         timePeriodBtn.setOnClickListener() {
-            if (timePeriod == "Monthly"){
+            if (timePeriod == "Monthly") {
                 val monthYearPickerDialog = MonthYearPickerDialog(
                     this,
-                    {month, year ->
-                        val formattedDate = String.format(Locale.getDefault(),
-                            "%02d-%04d", month, year)
+                    { month, year ->
+                        val formattedDate = String.format(
+                            Locale.getDefault(),
+                            "%02d-%04d", month, year
+                        )
                         selectedMonth = month
                         selectedYear = year
                         timePeriodBtn.text = formattedDate
@@ -124,12 +133,14 @@ class AnalyticsActivity : ComponentActivity() {
 
                 )
                 monthYearPickerDialog.show()
-            } else if (timePeriod == "Yearly"){
+            } else if (timePeriod == "Yearly") {
                 val yearPickerDialog = YearPickerDIalog(
                     this,
-                    {year ->
-                        val formattedDate = String.format(Locale.getDefault(),
-                            "%04d", year)
+                    { year ->
+                        val formattedDate = String.format(
+                            Locale.getDefault(),
+                            "%04d", year
+                        )
                         selectedMonth = null
                         selectedYear = year
                         timePeriodBtn.text = formattedDate
@@ -146,8 +157,9 @@ class AnalyticsActivity : ComponentActivity() {
                 val datePickerDialog = DatePickerDialog(
                     this, com.mobdeve.s11.group2.moneymonster.R.style.DatePickerDialogStyle,
                     { _, selectedYear, selectedMonth, selectedDay ->
-                        val formattedDate = String.format(Locale.getDefault(),
-                            "%04d-%02d-%02d",  selectedYear, selectedMonth + 1,selectedDay
+                        val formattedDate = String.format(
+                            Locale.getDefault(),
+                            "%04d-%02d-%02d", selectedYear, selectedMonth + 1, selectedDay
                         )
                         this.selectedYear = selectedYear
                         this.selectedMonth = selectedMonth + 1
@@ -168,18 +180,20 @@ class AnalyticsActivity : ComponentActivity() {
 
     private fun setDefaultTimePeriod(): String {
         val dateToday = Calendar.getInstance().time
-        when (timePeriod){
-            "Daily" ,"Monthly" -> {
+        when (timePeriod) {
+            "Daily", "Monthly" -> {
                 timePeriod = "Monthly"
                 selectedMonth = Calendar.getInstance().get(Calendar.MONTH) + 1
                 selectedYear = Calendar.getInstance().get(Calendar.YEAR)
                 return TimePeriodUtils.MONTH_YEAR_FORMATTER.format(dateToday)
             }
+
             "Yearly" -> {
                 selectedMonth = null
                 selectedYear = Calendar.getInstance().get(Calendar.YEAR)
                 return TimePeriodUtils.YEAR_FORMATTER.format(dateToday)
             }
+
             else -> return "Invalid time period"
         }
     }
@@ -278,6 +292,15 @@ class AnalyticsActivity : ComponentActivity() {
 
         val lineData = LineData(expenseDataSet, savingDataSet)
         overviewLc.data = lineData
+
+        overviewLc.axisLeft.apply {
+            axisMinimum = 0f
+            isGranularityEnabled = true
+            granularity = 1f
+        }
+
+        overviewLc.axisRight.isEnabled = false
+
         overviewLc.invalidate()
     }
 
@@ -290,3 +313,4 @@ class AnalyticsActivity : ComponentActivity() {
         }
     }
 }
+
