@@ -200,6 +200,7 @@ class FinanceActivity : ComponentActivity() {
         if (result != -1L) {
             updateProgress(amount, isLoggingExpense)
             updateMonsterStats(amount, isLoggingExpense)
+            //TODO: update money saved/spent. update xp if goal is reached
 
             val intent = Intent("com.mobdeve.s11.group2.moneymonster.UPDATE_MONSTER_STATS")
             sendBroadcast(intent)

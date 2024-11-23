@@ -112,18 +112,20 @@ class MainActivity : ComponentActivity() {
 
     private fun loadAndDisplayProgress() {
         val sharedPref = getSharedPreferences(SettingsActivity.PREFERENCE_FILE, MODE_PRIVATE)
-        val target = sharedPref.getInt(SettingsActivity.TARGET, 500)
-        val limit = sharedPref.getInt(SettingsActivity.LIMIT, 300)
+        val target = sharedPref.getFloat(SettingsActivity.TARGET, 500.0.toFloat())
+        val limit = sharedPref.getFloat(SettingsActivity.LIMIT, 300.0.toFloat())
 
         // Get current expense and income from shared preferences
         val currentExpense = sharedPref.getFloat("CURRENT_EXPENSE", 0f).toDouble()
         val currentIncome = sharedPref.getFloat("CURRENT_INCOME", 0f).toDouble()
 
-        targetProgressBar.max = target
-        targetprogressText.text = "$currency %.2f/%.2f".format(0.0, target.toDouble())
+        targetProgressBar.max = target.toInt()
+        targetProgressBar.progress = currentIncome.toInt()
+        targetprogressText.text = String.format("$currency %.2f/%.2f", currentIncome, target.toDouble())
 
-        limitProgressBar.max = limit
-        limitprogressText.text = "$currency %.2f/%.2f".format(0.0, limit.toDouble())
+        limitProgressBar.max = limit.toInt()
+        limitProgressBar.progress = currentExpense.toInt()
+        limitprogressText.text = String.format("$currency %.2f/%.2f", currentExpense, limit.toDouble())
     }
 
     private fun loadAndDisplayCurrency() {
@@ -133,8 +135,8 @@ class MainActivity : ComponentActivity() {
         val currentIncome = sharedPref.getFloat("CURRENT_INCOME", 0f).toDouble()
         val currentExpense = sharedPref.getFloat("CURRENT_EXPENSE", 0f).toDouble()
 
-        targetprogressText.text = "$currency %.2f/%.2f".format(0.0, targetProgressBar.max.toDouble())
-        limitprogressText.text = "$currency %.2f/%.2f".format(0.0, limitProgressBar.max.toDouble())
+        targetprogressText.text = "$currency %.2f/%.2f".format(currentIncome, targetProgressBar.max.toDouble())
+        limitprogressText.text = "$currency %.2f/%.2f".format(currentExpense, limitProgressBar.max.toDouble())
     }
 
     private fun checkAndLevelUpMonster() {
