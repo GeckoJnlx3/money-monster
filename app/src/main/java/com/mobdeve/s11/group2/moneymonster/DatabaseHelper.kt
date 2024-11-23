@@ -15,7 +15,7 @@ import java.util.Locale
 class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
     companion object {
         private const val DATABASE_NAME = "moneymonster.db"
-        private const val DATABASE_VERSION = 7
+        private const val DATABASE_VERSION = 8
 
         const val FINANCE_TABLE_NAME = "finance"
         const val COL_FINANCE_ID = "record_id"
@@ -42,7 +42,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         const val COL_UNLOCKED = "unlocked"
         const val COL_ON_FIELD = "on_field"
 
-        val DATE_FORMAT = SimpleDateFormat("dd-MM-yyyy", Locale("en-PH"))
+        val DATE_FORMAT = SimpleDateFormat("yyyy-MM-dd", Locale("en-PH"))
     }
 
     private val CREATE_FINANCE_TABLE = """
