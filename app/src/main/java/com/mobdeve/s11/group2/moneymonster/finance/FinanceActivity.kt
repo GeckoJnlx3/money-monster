@@ -239,8 +239,29 @@ class FinanceActivity : ComponentActivity() {
                 activeMonster.statSaved += amount
             }
 
-            if (shouldLevelUp(activeMonster)) {
-                levelUpMonster(activeMonster)
+            val sharedPref = getSharedPreferences(SettingsActivity.PREFERENCE_FILE, MODE_PRIVATE)
+            var currentIncome = sharedPref.getFloat("CURRENT_INCOME", 0f).toDouble()
+            var currentExpense = sharedPref.getFloat("CURRENT_EXPENSE", 0f).toDouble()
+
+            val target = sharedPref.getFloat(SettingsActivity.TARGET, 500.0.toFloat())
+            val limit = sharedPref.getFloat(SettingsActivity.LIMIT, 300.0.toFloat())
+
+            if (currentIncome > target){
+                val totalXp = currentIncome/target
+//                Log.d("totalxp", totalXp.toString())
+                currentIncome = currentIncome%target
+//                Log.d("currentIncome", currentIncome.toString())
+
+                activeMonster.upTick += totalXp.toInt()
+
+                val editor = sharedPref.edit()
+                editor.putFloat("CURRENT_INCOME", (currentIncome).toFloat())
+                editor.apply()
+            }
+
+
+            if (shouldEvolve(activeMonster)) {
+                evolveMonster(activeMonster)
             }
 
             val result = dbHelper.updateMonster(activeMonster)
@@ -252,7 +273,7 @@ class FinanceActivity : ComponentActivity() {
         }
     }
 
-    private fun shouldLevelUp(monster: Monster): Boolean {
+    private fun shouldEvolve(monster: Monster): Boolean {
         return when (monster.stage) {
             "baby" -> monster.level >= 5
             "teen" -> monster.level >= 15
@@ -260,7 +281,7 @@ class FinanceActivity : ComponentActivity() {
         }
     }
 
-    private fun levelUpMonster(monster: Monster) {
+    private fun evolveMonster(monster: Monster) {
         val dbHelper = DatabaseHelper(this)
         val db = dbHelper.writableDatabase
 

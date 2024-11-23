@@ -9,7 +9,7 @@ data class Monster(
     val image: Int,
     val adoptionDate: Date,
     var stage: String,
-    val upTick: Int,
+    var upTick: Int,
     val reqExp: Int,
     var level: Int,
     var statSaved: Double,
