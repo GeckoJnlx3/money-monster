@@ -26,7 +26,6 @@ import java.sql.Date
 
 object MonsterDataHelper {
 
-    // Populate the monster table with predefined monsters
     fun populateMonsterTable(db: SQLiteDatabase?) {
         val monsters = listOf(
             Monster(1, "gwomp", "Gwomp", R.drawable.gwomp_baby, Date(System.currentTimeMillis()), "baby", 0, 5, 1, 0.00, 0.00, "A baby Gwomp.", true, true),
@@ -60,7 +59,6 @@ object MonsterDataHelper {
         }
     }
 
-    // Update monster level and image based on the species and new level
     fun updateMonsterLevel(db: SQLiteDatabase, monsterId: Int, newLevel: Int) {
         val cursor = db.query(
             MONSTER_TABLE_NAME,
@@ -91,7 +89,6 @@ object MonsterDataHelper {
         }
     }
 
-    // Get the image for a monster based on its species and level
     fun getImageForLevel(species: String, level: Int): Int {
         return when (species) {
             "gwomp" -> when {
@@ -113,17 +110,16 @@ object MonsterDataHelper {
         }
     }
 
-    // Fetch the active monster based on the onField column
     fun getActiveMonster(db: SQLiteDatabase): Monster? {
         val cursor = db.query(
-            MONSTER_TABLE_NAME, // Table name
-            null, // Select all columns
-            "${COL_ON_FIELD} = ?", // WHERE clause: onField is true
-            arrayOf("1"), // 1 indicates active monster
-            null, // GROUP BY clause (not needed here)
-            null, // HAVING clause (not needed)
-            null, // ORDER BY clause (not needed)
-            "1" // Limit the query to only one result (active monster)
+            MONSTER_TABLE_NAME,
+            null,
+            "${COL_ON_FIELD} = ?",
+            arrayOf("1"),
+            null,
+            null,
+            null,
+            "1"
         )
 
         var activeMonster: Monster? = null

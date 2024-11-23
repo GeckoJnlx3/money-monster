@@ -33,7 +33,6 @@ object MonsterProgressionHelper {
                     var newLevel = currentLevel
                     var newStage = currentStage
 
-                    // Level up logic
                     while (newExp >= getExpForNextLevel(newLevel, newStage)) {
                         newExp -= getExpForNextLevel(newLevel, newStage)
                         newLevel++

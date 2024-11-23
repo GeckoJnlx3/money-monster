@@ -52,7 +52,7 @@ class FinanceActivity : ComponentActivity() {
 
     private val statsUpdateReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
-            loadMonsterData()  // Call to loadMonsterData when the broadcast is received
+            loadMonsterData()
         }
     }
 
@@ -105,14 +105,7 @@ class FinanceActivity : ComponentActivity() {
         val activeMonster = MonsterDataHelper.getActiveMonster(db)
 
         if (activeMonster != null) {
-            // You can update the UI with the active monster's data, for example:
-            // Update the UI with monster stats like level, money saved, money spent, etc.
-            // You may want to use TextViews or other UI elements to show this data.
             Log.d("FinanceActivity", "Monster data loaded: ${activeMonster.name}")
-            // Example of how you might update the UI:
-            // nameTextView.text = activeMonster.name
-            // savedTextView.text = "Money Saved: ${activeMonster.statSaved}"
-            // levelTextView.text = "Level: ${activeMonster.level}"
         }
     }
 
@@ -240,7 +233,6 @@ class FinanceActivity : ComponentActivity() {
                 activeMonster.statSaved += amount
             }
 
-            // Check for level-up based on the new level thresholds
             if (shouldLevelUp(activeMonster)) {
                 levelUpMonster(activeMonster)
             }
@@ -279,7 +271,6 @@ class FinanceActivity : ComponentActivity() {
             else -> monster.stage
         }
 
-        // Update monster image and level
         MonsterDataHelper.updateMonsterLevel(db, monster.monsterId, newLevel)
         Log.d("FinanceActivity", "Monster leveled up to ${monster.stage}.")
     }
