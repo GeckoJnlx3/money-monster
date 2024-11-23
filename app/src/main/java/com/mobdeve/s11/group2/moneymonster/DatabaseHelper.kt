@@ -188,8 +188,10 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
                 }
 
                 if (adoptionDate != null) {
-                    monsters.add(Monster(monsterId, species, name, image,
-                        adoptionDate, stage, upTick, reqExp, level, statSaved, statSpent, description, unlocked, onField))
+                    monsters.add(Monster(
+                        monsterId, species, name, image,
+                        Date(adoptionDate.time), stage, upTick, reqExp, level, statSaved, statSpent, description, unlocked, onField
+                    ))
                 }
             } while (cursor.moveToNext())
         } else {
@@ -199,4 +201,5 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         cursor?.close()
         return monsters
     }
+
 }

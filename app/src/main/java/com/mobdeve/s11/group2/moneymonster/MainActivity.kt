@@ -14,6 +14,10 @@ import com.mobdeve.s11.group2.moneymonster.databinding.ActivityMainBinding
 import com.mobdeve.s11.group2.moneymonster.history.HistoryActivity
 import com.mobdeve.s11.group2.moneymonster.finance.FinanceActivity
 import com.mobdeve.s11.group2.moneymonster.monsterpedia.MonsterpediaActivity
+import android.database.sqlite.SQLiteDatabase
+import com.mobdeve.s11.group2.moneymonster.MonsterProgressionHelper
+import com.mobdeve.s11.group2.moneymonster.DatabaseHelper
+import com.mobdeve.s11.group2.moneymonster.MonsterDataHelper
 import com.mobdeve.s11.group2.moneymonster.monster.MonsterStatActivity
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -37,9 +41,14 @@ class MainActivity : ComponentActivity() {
 
     private var currency: String = "PHP"
 
+    private lateinit var db: SQLiteDatabase  // Reference to your database
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         bindView()
+
+        // Initialize the database (adjust this as needed)
+        db = DatabaseHelper(this).writableDatabase
 
         settingsBtn.setOnClickListener { openSettings() }
         expenseGoal.setOnClickListener { openSettings() }
@@ -74,6 +83,7 @@ class MainActivity : ComponentActivity() {
 
         loadAndDisplayProgress()
         loadAndDisplayCurrency()
+        checkAndLevelUpMonster()
     }
 
     private fun openSettings() {
@@ -120,7 +130,6 @@ class MainActivity : ComponentActivity() {
         val sharedPref = getSharedPreferences(SettingsActivity.PREFERENCE_FILE, MODE_PRIVATE)
         currency = sharedPref.getString(SettingsActivity.CURRENCY, "PHP") ?: "PHP"
 
-        // Get current progress for target and limit
         val currentIncome = sharedPref.getFloat("CURRENT_INCOME", 0f).toDouble()
         val currentExpense = sharedPref.getFloat("CURRENT_EXPENSE", 0f).toDouble()
 
@@ -128,6 +137,11 @@ class MainActivity : ComponentActivity() {
         limitprogressText.text = "$currency %.2f/%.2f".format(0.0, limitProgressBar.max.toDouble())
     }
 
+    private fun checkAndLevelUpMonster() {
+        val monsterId = 1
+        val gainedExp = 20
+        MonsterProgressionHelper.levelUpMonster(db, monsterId, gainedExp)
+    }
 
     private fun startProgress(target: Int, currentIncome: Double) {
         targetProgressBar.progress = 0
