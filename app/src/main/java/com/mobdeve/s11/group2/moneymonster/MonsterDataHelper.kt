@@ -2,6 +2,7 @@ package com.mobdeve.s11.group2.moneymonster
 
 import android.content.ContentValues
 import android.database.sqlite.SQLiteDatabase
+import androidx.core.database.getDoubleOrNull
 import com.mobdeve.s11.group2.moneymonster.DatabaseHelper.Companion.MONSTER_TABLE_NAME
 import com.mobdeve.s11.group2.moneymonster.DatabaseHelper.Companion.COL_MONSTER_ID
 import com.mobdeve.s11.group2.moneymonster.DatabaseHelper.Companion.COL_SPECIES
@@ -27,17 +28,15 @@ object MonsterDataHelper {
 
     fun populateMonsterTable(db: SQLiteDatabase?) {
         val monsters = listOf(
-            Monster(1, "gwomp", "Gwomp", R.drawable.gwomp_baby, Date(System.currentTimeMillis()), "baby", 0, 5, 1, 0, 0, "A baby Gwomp.", true, true),
-            Monster(2, "gwomp", "Gwompor", R.drawable.gwomp_teen, Date(System.currentTimeMillis()), "baby", 0, 5, 2, 0, 0, "The teenage Gwomp.", false, false),
-            Monster(3, "gwomp", "Wompagwom", R.drawable.gwomp_adult, Date(System.currentTimeMillis()), "baby", 0, 5, 3, 0, 0, "The adult Gwomp.", false, false),
-
-            Monster(4, "mamoo", "Mamoo", R.drawable.mamoo_baby, Date(System.currentTimeMillis()), "teen", 0, 15, 1, 0, 0, "A baby Mamoo.", false, false),
-            Monster(5, "mamoo", "Moomie", R.drawable.mamoo_teen, Date(System.currentTimeMillis()), "teen", 0, 15, 2, 0, 0, "The teenage Mamoo.", false, false),
-            Monster(6, "mamoo", "Mamoolah", R.drawable.mamoo_adult, Date(System.currentTimeMillis()), "teen", 0, 15, 3, 0, 0, "The adult Mamoo.", false, false),
-
-            Monster(7, "ave", "Ave", R.drawable.ave_baby, Date(System.currentTimeMillis()), "adult", 0, 25, 1, 0, 0, "A baby Ave.", false, false),
-            Monster(8, "ave", "Evale", R.drawable.ave_teen, Date(System.currentTimeMillis()), "adult", 0, 25, 2, 0, 0, "The teenage Ave.", false, false),
-            Monster(9, "ave", "Alvirose", R.drawable.ave_adult, Date(System.currentTimeMillis()), "adult", 0, 25, 3, 0, 0, "The adult Ave.", false, false)
+            Monster(1, "gwomp", "Gwomp", R.drawable.gwomp_baby, Date(System.currentTimeMillis()), "baby", 0, 5, 1, 0.00, 0.00, "A baby Gwomp.", true, true),
+            Monster(2, "gwomp", "Gwompor", R.drawable.gwomp_teen, Date(System.currentTimeMillis()), "teen", 5, 15, 2, 0.00, 0.00, "The teenage Gwomp.", false, false),
+            Monster(3, "gwomp", "Wompagwom", R.drawable.gwomp_adult, Date(System.currentTimeMillis()), "adult", 15, 25, 3, 0.00, 0.00, "The adult Gwomp.", false, false),
+            Monster(4, "mamoo", "Mamoo", R.drawable.mamoo_baby, Date(System.currentTimeMillis()), "baby", 0, 15, 1, 0.00, 0.00, "A baby Mamoo.", false, false),
+            Monster(5, "mamoo", "Moomie", R.drawable.mamoo_teen, Date(System.currentTimeMillis()), "teen", 5, 15, 2, 0.00, 0.00, "The teenage Mamoo.", false, false),
+            Monster(6, "mamoo", "Mamoolah", R.drawable.mamoo_adult, Date(System.currentTimeMillis()), "adult", 15, 25, 3, 0.00, 0.00, "The adult Mamoo.", false, false),
+            Monster(7, "ave", "Ave", R.drawable.ave_baby, Date(System.currentTimeMillis()), "baby", 0, 25, 1, 0.00, 0.00, "A baby Ave.", false, false),
+            Monster(8, "ave", "Evale", R.drawable.ave_teen, Date(System.currentTimeMillis()), "teen", 5, 25, 2, 0.00, 0.00, "The teenage Ave.", false, false),
+            Monster(9, "ave", "Alvirose", R.drawable.ave_adult, Date(System.currentTimeMillis()), "adult", 15, 25, 3, 0.00, 0.00, "The adult Ave.", false, false)
         )
 
         monsters.forEach { monster ->
@@ -90,7 +89,7 @@ object MonsterDataHelper {
         }
     }
 
-    private fun getImageForLevel(species: String, level: Int): Int {
+    fun getImageForLevel(species: String, level: Int): Int {
         return when (species) {
             "gwomp" -> when {
                 level <= 5 -> R.drawable.gwomp_baby
@@ -111,78 +110,40 @@ object MonsterDataHelper {
         }
     }
 
-
-
-    fun getMonsterDetails(db: SQLiteDatabase, monsterId: Int): Monster? {
+    fun getActiveMonster(db: SQLiteDatabase): Monster? {
         val cursor = db.query(
             MONSTER_TABLE_NAME,
             null,
-            "${COL_MONSTER_ID} = ?",
-            arrayOf(monsterId.toString()),
+            "${COL_ON_FIELD} = ?",
+            arrayOf("1"),
             null,
             null,
-            null
+            null,
+            "1"
         )
 
-        var monster: Monster? = null
+        var activeMonster: Monster? = null
+
         if (cursor != null && cursor.moveToFirst()) {
-            val speciesIndex = cursor.getColumnIndex(COL_SPECIES)
-            val nameIndex = cursor.getColumnIndex(COL_NAME)
-            val imageIndex = cursor.getColumnIndex(COL_IMAGE)
-            val levelIndex = cursor.getColumnIndex(COL_LEVEL)
-            val adoptionDateIndex = cursor.getColumnIndex(COL_ADOPTION_DATE)
-            val stageIndex = cursor.getColumnIndex(COL_STAGE)
-            val upTickIndex = cursor.getColumnIndex(COL_UP_TICK)
-            val reqExpIndex = cursor.getColumnIndex(COL_REQ_EXP)
-            val statSavedIndex = cursor.getColumnIndex(COL_STAT_SAVED)
-            val statSpentIndex = cursor.getColumnIndex(COL_STAT_SPENT)
-            val descriptionIndex = cursor.getColumnIndex(COL_DESCRIPTION)
-            val unlockedIndex = cursor.getColumnIndex(COL_UNLOCKED)
-            val onFieldIndex = cursor.getColumnIndex(COL_ON_FIELD)
-
-            val species = cursor.getString(speciesIndex)
-            val name = cursor.getString(nameIndex)
-            val imageResId = cursor.getInt(imageIndex)
-            val level = cursor.getInt(levelIndex)
-
-            val adoptionDateStr = cursor.getString(adoptionDateIndex)
-            val adoptionDate = try {
-                DATE_FORMAT.parse(adoptionDateStr)
-            } catch (e: Exception) {
-                null
-            }
-
-            val stage = cursor.getString(stageIndex)
-            val upTick = cursor.getInt(upTickIndex)
-            val reqExp = cursor.getInt(reqExpIndex)
-            val statSaved = cursor.getInt(statSavedIndex)
-            val statSpent = cursor.getInt(statSpentIndex)
-            val description = cursor.getString(descriptionIndex)
-            val unlocked = cursor.getInt(unlockedIndex) == 1
-            val onField = cursor.getInt(onFieldIndex) == 1
-
-            if (adoptionDate != null) {
-                monster = Monster(
-                    monsterId = monsterId,
-                    species = species,
-                    name = name,
-                    image = imageResId,
-                    adoptionDate = Date(adoptionDate.time),
-                    stage = stage,
-                    upTick = upTick,
-                    reqExp = reqExp,
-                    level = level,
-                    statSaved = statSaved,
-                    statSpent = statSpent,
-                    description = description,
-                    unlocked = unlocked,
-                    onField = onField
-                )
-            }
+            activeMonster = Monster(
+                monsterId = cursor.getInt(cursor.getColumnIndexOrThrow(COL_MONSTER_ID)),
+                species = cursor.getString(cursor.getColumnIndexOrThrow(COL_SPECIES)),
+                name = cursor.getString(cursor.getColumnIndexOrThrow(COL_NAME)),
+                image = cursor.getInt(cursor.getColumnIndexOrThrow(COL_IMAGE)),
+                adoptionDate = Date(cursor.getLong(cursor.getColumnIndexOrThrow(COL_ADOPTION_DATE))),
+                stage = cursor.getString(cursor.getColumnIndexOrThrow(COL_STAGE)),
+                upTick = cursor.getInt(cursor.getColumnIndexOrThrow(COL_UP_TICK)),
+                reqExp = cursor.getInt(cursor.getColumnIndexOrThrow(COL_REQ_EXP)),
+                level = cursor.getInt(cursor.getColumnIndexOrThrow(COL_LEVEL)),
+                statSaved = cursor.getDouble(cursor.getColumnIndexOrThrow(COL_STAT_SAVED)),
+                statSpent = cursor.getDouble(cursor.getColumnIndexOrThrow(COL_STAT_SPENT)),
+                description = cursor.getString(cursor.getColumnIndexOrThrow(COL_DESCRIPTION)),
+                unlocked = cursor.getInt(cursor.getColumnIndexOrThrow(COL_UNLOCKED)) == 1,
+                onField = cursor.getInt(cursor.getColumnIndexOrThrow(COL_ON_FIELD)) == 1
+            )
         }
+
         cursor?.close()
-
-        return monster
+        return activeMonster
     }
-
 }

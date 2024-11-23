@@ -109,6 +109,22 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         return result
     }
 
+    fun updateMonster(monster: Monster): Long {
+        val db = this.writableDatabase
+        val contentValues = ContentValues()
+        contentValues.put(COL_NAME, monster.name)
+        contentValues.put(COL_STAT_SAVED, monster.statSaved)
+        contentValues.put(COL_STAT_SPENT, monster.statSpent)
+        contentValues.put(COL_LEVEL, monster.level)
+
+        return db.update(
+            MONSTER_TABLE_NAME,
+            contentValues,
+            "$COL_MONSTER_ID = ?",
+            arrayOf(monster.monsterId.toString())
+        ).toLong()
+    }
+
     fun updateMonsterStatSaved(amount: Double) {
         val db = writableDatabase
         db.execSQL("""
@@ -175,8 +191,8 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
                 val upTick = cursor.getInt(cursor.getColumnIndexOrThrow(COL_UP_TICK))
                 val reqExp = cursor.getInt(cursor.getColumnIndexOrThrow(COL_REQ_EXP))
                 val level = cursor.getInt(cursor.getColumnIndexOrThrow(COL_LEVEL))
-                val statSaved = cursor.getInt(cursor.getColumnIndexOrThrow(COL_STAT_SAVED))
-                val statSpent = cursor.getInt(cursor.getColumnIndexOrThrow(COL_STAT_SPENT))
+                val statSaved = cursor.getDouble(cursor.getColumnIndexOrThrow(COL_STAT_SAVED))
+                val statSpent = cursor.getDouble(cursor.getColumnIndexOrThrow(COL_STAT_SPENT))
                 val description = cursor.getString(cursor.getColumnIndexOrThrow(COL_DESCRIPTION))
                 val unlocked = cursor.getInt(cursor.getColumnIndexOrThrow(COL_UNLOCKED)) == 1
                 val onField = cursor.getInt(cursor.getColumnIndexOrThrow(COL_ON_FIELD)) == 1

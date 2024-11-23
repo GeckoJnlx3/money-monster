@@ -11,9 +11,9 @@ data class Monster(
     val stage: String,
     val upTick: Int,
     val reqExp: Int,
-    val level: Int,
-    val statSaved: Int,
-    val statSpent: Int,
+    var level: Int,
+    var statSaved: Double,
+    var statSpent: Double,
     val description: String,
     val unlocked: Boolean,
     val onField: Boolean
