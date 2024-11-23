@@ -5,8 +5,8 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.ProgressBar
-import android.widget.Spinner
 import android.widget.TextView
 import android.view.View
 import androidx.activity.ComponentActivity
@@ -14,12 +14,12 @@ import com.mobdeve.s11.group2.moneymonster.databinding.ActivityMainBinding
 import com.mobdeve.s11.group2.moneymonster.history.HistoryActivity
 import com.mobdeve.s11.group2.moneymonster.finance.FinanceActivity
 import com.mobdeve.s11.group2.moneymonster.monsterpedia.MonsterpediaActivity
+import com.mobdeve.s11.group2.moneymonster.monster.MonsterStatActivity
 import java.text.SimpleDateFormat
 import java.util.Calendar
 
 class MainActivity : ComponentActivity() {
 
-    private lateinit var dateRangeSpinner: Spinner
     private lateinit var targetProgressBar: ProgressBar
     private lateinit var limitProgressBar: ProgressBar
     private lateinit var targetprogressText: TextView
@@ -32,6 +32,7 @@ class MainActivity : ComponentActivity() {
     private lateinit var financeBtn: Button
     private lateinit var historyBtn: Button
     private lateinit var dateTodayTv: TextView
+    private lateinit var monsterImageView: ImageView
     private val handler = Handler()
 
     private var currency: String = "PHP"
@@ -46,7 +47,7 @@ class MainActivity : ComponentActivity() {
 
         setDateToday()
 
-        historyBtn.setOnClickListener{
+        historyBtn.setOnClickListener {
             val intent = Intent(this, HistoryActivity::class.java)
             startActivity(intent)
         }
@@ -66,6 +67,11 @@ class MainActivity : ComponentActivity() {
             startActivity(intent)
         }
 
+        monsterImageView.setOnClickListener {
+            val intent = Intent(this, MonsterStatActivity::class.java)
+            startActivity(intent)
+        }
+
         loadAndDisplayProgress()
         loadAndDisplayCurrency()
     }
@@ -75,7 +81,7 @@ class MainActivity : ComponentActivity() {
         startActivity(intent)
     }
 
-    private fun bindView(){
+    private fun bindView() {
         val viewBinding: ActivityMainBinding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(viewBinding.root)
 
@@ -91,6 +97,7 @@ class MainActivity : ComponentActivity() {
         expenseGoal = viewBinding.expenseGoal
         savingGoal = viewBinding.savingGoal
         dateTodayTv = viewBinding.dateTodayTv
+        monsterImageView = viewBinding.monsterImage
     }
 
     private fun loadAndDisplayProgress() {
@@ -103,12 +110,10 @@ class MainActivity : ComponentActivity() {
         val currentIncome = sharedPref.getFloat("CURRENT_INCOME", 0f).toDouble()
 
         targetProgressBar.max = target
-        targetProgressBar.progress = currentIncome.toInt()
-        targetprogressText.text = "$currency $currentIncome/$target"
+        targetprogressText.text = "$currency %.2f/%.2f".format(0.0, target.toDouble())
 
         limitProgressBar.max = limit
-        limitProgressBar.progress = currentExpense.toInt()
-        limitprogressText.text = "$currency $currentExpense/$limit"
+        limitprogressText.text = "$currency %.2f/%.2f".format(0.0, limit.toDouble())
     }
 
     private fun loadAndDisplayCurrency() {
@@ -119,9 +124,8 @@ class MainActivity : ComponentActivity() {
         val currentIncome = sharedPref.getFloat("CURRENT_INCOME", 0f).toDouble()
         val currentExpense = sharedPref.getFloat("CURRENT_EXPENSE", 0f).toDouble()
 
-        // Update text views with current values
-        targetprogressText.text = "$currency $currentIncome/${targetProgressBar.max}"
-        limitprogressText.text = "$currency $currentExpense/${limitProgressBar.max}"
+        targetprogressText.text = "$currency %.2f/%.2f".format(0.0, targetProgressBar.max.toDouble())
+        limitprogressText.text = "$currency %.2f/%.2f".format(0.0, limitProgressBar.max.toDouble())
     }
 
 
@@ -137,7 +141,7 @@ class MainActivity : ComponentActivity() {
                 // Update progress bar and text
                 handler.post {
                     targetProgressBar.progress = progress
-                    targetprogressText.text = "$currency $progress/$maxProgress"
+                    targetprogressText.text = "$currency %.2f/%.2f".format(progress.toDouble(), maxProgress.toDouble())
                 }
                 try {
                     Thread.sleep(10) // Add delay to simulate progress
@@ -148,7 +152,7 @@ class MainActivity : ComponentActivity() {
         }.start()
     }
 
-    private fun setDateToday(){
+    private fun setDateToday() {
         val dateToday = Calendar.getInstance().time
         val formatter = SimpleDateFormat("MMM dd, yyyy")
         dateTodayTv.text = formatter.format(dateToday)
