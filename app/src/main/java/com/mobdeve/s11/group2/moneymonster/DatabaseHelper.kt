@@ -2,13 +2,13 @@ package com.mobdeve.s11.group2.moneymonster
 
 import android.content.ContentValues
 import android.content.Context
+import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import android.util.Log
 import androidx.core.database.getDoubleOrNull
 import com.mobdeve.s11.group2.moneymonster.finance.FinanceRecord
 import com.mobdeve.s11.group2.moneymonster.monster.Monster
-import java.sql.Date
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -129,10 +129,10 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         Log.d("DatabaseHelper", "Updated stat_spent by $amount for active monster.")
     }
 
-    fun getAllRecords(): List<FinanceRecord> {
+    fun getAllRecords(month:Int?, year:Int?): List<FinanceRecord> {
         val records = mutableListOf<FinanceRecord>()
         val db = readableDatabase
-        val cursor = db.rawQuery("SELECT * FROM $FINANCE_TABLE_NAME", null)
+        val cursor = generateRecordQuery(db, month,year)
 
         if (cursor.moveToFirst()) {
             do {
@@ -157,6 +157,36 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         }
         cursor.close()
         return records
+    }
+
+    private fun generateRecordQuery(db:SQLiteDatabase, month:Int?, year:Int?): Cursor {
+        if (year == null){
+            return db.rawQuery("SELECT * FROM $FINANCE_TABLE_NAME", null)
+        } else {
+            val startDate:String
+            val endDate:String
+
+            if (month != null){
+                startDate = "$year-$month-01"
+                val lastDayOfMonth = getLastDayOfMonthYear(month, year)
+                endDate = "$year-$month-$lastDayOfMonth"
+            } else {
+                startDate = "$year-01-01"
+                endDate = "$year-12-31"
+            }
+            return db.rawQuery(
+                "SELECT * FROM $FINANCE_TABLE_NAME WHERE $COL_DATE BETWEEN ? AND  ?",
+                arrayOf(startDate, endDate))
+        }
+    }
+
+    private fun getLastDayOfMonthYear(month:Int, year:Int): Int{
+        when (month){
+            1, 3, 5, 7, 8, 10,12 -> return 31
+            4, 6, 9, 11 -> return 30
+            2 -> return if (year % 4 == 0) 29 else 28
+            else -> return -1
+        }
     }
 
     fun getAllMonsters(): List<Monster> {

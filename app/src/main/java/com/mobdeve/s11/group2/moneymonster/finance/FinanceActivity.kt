@@ -132,6 +132,7 @@ class FinanceActivity : ComponentActivity() {
             return
         }
 
+
         val date = try {
             DatabaseHelper.DATE_FORMAT.parse(dateText)
         } catch (e: Exception) {
