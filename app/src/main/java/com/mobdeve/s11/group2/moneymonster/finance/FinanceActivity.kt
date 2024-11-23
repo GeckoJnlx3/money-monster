@@ -218,7 +218,7 @@ class FinanceActivity : ComponentActivity() {
             this, R.style.DatePickerDialogStyle,
             { _, selectedYear, selectedMonth, selectedDay ->
                 val formattedDate = String.format(Locale.getDefault(),
-                    "%04d-%02d-%02d-",  selectedYear, selectedMonth + 1,selectedDay
+                    "%04d-%02d-%02d",  selectedYear, selectedMonth + 1,selectedDay
                 )
                 dateEt.setText(formattedDate)
             },
