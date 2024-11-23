@@ -22,6 +22,9 @@ class SettingsActivity : ComponentActivity() {
         const val LIMIT = "LIMIT"
         const val TIME = "TIME"
 
+        val CURRENCY_LIST = arrayOf("PHP", "USD", "EUR", "JPY", "GBP", "AUD")
+        val TIME_OPTIONS = arrayOf("Daily", "Monthly", "Yearly")
+
         const val PREFERENCE_FILE = "com.mobdeve.s11.group2.moneymonster.PREFERENCE_FILE_KEY"
     }
 
@@ -31,26 +34,24 @@ class SettingsActivity : ComponentActivity() {
         setContentView(binding.root)
 
         val currencySpinner: Spinner = binding.currencySpnr
-        val currencies = arrayOf("PHP", "USD", "EUR", "JPY", "GBP", "AUD")
-        val currencyAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, currencies)
+        val currencyAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, CURRENCY_LIST)
         currencyAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         currencySpinner.adapter = currencyAdapter
 
         val sharedPref = getSharedPreferences(PREFERENCE_FILE, Context.MODE_PRIVATE)
         val savedCurrency = sharedPref.getString(CURRENCY, "PHP")
-        val selectedCurrencyPosition = currencies.indexOf(savedCurrency)
+        val selectedCurrencyPosition = CURRENCY_LIST.indexOf(savedCurrency)
         if (selectedCurrencyPosition >= 0) {
             currencySpinner.setSelection(selectedCurrencyPosition)
         }
 
         val timeSpinner: Spinner = binding.timeSpnr
-        val timeOptions = arrayOf("Daily", "Weekly", "Monthly", "Yearly")
-        val timeAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, timeOptions)
+        val timeAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, TIME_OPTIONS)
         timeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         timeSpinner.adapter = timeAdapter
 
         val savedTime = sharedPref.getString(TIME, "Daily")
-        val selectedTimePosition = timeOptions.indexOf(savedTime)
+        val selectedTimePosition = TIME_OPTIONS.indexOf(savedTime)
         if (selectedTimePosition >= 0) {
             timeSpinner.setSelection(selectedTimePosition)
         }

@@ -2,20 +2,20 @@ package com.mobdeve.s11.group2.moneymonster
 
 import android.content.ContentValues
 import android.content.Context
+import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import android.util.Log
 import androidx.core.database.getDoubleOrNull
 import com.mobdeve.s11.group2.moneymonster.finance.FinanceRecord
 import com.mobdeve.s11.group2.moneymonster.monster.Monster
-import java.sql.Date
 import java.text.SimpleDateFormat
 import java.util.Locale
 
 class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
     companion object {
         private const val DATABASE_NAME = "moneymonster.db"
-        private const val DATABASE_VERSION = 7
+        private const val DATABASE_VERSION = 9
 
         const val FINANCE_TABLE_NAME = "finance"
         const val COL_FINANCE_ID = "record_id"
@@ -42,7 +42,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         const val COL_UNLOCKED = "unlocked"
         const val COL_ON_FIELD = "on_field"
 
-        val DATE_FORMAT = SimpleDateFormat("dd-MM-yyyy", Locale("en-PH"))
+        val DATE_FORMAT = SimpleDateFormat("yyyy-MM-dd", Locale("en-PH"))
     }
 
     private val CREATE_FINANCE_TABLE = """
@@ -129,10 +129,12 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         Log.d("DatabaseHelper", "Updated stat_spent by $amount for active monster.")
     }
 
-    fun getAllRecords(): List<FinanceRecord> {
+    fun getAllRecordsInDate(day: Int?, month: Int?, year: Int?): List<FinanceRecord> {
         val records = mutableListOf<FinanceRecord>()
         val db = readableDatabase
-        val cursor = db.rawQuery("SELECT * FROM $FINANCE_TABLE_NAME", null)
+
+        val cursor = db.rawQuery("SELECT * FROM $FINANCE_TABLE_NAME WHERE $COL_DATE = ?",
+            arrayOf("$year-$month-$day"))
 
         if (cursor.moveToFirst()) {
             do {
@@ -157,6 +159,66 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         }
         cursor.close()
         return records
+    }
+
+    fun getAllRecords(month:Int?, year:Int?): List<FinanceRecord> {
+        val records = mutableListOf<FinanceRecord>()
+        val db = readableDatabase
+        val cursor = generateRecordQuery(db, month,year)
+
+        if (cursor.moveToFirst()) {
+            do {
+                val id = cursor.getInt(cursor.getColumnIndexOrThrow(COL_FINANCE_ID))
+                val type = cursor.getString(cursor.getColumnIndexOrThrow(COL_TYPE))
+                val dateString = cursor.getString(cursor.getColumnIndexOrThrow(COL_DATE))
+                val currency = cursor.getString(cursor.getColumnIndexOrThrow(COL_CUR))
+                val amount = cursor.getDoubleOrNull(cursor.getColumnIndexOrThrow(COL_AMT))
+                val category = cursor.getString(cursor.getColumnIndexOrThrow(COL_CAT))
+                val description = cursor.getString(cursor.getColumnIndexOrThrow(COL_DESC))
+
+                val date = try {
+                    DATE_FORMAT.parse(dateString)
+                } catch (e: Exception) {
+                    null
+                }
+
+                if (date != null) {
+                    records.add(FinanceRecord(id, type, date, currency, amount.toString(), category, description))
+                }
+            } while (cursor.moveToNext())
+        }
+        cursor.close()
+        return records
+    }
+
+    private fun generateRecordQuery(db:SQLiteDatabase, month:Int?, year:Int?): Cursor {
+        if (year == null){
+            return db.rawQuery("SELECT * FROM $FINANCE_TABLE_NAME", null)
+        } else {
+            val startDate:String
+            val endDate:String
+
+            if (month != null){
+                startDate = "$year-$month-01"
+                val lastDayOfMonth = getLastDayOfMonthYear(month, year)
+                endDate = "$year-$month-$lastDayOfMonth"
+            } else {
+                startDate = "$year-01-01"
+                endDate = "$year-12-31"
+            }
+            return db.rawQuery(
+                "SELECT * FROM $FINANCE_TABLE_NAME WHERE $COL_DATE BETWEEN ? AND  ?",
+                arrayOf(startDate, endDate))
+        }
+    }
+
+    private fun getLastDayOfMonthYear(month:Int, year:Int): Int{
+        when (month){
+            1, 3, 5, 7, 8, 10,12 -> return 31
+            4, 6, 9, 11 -> return 30
+            2 -> return if (year % 4 == 0) 29 else 28
+            else -> return -1
+        }
     }
 
     fun getAllMonsters(): List<Monster> {

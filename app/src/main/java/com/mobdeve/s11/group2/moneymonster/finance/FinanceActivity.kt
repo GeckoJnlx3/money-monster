@@ -18,6 +18,7 @@ import com.mobdeve.s11.group2.moneymonster.R
 import com.mobdeve.s11.group2.moneymonster.SettingsActivity
 import com.mobdeve.s11.group2.moneymonster.databinding.FinanceBinding
 import java.util.Calendar
+import java.util.Locale
 
 class FinanceActivity : ComponentActivity() {
 
@@ -131,6 +132,7 @@ class FinanceActivity : ComponentActivity() {
             return
         }
 
+
         val date = try {
             DatabaseHelper.DATE_FORMAT.parse(dateText)
         } catch (e: Exception) {
@@ -215,8 +217,8 @@ class FinanceActivity : ComponentActivity() {
         val datePickerDialog = DatePickerDialog(
             this, R.style.DatePickerDialogStyle,
             { _, selectedYear, selectedMonth, selectedDay ->
-                val formattedDate = String.format(
-                    "%02d-%02d-%04d", selectedDay, selectedMonth + 1, selectedYear
+                val formattedDate = String.format(Locale.getDefault(),
+                    "%04d-%02d-%02d",  selectedYear, selectedMonth + 1,selectedDay
                 )
                 dateEt.setText(formattedDate)
             },
