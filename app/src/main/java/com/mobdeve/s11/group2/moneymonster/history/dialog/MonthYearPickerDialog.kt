@@ -1,10 +1,11 @@
-package com.mobdeve.s11.group2.moneymonster
+package com.mobdeve.s11.group2.moneymonster.history.dialog
 
 import android.app.Dialog
 import android.content.Context
 import android.os.Bundle
 import android.widget.NumberPicker
 import android.widget.Button
+import com.mobdeve.s11.group2.moneymonster.R
 import java.util.Calendar
 
 class MonthYearPickerDialog(context: Context, private val onDateSet: (Int, Int) -> Unit) : Dialog(context) {
@@ -36,7 +37,7 @@ class MonthYearPickerDialog(context: Context, private val onDateSet: (Int, Int) 
         okButton.setOnClickListener {
             val selectedMonth = monthPicker.value
             val selectedYear = yearPicker.value
-            onDateSet(selectedYear, selectedMonth)
+            onDateSet(selectedMonth, selectedYear)
             dismiss()
         }
     }
