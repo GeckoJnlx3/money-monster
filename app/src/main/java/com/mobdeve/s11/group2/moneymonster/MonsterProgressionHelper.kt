@@ -39,7 +39,7 @@ object MonsterProgressionHelper {
         }
         cursor.close()
     }
-    
+
     private fun getExpForNextLevel(level: Int): Int {
         return when (level) {
             1 -> 10
