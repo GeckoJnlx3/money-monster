@@ -19,12 +19,10 @@ import com.github.mikephil.charting.data.*
 import com.github.mikephil.charting.formatter.ValueFormatter
 import com.mobdeve.s11.group2.moneymonster.SettingsActivity.Companion.TIME
 import com.mobdeve.s11.group2.moneymonster.databinding.AnalyticsBinding
-import com.mobdeve.s11.group2.moneymonster.history.HistoryRecordDateAdapter
+import com.mobdeve.s11.group2.moneymonster.finance.FinanceRecord
 import com.mobdeve.s11.group2.moneymonster.history.dialog.MonthYearPickerDialog
 import com.mobdeve.s11.group2.moneymonster.history.dialog.YearPickerDIalog
-import kotlinx.coroutines.selects.select
 import java.text.SimpleDateFormat
-import java.time.Period
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -77,7 +75,7 @@ class AnalyticsActivity : ComponentActivity() {
         timePeriodSpnr.adapter = spinnerAdapter
 
         // setting up shared preference
-        val savedTime = sharedPref.getString(TIME, "Daily")
+        val savedTime = sharedPref.getString(TIME, "Monthly")
         val selectedTimePosition = SettingsActivity.TIME_OPTIONS.indexOf(savedTime)
         if (selectedTimePosition >= 0) {
             timePeriodSpnr.setSelection(selectedTimePosition)
@@ -171,13 +169,8 @@ class AnalyticsActivity : ComponentActivity() {
     private fun setDefaultTimePeriod(): String {
         val dateToday = Calendar.getInstance().time
         when (timePeriod){
-            "Daily" -> {
-                selectedDay = Calendar.getInstance().get(Calendar.DAY_OF_MONTH) + 1
-                selectedMonth = Calendar.getInstance().get(Calendar.MONTH) + 1
-                selectedYear = Calendar.getInstance().get(Calendar.YEAR)
-                return TimePeriodUtils.DATE_FORMATTER.format(dateToday)
-            }
-            "Monthly" -> {
+            "Daily" ,"Monthly" -> {
+                timePeriod = "Monthly"
                 selectedMonth = Calendar.getInstance().get(Calendar.MONTH) + 1
                 selectedYear = Calendar.getInstance().get(Calendar.YEAR)
                 return TimePeriodUtils.MONTH_YEAR_FORMATTER.format(dateToday)
@@ -249,18 +242,23 @@ class AnalyticsActivity : ComponentActivity() {
         overviewLc.xAxis.valueFormatter = LineChartXAxisValueFormatter()
         overviewLc.description.isEnabled = false
 
-        // TODO: create getAllRecords that accomodates for a date selected
         val records = databaseHelper.getAllRecords(selectedMonth, selectedYear)
+
         val expenseOverview = ArrayList<Entry>()
         val savingOverview = ArrayList<Entry>()
+
+        var totalExpense = 0.0
+        var totalIncome = 0.0
 
         records.forEach { record ->
             val date = record.date.time.toFloat()
             val amount = record.amount?.toFloatOrNull() ?: 0f
             if (record.type == "Expense") {
-                expenseOverview.add(Entry(date, amount))
+                totalExpense += amount
+                expenseOverview.add(Entry(date, totalExpense.toFloat()))
             } else if (record.type == "Income") {
-                savingOverview.add(Entry(date, amount))
+                totalIncome += amount
+                savingOverview.add(Entry(date, totalIncome.toFloat()))
             }
         }
 
@@ -284,7 +282,7 @@ class AnalyticsActivity : ComponentActivity() {
     }
 
     private class LineChartXAxisValueFormatter : ValueFormatter() {
-        private val dateFormat = SimpleDateFormat("MMM d", Locale("en"))
+        private val dateFormat = SimpleDateFormat("MMM dd", Locale("en"))
 
         override fun getFormattedValue(value: Float): String {
             val date = Date(value.toLong())

@@ -15,7 +15,7 @@ import java.util.Locale
 class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
     companion object {
         private const val DATABASE_NAME = "moneymonster.db"
-        private const val DATABASE_VERSION = 8
+        private const val DATABASE_VERSION = 9
 
         const val FINANCE_TABLE_NAME = "finance"
         const val COL_FINANCE_ID = "record_id"
@@ -127,6 +127,38 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
             WHERE $COL_ON_FIELD = 1
         """, arrayOf(amount))
         Log.d("DatabaseHelper", "Updated stat_spent by $amount for active monster.")
+    }
+
+    fun getAllRecordsInDate(day: Int?, month: Int?, year: Int?): List<FinanceRecord> {
+        val records = mutableListOf<FinanceRecord>()
+        val db = readableDatabase
+
+        val cursor = db.rawQuery("SELECT * FROM $FINANCE_TABLE_NAME WHERE $COL_DATE = ?",
+            arrayOf("$year-$month-$day"))
+
+        if (cursor.moveToFirst()) {
+            do {
+                val id = cursor.getInt(cursor.getColumnIndexOrThrow(COL_FINANCE_ID))
+                val type = cursor.getString(cursor.getColumnIndexOrThrow(COL_TYPE))
+                val dateString = cursor.getString(cursor.getColumnIndexOrThrow(COL_DATE))
+                val currency = cursor.getString(cursor.getColumnIndexOrThrow(COL_CUR))
+                val amount = cursor.getDoubleOrNull(cursor.getColumnIndexOrThrow(COL_AMT))
+                val category = cursor.getString(cursor.getColumnIndexOrThrow(COL_CAT))
+                val description = cursor.getString(cursor.getColumnIndexOrThrow(COL_DESC))
+
+                val date = try {
+                    DATE_FORMAT.parse(dateString)
+                } catch (e: Exception) {
+                    null
+                }
+
+                if (date != null) {
+                    records.add(FinanceRecord(id, type, date, currency, amount.toString(), category, description))
+                }
+            } while (cursor.moveToNext())
+        }
+        cursor.close()
+        return records
     }
 
     fun getAllRecords(month:Int?, year:Int?): List<FinanceRecord> {
