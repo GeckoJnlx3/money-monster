@@ -248,11 +248,13 @@ class FinanceActivity : ComponentActivity() {
 
             if (currentIncome > target){
                 val totalXp = currentIncome/target
-//                Log.d("totalxp", totalXp.toString())
                 currentIncome = currentIncome%target
-//                Log.d("currentIncome", currentIncome.toString())
 
                 activeMonster.upTick += totalXp.toInt()
+
+                if (activeMonster.upTick > activeMonster.reqExp){
+                    activeMonster.level += (totalXp/activeMonster.reqExp).toInt()
+                }
 
                 val editor = sharedPref.edit()
                 editor.putFloat("CURRENT_INCOME", (currentIncome).toFloat())

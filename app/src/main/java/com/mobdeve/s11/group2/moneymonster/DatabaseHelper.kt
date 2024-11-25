@@ -116,6 +116,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         contentValues.put(COL_NAME, monster.name)
         contentValues.put(COL_STAT_SAVED, monster.statSaved)
         contentValues.put(COL_STAT_SPENT, monster.statSpent)
+        contentValues.put(COL_UP_TICK, monster.upTick)
         contentValues.put(COL_LEVEL, monster.level)
 
         return db.update(
