@@ -22,6 +22,9 @@ class SettingsActivity : ComponentActivity() {
         const val LIMIT = "LIMIT"
         const val TIME = "TIME"
 
+        val CURRENCY_LIST = arrayOf("PHP", "USD", "EUR", "JPY", "GBP", "AUD")
+        val TIME_OPTIONS = arrayOf("Daily", "Monthly", "Yearly")
+
         const val PREFERENCE_FILE = "com.mobdeve.s11.group2.moneymonster.PREFERENCE_FILE_KEY"
     }
 
@@ -31,49 +34,47 @@ class SettingsActivity : ComponentActivity() {
         setContentView(binding.root)
 
         val currencySpinner: Spinner = binding.currencySpnr
-        val currencies = arrayOf("PHP", "USD", "EUR", "JPY", "GBP", "AUD")
-        val currencyAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, currencies)
+        val currencyAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, CURRENCY_LIST)
         currencyAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         currencySpinner.adapter = currencyAdapter
 
         val sharedPref = getSharedPreferences(PREFERENCE_FILE, Context.MODE_PRIVATE)
         val savedCurrency = sharedPref.getString(CURRENCY, "PHP")
-        val selectedCurrencyPosition = currencies.indexOf(savedCurrency)
+        val selectedCurrencyPosition = CURRENCY_LIST.indexOf(savedCurrency)
         if (selectedCurrencyPosition >= 0) {
             currencySpinner.setSelection(selectedCurrencyPosition)
         }
 
         val timeSpinner: Spinner = binding.timeSpnr
-        val timeOptions = arrayOf("Daily", "Weekly", "Monthly", "Yearly")
-        val timeAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, timeOptions)
+        val timeAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, TIME_OPTIONS)
         timeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         timeSpinner.adapter = timeAdapter
 
         val savedTime = sharedPref.getString(TIME, "Daily")
-        val selectedTimePosition = timeOptions.indexOf(savedTime)
+        val selectedTimePosition = TIME_OPTIONS.indexOf(savedTime)
         if (selectedTimePosition >= 0) {
             timeSpinner.setSelection(selectedTimePosition)
         }
 
         binding.saveTargetBtn.setOnClickListener {
-            val target = binding.setTarget.text.toString().toIntOrNull()
+            val target = binding.setTarget.text.toString().toDoubleOrNull()
             if (target != null) {
                 saveToPreferences(TARGET, target)
-                Toast.makeText(this, "Target set", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Target set to $target", Toast.LENGTH_SHORT).show()
                 binding.setTarget.text.clear()
             } else {
-                Toast.makeText(this, "Please enter a target", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Please enter a valid target (e.g., 500.00)", Toast.LENGTH_SHORT).show()
             }
         }
 
         binding.expenseLimitBtn.setOnClickListener {
-            val limit = binding.setLimit.text.toString().toIntOrNull()
+            val limit = binding.setLimit.text.toString().toDoubleOrNull()
             if (limit != null) {
                 saveToPreferences(LIMIT, limit)
-                Toast.makeText(this, "Limit set", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Limit set to $limit", Toast.LENGTH_SHORT).show()
                 binding.setLimit.text.clear()
             } else {
-                Toast.makeText(this, "Please enter a limit", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Please enter a valid limit (e.g., 300.00)", Toast.LENGTH_SHORT).show()
             }
         }
 
@@ -103,10 +104,10 @@ class SettingsActivity : ComponentActivity() {
         }
     }
 
-    private fun saveToPreferences(key: String, value: Int) {
+    private fun saveToPreferences(key: String, value: Double) {
         val sharedPref = getSharedPreferences(PREFERENCE_FILE, Context.MODE_PRIVATE)
         with(sharedPref.edit()) {
-            putInt(key, value)
+            putFloat(key, value.toFloat()) // Store double as float due to SharedPreferences limitation
             apply()
         }
     }

@@ -1,6 +1,9 @@
 package com.mobdeve.s11.group2.moneymonster.finance
 
 import android.app.DatePickerDialog
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
 import android.content.res.ColorStateList
 import android.os.Bundle
 import android.util.Log
@@ -12,13 +15,15 @@ import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.ComponentActivity
-import androidx.compose.ui.text.font.FontVariation
 import androidx.core.content.ContextCompat
 import com.mobdeve.s11.group2.moneymonster.DatabaseHelper
+import com.mobdeve.s11.group2.moneymonster.MonsterDataHelper
 import com.mobdeve.s11.group2.moneymonster.R
 import com.mobdeve.s11.group2.moneymonster.SettingsActivity
 import com.mobdeve.s11.group2.moneymonster.databinding.FinanceBinding
+import com.mobdeve.s11.group2.moneymonster.monster.Monster
 import java.util.Calendar
+import java.util.Locale
 
 class FinanceActivity : ComponentActivity() {
 
@@ -45,6 +50,12 @@ class FinanceActivity : ComponentActivity() {
     )
 
     private var currency: String = "PHP"
+
+    private val statsUpdateReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            loadMonsterData()
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -91,26 +102,29 @@ class FinanceActivity : ComponentActivity() {
         updateUI()
     }
 
+    private fun loadMonsterData() {
+        val dbHelper = DatabaseHelper(this)
+        val db = dbHelper.readableDatabase
+
+        val activeMonster = MonsterDataHelper.getActiveMonster(db)
+
+        if (activeMonster != null) {
+            Log.d("FinanceActivity", "Monster data loaded: ${activeMonster.name}")
+        }
+    }
+
     private fun switchToExpense() {
         isLoggingExpense = true
-        logExpenseBtn.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this,
-            R.color.beige
-        )))
-        logIncomeBtn.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this,
-            R.color.brown_shadow
-        )))
+        logExpenseBtn.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.beige)))
+        logIncomeBtn.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.brown_shadow)))
         imageView.setImageResource(R.drawable.gwomp_baby)
         updateUI()
     }
 
     private fun switchToIncome() {
         isLoggingExpense = false
-        logExpenseBtn.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this,
-            R.color.brown_shadow
-        )))
-        logIncomeBtn.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this,
-            R.color.beige
-        )))
+        logExpenseBtn.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.brown_shadow)))
+        logIncomeBtn.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.beige)))
         imageView.setImageResource(R.drawable.gwomp_baby)
         updateUI()
     }
@@ -130,6 +144,22 @@ class FinanceActivity : ComponentActivity() {
         }
     }
 
+    private fun updateProgress(amount: Double, isExpense: Boolean) {
+        val sharedPref = getSharedPreferences(SettingsActivity.PREFERENCE_FILE, MODE_PRIVATE)
+        val editor = sharedPref.edit()
+
+        val currentExpense = sharedPref.getFloat("CURRENT_EXPENSE", 0f).toDouble()
+        val currentIncome = sharedPref.getFloat("CURRENT_INCOME", 0f).toDouble()
+
+        if (isExpense) {
+            editor.putFloat("CURRENT_EXPENSE", (currentExpense + amount).toFloat())
+        } else {
+            editor.putFloat("CURRENT_INCOME", (currentIncome + amount).toFloat())
+        }
+
+        editor.apply()
+    }
+
     private fun saveTransaction() {
         val amount = amountInput.text.toString().toDoubleOrNull()
         val description = memoInput.text.toString()
@@ -139,6 +169,7 @@ class FinanceActivity : ComponentActivity() {
             Toast.makeText(this, "Please fill in all fields correctly", Toast.LENGTH_SHORT).show()
             return
         }
+
 
         val date = try {
             DatabaseHelper.DATE_FORMAT.parse(dateText)
@@ -167,7 +198,12 @@ class FinanceActivity : ComponentActivity() {
         val result = dbHelper.recordExpense(record)
 
         if (result != -1L) {
-            updateProgress(amount, isLoggingExpense) // Update progress based on transaction type
+            updateProgress(amount, isLoggingExpense)
+            updateMonsterStats(amount, isLoggingExpense)
+            //TODO: update money saved/spent. update xp if goal is reached
+
+            val intent = Intent("com.mobdeve.s11.group2.moneymonster.UPDATE_MONSTER_STATS")
+            sendBroadcast(intent)
 
             Toast.makeText(this, "Transaction saved successfully.", Toast.LENGTH_SHORT).show()
         } else {
@@ -190,22 +226,80 @@ class FinanceActivity : ComponentActivity() {
         Toast.makeText(this, "$transactionType logged: $currency $amount", Toast.LENGTH_SHORT).show()
     }
 
-    private fun updateProgress(amount: Double, isExpense: Boolean) {
-        val sharedPref = getSharedPreferences(SettingsActivity.PREFERENCE_FILE,
-            MODE_PRIVATE
-        )
-        val editor = sharedPref.edit()
+    private fun updateMonsterStats(amount: Double, isExpense: Boolean) {
+        val dbHelper = DatabaseHelper(this)
+        val db = dbHelper.readableDatabase
 
-        val currentExpense = sharedPref.getFloat("CURRENT_EXPENSE", 0f).toDouble()
-        val currentIncome = sharedPref.getFloat("CURRENT_INCOME", 0f).toDouble()
+        val activeMonster = MonsterDataHelper.getActiveMonster(db)
 
-        if (isExpense) {
-            editor.putFloat("CURRENT_EXPENSE", (currentExpense + amount).toFloat())
-        } else {
-            editor.putFloat("CURRENT_INCOME", (currentIncome + amount).toFloat())
+        if (activeMonster != null) {
+            if (isExpense) {
+                activeMonster.statSpent += amount
+            } else {
+                activeMonster.statSaved += amount
+            }
+
+            val sharedPref = getSharedPreferences(SettingsActivity.PREFERENCE_FILE, MODE_PRIVATE)
+            var currentIncome = sharedPref.getFloat("CURRENT_INCOME", 0f).toDouble()
+            var currentExpense = sharedPref.getFloat("CURRENT_EXPENSE", 0f).toDouble()
+
+            val target = sharedPref.getFloat(SettingsActivity.TARGET, 500.0.toFloat())
+            val limit = sharedPref.getFloat(SettingsActivity.LIMIT, 300.0.toFloat())
+
+            if (currentIncome > target){
+                val totalXp = currentIncome/target
+//                Log.d("totalxp", totalXp.toString())
+                currentIncome = currentIncome%target
+//                Log.d("currentIncome", currentIncome.toString())
+
+                activeMonster.upTick += totalXp.toInt()
+
+                val editor = sharedPref.edit()
+                editor.putFloat("CURRENT_INCOME", (currentIncome).toFloat())
+                editor.apply()
+            }
+
+
+            if (shouldEvolve(activeMonster)) {
+                evolveMonster(activeMonster)
+            }
+
+            val result = dbHelper.updateMonster(activeMonster)
+            if (result > 0) {
+                Log.d("FinanceActivity", "Monster stats updated successfully.")
+            } else {
+                Log.e("FinanceActivity", "Failed to update monster stats.")
+            }
+        }
+    }
+
+    private fun shouldEvolve(monster: Monster): Boolean {
+        return when (monster.stage) {
+            "baby" -> monster.level >= 5
+            "teen" -> monster.level >= 15
+            else -> false
+        }
+    }
+
+    private fun evolveMonster(monster: Monster) {
+        val dbHelper = DatabaseHelper(this)
+        val db = dbHelper.writableDatabase
+
+        val newLevel = when (monster.stage) {
+            "baby" -> 5
+            "teen" -> 15
+            else -> return
         }
 
-        editor.apply()
+        monster.level = newLevel
+        monster.stage = when (newLevel) {
+            5 -> "teen"
+            15 -> "adult"
+            else -> monster.stage
+        }
+
+        MonsterDataHelper.updateMonsterLevel(db, monster.monsterId, newLevel)
+        Log.d("FinanceActivity", "Monster leveled up to ${monster.stage}.")
     }
 
     private fun loadCurrency() {
@@ -224,8 +318,8 @@ class FinanceActivity : ComponentActivity() {
         val datePickerDialog = DatePickerDialog(
             this, R.style.DatePickerDialogStyle,
             { _, selectedYear, selectedMonth, selectedDay ->
-                val formattedDate = String.format(
-                    "%02d-%02d-%04d", selectedDay, selectedMonth + 1, selectedYear
+                val formattedDate = String.format(Locale.getDefault(),
+                    "%04d-%02d-%02d",  selectedYear, selectedMonth + 1,selectedDay
                 )
                 dateEt.setText(formattedDate)
             },

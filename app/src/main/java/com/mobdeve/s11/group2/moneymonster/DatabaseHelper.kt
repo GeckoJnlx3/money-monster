@@ -2,6 +2,7 @@ package com.mobdeve.s11.group2.moneymonster
 
 import android.content.ContentValues
 import android.content.Context
+import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import android.util.Log
@@ -15,7 +16,7 @@ import java.util.Locale
 class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
     companion object {
         private const val DATABASE_NAME = "moneymonster.db"
-        private const val DATABASE_VERSION = 7
+        private const val DATABASE_VERSION = 9
 
         const val FINANCE_TABLE_NAME = "finance"
         const val COL_FINANCE_ID = "record_id"
@@ -42,7 +43,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         const val COL_UNLOCKED = "unlocked"
         const val COL_ON_FIELD = "on_field"
 
-        val DATE_FORMAT = SimpleDateFormat("dd-MM-yyyy", Locale("en-PH"))
+        val DATE_FORMAT = SimpleDateFormat("yyyy-MM-dd", Locale("en-PH"))
     }
 
     private val CREATE_FINANCE_TABLE = """
@@ -109,10 +110,48 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         return result
     }
 
-    fun getAllRecords(): List<FinanceRecord> {
+    fun updateMonster(monster: Monster): Long {
+        val db = this.writableDatabase
+        val contentValues = ContentValues()
+        contentValues.put(COL_NAME, monster.name)
+        contentValues.put(COL_STAT_SAVED, monster.statSaved)
+        contentValues.put(COL_STAT_SPENT, monster.statSpent)
+        contentValues.put(COL_LEVEL, monster.level)
+
+        return db.update(
+            MONSTER_TABLE_NAME,
+            contentValues,
+            "$COL_MONSTER_ID = ?",
+            arrayOf(monster.monsterId.toString())
+        ).toLong()
+    }
+
+    fun updateMonsterStatSaved(amount: Double) {
+        val db = writableDatabase
+        db.execSQL("""
+            UPDATE $MONSTER_TABLE_NAME
+            SET $COL_STAT_SAVED = $COL_STAT_SAVED + ?
+            WHERE $COL_ON_FIELD = 1
+        """, arrayOf(amount))
+        Log.d("DatabaseHelper", "Updated stat_saved by $amount for active monster.")
+    }
+
+    fun updateMonsterStatSpent(amount: Double) {
+        val db = writableDatabase
+        db.execSQL("""
+            UPDATE $MONSTER_TABLE_NAME
+            SET $COL_STAT_SPENT = $COL_STAT_SPENT + ?
+            WHERE $COL_ON_FIELD = 1
+        """, arrayOf(amount))
+        Log.d("DatabaseHelper", "Updated stat_spent by $amount for active monster.")
+    }
+
+    fun getAllRecordsInDate(day: Int?, month: Int?, year: Int?): List<FinanceRecord> {
         val records = mutableListOf<FinanceRecord>()
         val db = readableDatabase
-        val cursor = db.rawQuery("SELECT * FROM $FINANCE_TABLE_NAME", null)
+
+        val cursor = db.rawQuery("SELECT * FROM $FINANCE_TABLE_NAME WHERE $COL_DATE = ?",
+            arrayOf("$year-$month-$day"))
 
         if (cursor.moveToFirst()) {
             do {
@@ -139,6 +178,72 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         return records
     }
 
+    fun getAllRecords(month:Int?, year:Int?): List<FinanceRecord> {
+        val records = mutableListOf<FinanceRecord>()
+        val db = readableDatabase
+        val cursor = generateRecordQuery(db, month,year)
+
+        if (cursor.moveToFirst()) {
+            do {
+                val id = cursor.getInt(cursor.getColumnIndexOrThrow(COL_FINANCE_ID))
+                val type = cursor.getString(cursor.getColumnIndexOrThrow(COL_TYPE))
+                val dateString = cursor.getString(cursor.getColumnIndexOrThrow(COL_DATE))
+                val currency = cursor.getString(cursor.getColumnIndexOrThrow(COL_CUR))
+                val amount = cursor.getDoubleOrNull(cursor.getColumnIndexOrThrow(COL_AMT))
+                val category = cursor.getString(cursor.getColumnIndexOrThrow(COL_CAT))
+                val description = cursor.getString(cursor.getColumnIndexOrThrow(COL_DESC))
+
+                val date = try {
+                    DATE_FORMAT.parse(dateString)
+                } catch (e: Exception) {
+                    null
+                }
+
+                if (date != null) {
+                    records.add(FinanceRecord(id, type, date, currency, amount.toString(), category, description))
+                }
+            } while (cursor.moveToNext())
+        }
+        cursor.close()
+        return records
+    }
+
+    private fun generateRecordQuery(db: SQLiteDatabase, month: Int?, year: Int?): Cursor {
+        if (year == null) {
+            return db.rawQuery("SELECT * FROM $FINANCE_TABLE_NAME ORDER BY $COL_DATE ASC", null)
+        } else {
+            val startDate: String
+            val endDate: String
+
+            if (month != null) {
+                val formattedMonth = String.format("%02d", month)
+                val lastDayOfMonth = getLastDayOfMonthYear(month, year)
+
+                startDate = "$year-$formattedMonth-01"
+                endDate = "$year-$formattedMonth-${String.format("%02d", lastDayOfMonth)}"
+            } else {
+                startDate = "$year-01-01"
+                endDate = "$year-12-31"
+            }
+
+            return db.rawQuery(
+                "SELECT * FROM $FINANCE_TABLE_NAME WHERE $COL_DATE BETWEEN ? AND ? ORDER BY $COL_DATE ASC",
+                arrayOf(startDate, endDate)
+            )
+        }
+    }
+
+
+
+    private fun getLastDayOfMonthYear(month:Int, year:Int): Int{
+        when (month){
+            1, 3, 5, 7, 8, 10,12 -> return 31
+            4, 6, 9, 11 -> return 30
+            2 -> return if (year % 4 == 0) 29 else 28
+            else -> return -1
+        }
+    }
+
     fun getAllMonsters(): List<Monster> {
         val monsters = mutableListOf<Monster>()
         val db = readableDatabase
@@ -155,8 +260,8 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
                 val upTick = cursor.getInt(cursor.getColumnIndexOrThrow(COL_UP_TICK))
                 val reqExp = cursor.getInt(cursor.getColumnIndexOrThrow(COL_REQ_EXP))
                 val level = cursor.getInt(cursor.getColumnIndexOrThrow(COL_LEVEL))
-                val statSaved = cursor.getInt(cursor.getColumnIndexOrThrow(COL_STAT_SAVED))
-                val statSpent = cursor.getInt(cursor.getColumnIndexOrThrow(COL_STAT_SPENT))
+                val statSaved = cursor.getDouble(cursor.getColumnIndexOrThrow(COL_STAT_SAVED))
+                val statSpent = cursor.getDouble(cursor.getColumnIndexOrThrow(COL_STAT_SPENT))
                 val description = cursor.getString(cursor.getColumnIndexOrThrow(COL_DESCRIPTION))
                 val unlocked = cursor.getInt(cursor.getColumnIndexOrThrow(COL_UNLOCKED)) == 1
                 val onField = cursor.getInt(cursor.getColumnIndexOrThrow(COL_ON_FIELD)) == 1
@@ -168,8 +273,10 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
                 }
 
                 if (adoptionDate != null) {
-                    monsters.add(Monster(monsterId, species, name, image,
-                        adoptionDate, stage, upTick, reqExp, level, statSaved, statSpent, description, unlocked, onField))
+                    monsters.add(Monster(
+                        monsterId, species, name, image,
+                        Date(adoptionDate.time), stage, upTick, reqExp, level, statSaved, statSpent, description, unlocked, onField
+                    ))
                 }
             } while (cursor.moveToNext())
         } else {
@@ -179,4 +286,5 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         cursor?.close()
         return monsters
     }
+
 }
