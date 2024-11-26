@@ -53,6 +53,7 @@
 
             <ImageView
                 android:id="@+id/monsterStatImage"
+
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/gwomp_baby" />
@@ -79,7 +80,7 @@
 
                     <TextView
                         android:id="@+id/levelText"
-                        android:layout_width="2dp"
+out_width="2dp"
                         android:layout_height="50dp"
                         android:layout_weight="1"
                         android:text="Lvl" />
@@ -124,6 +125,7 @@
 
                     <TextView
                         android:id="@+id/moneySavedText"
+
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
