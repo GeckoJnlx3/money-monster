@@ -110,6 +110,52 @@ object MonsterDataHelper {
         }
     }
 
+    fun updateMonsterStageAndImage(db: SQLiteDatabase, monsterId: Int, newStage: String, newName: String, newImage: Int) {
+        val values = ContentValues().apply {
+            put(COL_STAGE, newStage)
+            put(COL_NAME, newName)
+            put(COL_IMAGE, newImage)
+        }
+
+        db.update(MONSTER_TABLE_NAME, values, "$COL_MONSTER_ID = ?", arrayOf(monsterId.toString()))
+    }
+
+    fun getMonsterBySpeciesAndStage(db: SQLiteDatabase, species: String, stage: String): Monster? {
+        val cursor = db.query(
+            MONSTER_TABLE_NAME,
+            null,
+            "$COL_SPECIES = ? AND $COL_STAGE = ?",
+            arrayOf(species, stage),
+            null,
+            null,
+            null,
+            "1"
+        )
+
+        var monster: Monster? = null
+        if (cursor != null && cursor.moveToFirst()) {
+            monster = Monster(
+                monsterId = cursor.getInt(cursor.getColumnIndexOrThrow(COL_MONSTER_ID)),
+                species = cursor.getString(cursor.getColumnIndexOrThrow(COL_SPECIES)),
+                name = cursor.getString(cursor.getColumnIndexOrThrow(COL_NAME)),
+                image = cursor.getInt(cursor.getColumnIndexOrThrow(COL_IMAGE)),
+                adoptionDate = Date(cursor.getLong(cursor.getColumnIndexOrThrow(COL_ADOPTION_DATE))),
+                stage = cursor.getString(cursor.getColumnIndexOrThrow(COL_STAGE)),
+                upTick = cursor.getInt(cursor.getColumnIndexOrThrow(COL_UP_TICK)),
+                reqExp = cursor.getInt(cursor.getColumnIndexOrThrow(COL_REQ_EXP)),
+                level = cursor.getInt(cursor.getColumnIndexOrThrow(COL_LEVEL)),
+                statSaved = cursor.getDouble(cursor.getColumnIndexOrThrow(COL_STAT_SAVED)),
+                statSpent = cursor.getDouble(cursor.getColumnIndexOrThrow(COL_STAT_SPENT)),
+                description = cursor.getString(cursor.getColumnIndexOrThrow(COL_DESCRIPTION)),
+                unlocked = cursor.getInt(cursor.getColumnIndexOrThrow(COL_UNLOCKED)) == 1,
+                onField = cursor.getInt(cursor.getColumnIndexOrThrow(COL_ON_FIELD)) == 1
+            )
+        }
+
+        cursor?.close()
+        return monster
+    }
+
     fun getActiveMonster(db: SQLiteDatabase): Monster? {
         val cursor = db.query(
             MONSTER_TABLE_NAME,

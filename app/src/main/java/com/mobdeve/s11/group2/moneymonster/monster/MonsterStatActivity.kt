@@ -71,12 +71,10 @@ class MonsterStatActivity : ComponentActivity() {
 
     private fun loadMonsterData() {
         val db = databaseHelper.readableDatabase
-
         val activeMonster = MonsterDataHelper.getActiveMonster(db)
 
         if (activeMonster != null) {
             monsterNameText.text = activeMonster.name
-
             moneySavedValue.text = FormatUtils.formatAmount(activeMonster.statSaved, currency)
             moneySpentValue.text = FormatUtils.formatAmount(activeMonster.statSpent, currency)
             adoptedOnValue.text = "${activeMonster.adoptionDate}"
@@ -84,12 +82,7 @@ class MonsterStatActivity : ComponentActivity() {
             levelProgressText.text = "EXP ${activeMonster.upTick}/${activeMonster.reqExp}"
             levelProgressBar.progress = activeMonster.level
 
-//            monsterImageView.setImageResource(
-//                if (activeMonster.statSaved >= activeMonster.levelUpThreshold)
-//                    R.drawable.level_up_monster_image
-//                else
-//                    R.drawable.normal_monster_image
-//            )
+            monsterImageView.setImageResource(activeMonster.image) // Updated to reflect the new image
         }
     }
 

@@ -287,22 +287,26 @@ class FinanceActivity : ComponentActivity() {
         val dbHelper = DatabaseHelper(this)
         val db = dbHelper.writableDatabase
 
-        val newLevel = when (monster.stage) {
-            "baby" -> 5
-            "teen" -> 15
+        val newStage = when (monster.stage) {
+            "baby" -> "teen"
+            "teen" -> "adult"
             else -> return
         }
 
-        monster.level = newLevel
-        monster.stage = when (newLevel) {
-            5 -> "teen"
-            15 -> "adult"
-            else -> monster.stage
-        }
+        monster.stage = newStage
 
-        MonsterDataHelper.updateMonsterLevel(db, monster.monsterId, newLevel)
-        Log.d("FinanceActivity", "Monster leveled up to ${monster.stage}.")
+        val evolvedMonster = MonsterDataHelper.getMonsterBySpeciesAndStage(db, monster.species, newStage)
+
+        if (evolvedMonster != null) {
+            monster.name = evolvedMonster.name
+            monster.image = evolvedMonster.image
+            monster.unlocked = true
+
+            MonsterDataHelper.updateMonsterStageAndImage(db, monster.monsterId, newStage, evolvedMonster.name, evolvedMonster.image)
+            Log.d("FinanceActivity", "Monster evolved to ${monster.name} (Stage: $newStage).")
+        }
     }
+
 
     private fun loadCurrency() {
         val sharedPref = getSharedPreferences(SettingsActivity.PREFERENCE_FILE, MODE_PRIVATE)
