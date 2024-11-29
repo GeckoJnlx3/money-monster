@@ -16,5 +16,5 @@ data class Monster(
     var statSpent: Double,
     val description: String,
     var unlocked: Boolean,
-    val onField: Boolean
+    var onField: Boolean
 )

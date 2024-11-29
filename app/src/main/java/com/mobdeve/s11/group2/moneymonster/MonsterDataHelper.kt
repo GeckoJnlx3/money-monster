@@ -121,15 +121,14 @@ object MonsterDataHelper {
     }
 
     fun getMonsterBySpeciesAndStage(db: SQLiteDatabase, species: String, stage: String): Monster? {
-        val cursor = db.query(
+        val cursor =  db.query(
             MONSTER_TABLE_NAME,
-            null,
+            arrayOf(COL_MONSTER_ID, COL_SPECIES, COL_NAME, COL_IMAGE, COL_ADOPTION_DATE, COL_STAGE, COL_UP_TICK, COL_REQ_EXP, COL_LEVEL, COL_STAT_SAVED, COL_STAT_SPENT, COL_DESCRIPTION, COL_UNLOCKED, COL_ON_FIELD),
             "$COL_SPECIES = ? AND $COL_STAGE = ?",
             arrayOf(species, stage),
             null,
             null,
-            null,
-            "1"
+            null
         )
 
         var monster: Monster? = null

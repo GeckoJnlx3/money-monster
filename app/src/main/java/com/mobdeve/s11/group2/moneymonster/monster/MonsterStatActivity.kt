@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.util.Log
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
@@ -66,12 +67,14 @@ class MonsterStatActivity : ComponentActivity() {
 
     private fun loadCurrency() {
         val sharedPref: SharedPreferences = getSharedPreferences(SettingsActivity.PREFERENCE_FILE, Context.MODE_PRIVATE)
-        currency = sharedPref.getString(SettingsActivity.CURRENCY, "PHP") ?: "PHP"  // Default to "PHP" if not set
+        currency = sharedPref.getString(SettingsActivity.CURRENCY, "PHP") ?: "PHP"
     }
 
     private fun loadMonsterData() {
         val db = databaseHelper.readableDatabase
         val activeMonster = MonsterDataHelper.getActiveMonster(db)
+
+        Log.d("MonsterStatActivity", "Active Monster: $activeMonster")
 
         if (activeMonster != null) {
             monsterNameText.text = activeMonster.name
@@ -80,9 +83,9 @@ class MonsterStatActivity : ComponentActivity() {
             adoptedOnValue.text = "${activeMonster.adoptionDate}"
             levelNumberText.text = "${activeMonster.level}"
             levelProgressText.text = "EXP ${activeMonster.upTick}/${activeMonster.reqExp}"
-            levelProgressBar.progress = activeMonster.level
-
-            monsterImageView.setImageResource(activeMonster.image) // Updated to reflect the new image
+            levelProgressBar.progress = activeMonster.upTick
+            levelProgressBar.max = activeMonster.reqExp
+            monsterImageView.setImageResource(activeMonster.image)
         }
     }
 

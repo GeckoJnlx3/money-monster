@@ -17,6 +17,10 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.core.content.ContextCompat
 import com.mobdeve.s11.group2.moneymonster.DatabaseHelper
+import com.mobdeve.s11.group2.moneymonster.DatabaseHelper.Companion.COL_MONSTER_ID
+import com.mobdeve.s11.group2.moneymonster.DatabaseHelper.Companion.COL_SPECIES
+import com.mobdeve.s11.group2.moneymonster.DatabaseHelper.Companion.COL_STAGE
+import com.mobdeve.s11.group2.moneymonster.DatabaseHelper.Companion.MONSTER_TABLE_NAME
 import com.mobdeve.s11.group2.moneymonster.MonsterDataHelper
 import com.mobdeve.s11.group2.moneymonster.R
 import com.mobdeve.s11.group2.moneymonster.SettingsActivity
@@ -253,6 +257,7 @@ class FinanceActivity : ComponentActivity() {
                 activeMonster.upTick += totalXp.toInt()
 
                 if (activeMonster.upTick > activeMonster.reqExp){
+                    activeMonster.upTick = activeMonster.upTick%activeMonster.reqExp
                     activeMonster.level += (totalXp/activeMonster.reqExp).toInt()
                 }
 
@@ -283,30 +288,35 @@ class FinanceActivity : ComponentActivity() {
         }
     }
 
-    private fun evolveMonster(monster: Monster) {
+    private fun evolveMonster(activeMonster: Monster) {
         val dbHelper = DatabaseHelper(this)
         val db = dbHelper.writableDatabase
 
-        val newStage = when (monster.stage) {
+        val newStage = when (activeMonster.stage) {
             "baby" -> "teen"
             "teen" -> "adult"
             else -> return
         }
 
-        monster.stage = newStage
+        val evolvedMonster = MonsterDataHelper.getMonsterBySpeciesAndStage(db, activeMonster.species, newStage)
 
-        val evolvedMonster = MonsterDataHelper.getMonsterBySpeciesAndStage(db, monster.species, newStage)
+        Log.d("FinanceActivity", "Evolved from ${activeMonster.name} (Stage: ${activeMonster.stage}).")
 
         if (evolvedMonster != null) {
-            monster.name = evolvedMonster.name
-            monster.image = evolvedMonster.image
-            monster.unlocked = true
+            activeMonster.onField = false
+            activeMonster.unlocked = true
 
-            MonsterDataHelper.updateMonsterStageAndImage(db, monster.monsterId, newStage, evolvedMonster.name, evolvedMonster.image)
-            Log.d("FinanceActivity", "Monster evolved to ${monster.name} (Stage: $newStage).")
+            evolvedMonster.onField = true
+            evolvedMonster.unlocked = true
+            evolvedMonster.upTick = activeMonster.upTick
+            evolvedMonster.level = activeMonster.level
+
+            dbHelper.updateMonster(evolvedMonster)
+            dbHelper.updateMonster(activeMonster)
+
+            Log.d("FinanceActivity", "Monster evolved to ${evolvedMonster.name} (Stage: $newStage).")
         }
     }
-
 
     private fun loadCurrency() {
         val sharedPref = getSharedPreferences(SettingsActivity.PREFERENCE_FILE, MODE_PRIVATE)
