@@ -16,7 +16,7 @@ import java.util.Locale
 class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
     companion object {
         private const val DATABASE_NAME = "moneymonster.db"
-        private const val DATABASE_VERSION = 9
+        private const val DATABASE_VERSION = 10
 
         const val FINANCE_TABLE_NAME = "finance"
         const val COL_FINANCE_ID = "record_id"

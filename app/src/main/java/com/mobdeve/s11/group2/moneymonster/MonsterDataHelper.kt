@@ -60,9 +60,9 @@ object MonsterDataHelper {
     fun updateMonsterLevelProgress(db: SQLiteDatabase, increment: Int) {
         db.execSQL(
             """
-        UPDATE monsters 
-        SET level_progress = level_progress + ? 
-        WHERE active = 1
+        UPDATE $MONSTER_TABLE_NAME 
+        SET $COL_UP_TICK = $COL_UP_TICK + ? 
+        WHERE $COL_ON_FIELD = 1
         """,
             arrayOf(increment)
         )
@@ -100,23 +100,23 @@ object MonsterDataHelper {
 
     fun loadMonsterData(db: SQLiteDatabase): MonsterData {
         val cursor = db.query(
-            "monsters", // Assuming the table is named "monsters"
+            MONSTER_TABLE_NAME, // Assuming the table is named "monsters"
             null, // Fetch all columns
-            "active = ?", arrayOf("1"), // Assuming 'active' column indicates the active monster
+            "$COL_ON_FIELD = ?", arrayOf("1"), // Assuming 'active' column indicates the active monster
             null, null, null
         )
 
         cursor.use {
             if (it.moveToFirst()) {
                 return MonsterData(
-                    level = it.getInt(it.getColumnIndexOrThrow("level")),
-                    levelProgress = it.getInt(it.getColumnIndexOrThrow("level_progress")),
-                    maxLevelProgress = it.getInt(it.getColumnIndexOrThrow("max_level_progress")),
-                    name = it.getString(it.getColumnIndexOrThrow("name")),
-                    moneySaved = it.getFloat(it.getColumnIndexOrThrow("money_saved")),
-                    moneySpent = it.getFloat(it.getColumnIndexOrThrow("money_spent")),
-                    adoptedOn = it.getString(it.getColumnIndexOrThrow("adopted_on")),
-                    imageResId = it.getInt(it.getColumnIndexOrThrow("image_res_id"))
+                    level = it.getInt(it.getColumnIndexOrThrow(COL_LEVEL)),
+                    levelProgress = it.getInt(it.getColumnIndexOrThrow(COL_UP_TICK)),
+                    maxLevelProgress = it.getInt(it.getColumnIndexOrThrow(COL_REQ_EXP)),
+                    name = it.getString(it.getColumnIndexOrThrow(COL_NAME)),
+                    moneySaved = it.getFloat(it.getColumnIndexOrThrow(COL_STAT_SAVED)),
+                    moneySpent = it.getFloat(it.getColumnIndexOrThrow(COL_STAT_SPENT)),
+                    adoptedOn = it.getString(it.getColumnIndexOrThrow(COL_ADOPTION_DATE)),
+                    imageResId = it.getInt(it.getColumnIndexOrThrow(COL_IMAGE))
                 )
             } else {
                 throw IllegalStateException("No active monster found")
