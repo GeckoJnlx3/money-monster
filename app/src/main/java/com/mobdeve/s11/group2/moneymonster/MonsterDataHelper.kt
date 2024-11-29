@@ -18,9 +18,8 @@ import com.mobdeve.s11.group2.moneymonster.DatabaseHelper.Companion.COL_STAT_SPE
 import com.mobdeve.s11.group2.moneymonster.DatabaseHelper.Companion.COL_DESCRIPTION
 import com.mobdeve.s11.group2.moneymonster.DatabaseHelper.Companion.COL_UNLOCKED
 import com.mobdeve.s11.group2.moneymonster.DatabaseHelper.Companion.COL_ON_FIELD
-
 import com.mobdeve.s11.group2.moneymonster.DatabaseHelper.Companion.DATE_FORMAT
-
+import com.mobdeve.s11.group2.moneymonster.monster.MonsterData
 import com.mobdeve.s11.group2.moneymonster.monster.Monster
 import java.sql.Date
 
@@ -58,6 +57,16 @@ object MonsterDataHelper {
             db?.insert(MONSTER_TABLE_NAME, null, values)
         }
     }
+    fun updateMonsterLevelProgress(db: SQLiteDatabase, increment: Int) {
+        db.execSQL(
+            """
+        UPDATE monsters 
+        SET level_progress = level_progress + ? 
+        WHERE active = 1
+        """,
+            arrayOf(increment)
+        )
+    }
 
     fun updateMonsterLevel(db: SQLiteDatabase, monsterId: Int, newLevel: Int) {
         val cursor = db.query(
@@ -86,6 +95,32 @@ object MonsterDataHelper {
             db.update(MONSTER_TABLE_NAME, values, "$COL_MONSTER_ID = ?", arrayOf(monsterId.toString()))
         } else {
             throw IllegalArgumentException("Species not found for monster with ID: $monsterId")
+        }
+    }
+
+    fun loadMonsterData(db: SQLiteDatabase): MonsterData {
+        val cursor = db.query(
+            "monsters", // Assuming the table is named "monsters"
+            null, // Fetch all columns
+            "active = ?", arrayOf("1"), // Assuming 'active' column indicates the active monster
+            null, null, null
+        )
+
+        cursor.use {
+            if (it.moveToFirst()) {
+                return MonsterData(
+                    level = it.getInt(it.getColumnIndexOrThrow("level")),
+                    levelProgress = it.getInt(it.getColumnIndexOrThrow("level_progress")),
+                    maxLevelProgress = it.getInt(it.getColumnIndexOrThrow("max_level_progress")),
+                    name = it.getString(it.getColumnIndexOrThrow("name")),
+                    moneySaved = it.getFloat(it.getColumnIndexOrThrow("money_saved")),
+                    moneySpent = it.getFloat(it.getColumnIndexOrThrow("money_spent")),
+                    adoptedOn = it.getString(it.getColumnIndexOrThrow("adopted_on")),
+                    imageResId = it.getInt(it.getColumnIndexOrThrow("image_res_id"))
+                )
+            } else {
+                throw IllegalStateException("No active monster found")
+            }
         }
     }
 

@@ -4,27 +4,27 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
-import android.widget.*
+import android.widget.Button
+import android.widget.ImageView
+import android.widget.ProgressBar
+import android.widget.TextView
+import android.view.View
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import com.mobdeve.s11.group2.moneymonster.databinding.ActivityMainBinding
 import com.mobdeve.s11.group2.moneymonster.history.HistoryActivity
 import com.mobdeve.s11.group2.moneymonster.finance.FinanceActivity
 import com.mobdeve.s11.group2.moneymonster.monsterpedia.MonsterpediaActivity
-import android.database.sqlite.SQLiteDatabase
-import com.mobdeve.s11.group2.moneymonster.DatabaseHelper
 import com.mobdeve.s11.group2.moneymonster.monster.MonsterStatActivity
 import java.text.SimpleDateFormat
-import java.util.*
-import android.view.View
+import java.util.Calendar
 
 class MainActivity : ComponentActivity() {
 
     private lateinit var targetProgressBar: ProgressBar
     private lateinit var limitProgressBar: ProgressBar
-    private lateinit var levelProgressBar: ProgressBar
-    private lateinit var targetProgressText: TextView
-    private lateinit var limitProgressText: TextView
-    private lateinit var levelProgressText: TextView
+    private lateinit var targetprogressText: TextView
+    private lateinit var limitprogressText: TextView
     private lateinit var settingsBtn: Button
     private lateinit var expenseGoal: View
     private lateinit var savingGoal: View
@@ -38,15 +38,9 @@ class MainActivity : ComponentActivity() {
 
     private var currency: String = "PHP"
 
-    private lateinit var db: SQLiteDatabase
-    private lateinit var databaseHelper: DatabaseHelper
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         bindView()
-
-        databaseHelper = DatabaseHelper(this)
-        db = databaseHelper.writableDatabase
 
         settingsBtn.setOnClickListener { openSettings() }
         expenseGoal.setOnClickListener { openSettings() }
@@ -95,8 +89,8 @@ class MainActivity : ComponentActivity() {
 
         targetProgressBar = viewBinding.targetProgressBar
         limitProgressBar = viewBinding.limitProgressBar
-        targetProgressText = viewBinding.targetProgressText
-        limitProgressText = viewBinding.limitProgressText
+        targetprogressText = viewBinding.targetProgressText
+        limitprogressText = viewBinding.limitProgressText
         historyBtn = viewBinding.historyBtn
         monsterpediaBtn = viewBinding.monsterpediaBtn
         settingsBtn = viewBinding.settingsBtn
@@ -106,11 +100,6 @@ class MainActivity : ComponentActivity() {
         savingGoal = viewBinding.savingGoal
         dateTodayTv = viewBinding.dateTodayTv
         monsterImageView = viewBinding.monsterImage
-
-        // Inflate the layout for monster stats
-        val monsterStatsView = layoutInflater.inflate(R.layout.monster_stats, null)
-        levelProgressBar = monsterStatsView.findViewById(R.id.levelProgressBar)
-        levelProgressText = monsterStatsView.findViewById(R.id.levelProgressText)
     }
 
     private fun loadAndDisplayProgress() {
@@ -123,17 +112,11 @@ class MainActivity : ComponentActivity() {
 
         targetProgressBar.max = target.toInt()
         targetProgressBar.progress = currentIncome.toInt()
-        targetProgressText.text = String.format("$currency %.2f/%.2f", currentIncome, target.toDouble())
+        targetprogressText.text = String.format("$currency %.2f/%.2f", currentIncome, target.toDouble())
 
         limitProgressBar.max = limit.toInt()
         limitProgressBar.progress = currentExpense.toInt()
-        limitProgressText.text = String.format("$currency %.2f/%.2f", currentExpense, limit.toDouble())
-
-        // Load monster progress from the database
-        val (targetProgress, levelProgress) = databaseHelper.getProgress()
-        targetProgressBar.progress = targetProgress
-        levelProgressBar.progress = levelProgress
-        levelProgressText.text = "${levelProgressBar.progress}/${levelProgressBar.max}"
+        limitprogressText.text = String.format("$currency %.2f/%.2f", currentExpense, limit.toDouble())
     }
 
     private fun loadAndDisplayCurrency() {
@@ -143,46 +126,32 @@ class MainActivity : ComponentActivity() {
         val currentIncome = sharedPref.getFloat("CURRENT_INCOME", 0f).toDouble()
         val currentExpense = sharedPref.getFloat("CURRENT_EXPENSE", 0f).toDouble()
 
-        targetProgressText.text = "$currency %.2f/%.2f".format(currentIncome, targetProgressBar.max.toDouble())
-        limitProgressText.text = "$currency %.2f/%.2f".format(currentExpense, limitProgressBar.max.toDouble())
+        targetprogressText.text = "$currency %.2f/%.2f".format(currentIncome, targetProgressBar.max.toDouble())
+        limitprogressText.text = "$currency %.2f/%.2f".format(currentExpense, limitProgressBar.max.toDouble())
     }
 
     private fun checkAndLevelUpMonster() {
-        val monsterId = 1
-        val gainedExp = 20
-        MonsterProgressionHelper.levelUpMonster(db, monsterId, gainedExp)
-    }
+        val sharedPref = getSharedPreferences(SettingsActivity.PREFERENCE_FILE, MODE_PRIVATE)
+        val target = sharedPref.getFloat(SettingsActivity.TARGET, 500.0f)
+        val currentIncome = sharedPref.getFloat("CURRENT_INCOME", 0f)
 
-    private fun updateProgress(increment: Int) {
-        val currentProgress = targetProgressBar.progress
-        val maxProgress = targetProgressBar.max
-
-        val newProgress = currentProgress + increment
-        targetProgressBar.progress = newProgress
-
-        // Update the progress text
-        targetProgressText.text = "$newProgress/$maxProgress"
-
-        // Check if the target is reached
-        if (newProgress >= maxProgress) {
-            targetProgressBar.progress = 0 // Reset target progress
-
-            // Increment level progress
-            val currentLevelProgress = levelProgressBar.progress
-            val levelMax = levelProgressBar.max
-
-            if (currentLevelProgress < levelMax) {
-                levelProgressBar.progress = currentLevelProgress + 1
-                levelProgressText.text = "${levelProgressBar.progress}/$levelMax"
-            }
-
-            // Save progress
-            saveProgress()
+        if (currentIncome >= target) {
+            resetSavingGoal()
+            notifyMonsterStatsUpdated()
         }
     }
 
-    private fun saveProgress() {
-        databaseHelper.updateProgress(targetProgressBar.progress, levelProgressBar.progress)
+    private fun resetSavingGoal() {
+        targetProgressBar.progress = 0
+        val sharedPref = getSharedPreferences(SettingsActivity.PREFERENCE_FILE, Context.MODE_PRIVATE)
+        sharedPref.edit().putFloat("CURRENT_INCOME", 0f).apply()
+        Toast.makeText(this, "Saving goal reached and reset!", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun notifyMonsterStatsUpdated() {
+        val intent = Intent("com.mobdeve.s11.group2.moneymonster.UPDATE_MONSTER_STATS")
+        intent.putExtra("LEVEL_PROGRESS_INCREMENT", 1)
+        sendBroadcast(intent)
     }
 
     private fun setDateToday() {

@@ -14,12 +14,10 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 
 class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
-
     companion object {
         private const val DATABASE_NAME = "moneymonster.db"
         private const val DATABASE_VERSION = 9
 
-        // Finance table constants
         const val FINANCE_TABLE_NAME = "finance"
         const val COL_FINANCE_ID = "record_id"
         const val COL_TYPE = "record_type"
@@ -29,7 +27,6 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         const val COL_CAT = "category"
         const val COL_DESC = "description"
 
-        // Monster table constants
         const val MONSTER_TABLE_NAME = "monster"
         const val COL_MONSTER_ID = "monster_id"
         const val COL_SPECIES = "species"
@@ -45,12 +42,6 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         const val COL_DESCRIPTION = "description"
         const val COL_UNLOCKED = "unlocked"
         const val COL_ON_FIELD = "on_field"
-
-        // Progress table constants
-        const val TABLE_PROGRESS = "progress"
-        const val COLUMN_ID = "id"
-        const val COLUMN_TARGET_PROGRESS = "target_progress"
-        const val COLUMN_LEVEL_PROGRESS = "level_progress"
 
         val DATE_FORMAT = SimpleDateFormat("yyyy-MM-dd", Locale("en-PH"))
     }
@@ -86,78 +77,239 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         );
     """.trimIndent()
 
-    private val CREATE_PROGRESS_TABLE = """
-        CREATE TABLE $TABLE_PROGRESS (
-            $COLUMN_ID INTEGER PRIMARY KEY AUTOINCREMENT,
-            $COLUMN_TARGET_PROGRESS INTEGER,
-            $COLUMN_LEVEL_PROGRESS INTEGER
-        );
-    """.trimIndent()
-
     override fun onCreate(db: SQLiteDatabase?) {
         db?.execSQL(CREATE_FINANCE_TABLE)
         db?.execSQL(CREATE_MONSTER_TABLE)
-        db?.execSQL(CREATE_PROGRESS_TABLE)
-
         MonsterDataHelper.populateMonsterTable(db)
-
-        // Initialize the progress table with default values
-        val defaultValues = ContentValues().apply {
-            put(COLUMN_TARGET_PROGRESS, 0)
-            put(COLUMN_LEVEL_PROGRESS, 0)
-        }
-        db?.insert(TABLE_PROGRESS, null, defaultValues)
     }
 
     override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
         Log.d("DatabaseHelper", "Database upgraded from version $oldVersion to $newVersion")
         db?.execSQL("DROP TABLE IF EXISTS $FINANCE_TABLE_NAME")
         db?.execSQL("DROP TABLE IF EXISTS $MONSTER_TABLE_NAME")
-        db?.execSQL("DROP TABLE IF EXISTS $TABLE_PROGRESS")
         onCreate(db)
     }
 
-    // Methods for progress table
-    fun getProgress(): Pair<Int, Int> {
-        val db = readableDatabase
-        val cursor = db.query(TABLE_PROGRESS, null, null, null, null, null, null)
-        return if (cursor.moveToFirst()) {
-            val targetProgress = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_TARGET_PROGRESS))
-            val levelProgress = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_LEVEL_PROGRESS))
-            cursor.close()
-            Pair(targetProgress, levelProgress)
-        } else {
-            cursor.close()
-            Pair(0, 0) // Default values
-        }
-    }
-
-    fun updateProgress(targetProgress: Int, levelProgress: Int) {
+    fun recordExpense(record: FinanceRecord): Long {
         val db = writableDatabase
         val values = ContentValues().apply {
-            put(COLUMN_TARGET_PROGRESS, targetProgress)
-            put(COLUMN_LEVEL_PROGRESS, levelProgress)
+            put(COL_TYPE, record.type)
+            put(COL_DATE, DATE_FORMAT.format(record.date))
+            put(COL_CUR, record.currency)
+            put(COL_AMT, record.amount?.toDoubleOrNull())
+            put(COL_CAT, record.category)
+            put(COL_DESC, record.description)
         }
-        db.update(TABLE_PROGRESS, values, null, null)
+
+        val result = db.insert(FINANCE_TABLE_NAME, null, values)
+        if (result == -1L) {
+            Log.e("DatabaseHelper", "Failed to insert record: $record")
+        } else {
+            Log.d("DatabaseHelper", "Finance record saved successfully: $record")
+        }
+        return result
     }
 
-    // Finance table methods
-    fun recordExpense(record: FinanceRecord) { /* unchanged */ }
+    fun updateMonster(monster: Monster): Long {
+        val db = this.writableDatabase
+        val contentValues = ContentValues()
+        contentValues.put(COL_NAME, monster.name)
+        contentValues.put(COL_STAT_SAVED, monster.statSaved)
+        contentValues.put(COL_STAT_SPENT, monster.statSpent)
+        contentValues.put(COL_LEVEL, monster.level)
 
-    // Monster table methods
-    fun updateMonster(monster: Monster) { /* unchanged */ }
+        return db.update(
+            MONSTER_TABLE_NAME,
+            contentValues,
+            "$COL_MONSTER_ID = ?",
+            arrayOf(monster.monsterId.toString())
+        ).toLong()
+    }
 
-    fun updateMonsterStatSaved(amount: Double) { /* unchanged */ }
+    fun getTotalStatSaved(): Double {
+        val db = readableDatabase
+        val cursor = db.rawQuery("SELECT SUM($COL_STAT_SAVED) AS total_saved FROM $MONSTER_TABLE_NAME", null)
+        return if (cursor.moveToFirst()) {
+            cursor.getDouble(cursor.getColumnIndexOrThrow("total_saved"))
+        } else {
+            0.0
+        }.also {
+            cursor.close()
+        }
+    }
 
-    fun updateMonsterStatSpent(amount: Double) { /* unchanged */ }
+    fun getTotalStatSpent(): Double {
+        val db = readableDatabase
+        val cursor = db.rawQuery("SELECT SUM($COL_STAT_SPENT) AS total_spent FROM $MONSTER_TABLE_NAME", null)
+        return if (cursor.moveToFirst()) {
+            cursor.getDouble(cursor.getColumnIndexOrThrow("total_spent"))
+        } else {
+            0.0
+        }.also {
+            cursor.close()
+        }
+    }
 
-    fun getAllRecordsInDate(day: Int?, month: Int?, year: Int?) { /* unchanged */ }
 
-    fun getAllRecords(month: Int?, year: Int?) { /* unchanged */ }
+    fun updateMonsterStatSaved(amount: Double) {
+        val db = writableDatabase
+        db.execSQL("""
+            UPDATE $MONSTER_TABLE_NAME
+            SET $COL_STAT_SAVED = $COL_STAT_SAVED + ?
+            WHERE $COL_ON_FIELD = 1
+        """, arrayOf(amount))
+        Log.d("DatabaseHelper", "Updated stat_saved by $amount for active monster.")
+    }
 
-    private fun generateRecordQuery(db: SQLiteDatabase, month: Int?, year: Int?) { /* unchanged */ }
+    fun updateMonsterStatSpent(amount: Double) {
+        val db = writableDatabase
+        db.execSQL("""
+            UPDATE $MONSTER_TABLE_NAME
+            SET $COL_STAT_SPENT = $COL_STAT_SPENT + ?
+            WHERE $COL_ON_FIELD = 1
+        """, arrayOf(amount))
+        Log.d("DatabaseHelper", "Updated stat_spent by $amount for active monster.")
+    }
 
-    private fun getLastDayOfMonthYear(month: Int, year: Int) { /* unchanged */ }
+    fun getAllRecordsInDate(day: Int?, month: Int?, year: Int?): List<FinanceRecord> {
+        val records = mutableListOf<FinanceRecord>()
+        val db = readableDatabase
 
-    fun getAllMonsters() { /* unchanged */ }
+        val cursor = db.rawQuery("SELECT * FROM $FINANCE_TABLE_NAME WHERE $COL_DATE = ?",
+            arrayOf("$year-$month-$day"))
+
+        if (cursor.moveToFirst()) {
+            do {
+                val id = cursor.getInt(cursor.getColumnIndexOrThrow(COL_FINANCE_ID))
+                val type = cursor.getString(cursor.getColumnIndexOrThrow(COL_TYPE))
+                val dateString = cursor.getString(cursor.getColumnIndexOrThrow(COL_DATE))
+                val currency = cursor.getString(cursor.getColumnIndexOrThrow(COL_CUR))
+                val amount = cursor.getDoubleOrNull(cursor.getColumnIndexOrThrow(COL_AMT))
+                val category = cursor.getString(cursor.getColumnIndexOrThrow(COL_CAT))
+                val description = cursor.getString(cursor.getColumnIndexOrThrow(COL_DESC))
+
+                val date = try {
+                    DATE_FORMAT.parse(dateString)
+                } catch (e: Exception) {
+                    null
+                }
+
+                if (date != null) {
+                    records.add(FinanceRecord(id, type, date, currency, amount.toString(), category, description))
+                }
+            } while (cursor.moveToNext())
+        }
+        cursor.close()
+        return records
+    }
+
+    fun getAllRecords(month:Int?, year:Int?): List<FinanceRecord> {
+        val records = mutableListOf<FinanceRecord>()
+        val db = readableDatabase
+        val cursor = generateRecordQuery(db, month,year)
+
+        if (cursor.moveToFirst()) {
+            do {
+                val id = cursor.getInt(cursor.getColumnIndexOrThrow(COL_FINANCE_ID))
+                val type = cursor.getString(cursor.getColumnIndexOrThrow(COL_TYPE))
+                val dateString = cursor.getString(cursor.getColumnIndexOrThrow(COL_DATE))
+                val currency = cursor.getString(cursor.getColumnIndexOrThrow(COL_CUR))
+                val amount = cursor.getDoubleOrNull(cursor.getColumnIndexOrThrow(COL_AMT))
+                val category = cursor.getString(cursor.getColumnIndexOrThrow(COL_CAT))
+                val description = cursor.getString(cursor.getColumnIndexOrThrow(COL_DESC))
+
+                val date = try {
+                    DATE_FORMAT.parse(dateString)
+                } catch (e: Exception) {
+                    null
+                }
+
+                if (date != null) {
+                    records.add(FinanceRecord(id, type, date, currency, amount.toString(), category, description))
+                }
+            } while (cursor.moveToNext())
+        }
+        cursor.close()
+        return records
+    }
+
+    private fun generateRecordQuery(db: SQLiteDatabase, month: Int?, year: Int?): Cursor {
+        if (year == null) {
+            return db.rawQuery("SELECT * FROM $FINANCE_TABLE_NAME ORDER BY $COL_DATE ASC", null)
+        } else {
+            val startDate: String
+            val endDate: String
+
+            if (month != null) {
+                val formattedMonth = String.format("%02d", month)
+                val lastDayOfMonth = getLastDayOfMonthYear(month, year)
+
+                startDate = "$year-$formattedMonth-01"
+                endDate = "$year-$formattedMonth-${String.format("%02d", lastDayOfMonth)}"
+            } else {
+                startDate = "$year-01-01"
+                endDate = "$year-12-31"
+            }
+
+            return db.rawQuery(
+                "SELECT * FROM $FINANCE_TABLE_NAME WHERE $COL_DATE BETWEEN ? AND ? ORDER BY $COL_DATE ASC",
+                arrayOf(startDate, endDate)
+            )
+        }
+    }
+
+
+
+    private fun getLastDayOfMonthYear(month:Int, year:Int): Int{
+        when (month){
+            1, 3, 5, 7, 8, 10,12 -> return 31
+            4, 6, 9, 11 -> return 30
+            2 -> return if (year % 4 == 0) 29 else 28
+            else -> return -1
+        }
+    }
+
+    fun getAllMonsters(): List<Monster> {
+        val monsters = mutableListOf<Monster>()
+        val db = readableDatabase
+        val cursor = db.rawQuery("SELECT * FROM $MONSTER_TABLE_NAME", null)
+
+        if (cursor != null && cursor.moveToFirst()) {
+            do {
+                val monsterId = cursor.getInt(cursor.getColumnIndexOrThrow(COL_MONSTER_ID))
+                val species = cursor.getString(cursor.getColumnIndexOrThrow(COL_SPECIES))
+                val name = cursor.getString(cursor.getColumnIndexOrThrow(COL_NAME))
+                val image = cursor.getInt(cursor.getColumnIndexOrThrow(COL_IMAGE))
+                val adoptionDateStr = cursor.getString(cursor.getColumnIndexOrThrow(COL_ADOPTION_DATE))
+                val stage = cursor.getString(cursor.getColumnIndexOrThrow(COL_STAGE))
+                val upTick = cursor.getInt(cursor.getColumnIndexOrThrow(COL_UP_TICK))
+                val reqExp = cursor.getInt(cursor.getColumnIndexOrThrow(COL_REQ_EXP))
+                val level = cursor.getInt(cursor.getColumnIndexOrThrow(COL_LEVEL))
+                val statSaved = cursor.getDouble(cursor.getColumnIndexOrThrow(COL_STAT_SAVED))
+                val statSpent = cursor.getDouble(cursor.getColumnIndexOrThrow(COL_STAT_SPENT))
+                val description = cursor.getString(cursor.getColumnIndexOrThrow(COL_DESCRIPTION))
+                val unlocked = cursor.getInt(cursor.getColumnIndexOrThrow(COL_UNLOCKED)) == 1
+                val onField = cursor.getInt(cursor.getColumnIndexOrThrow(COL_ON_FIELD)) == 1
+
+                val adoptionDate = try {
+                    DATE_FORMAT.parse(adoptionDateStr)
+                } catch (e: Exception) {
+                    null
+                }
+
+                if (adoptionDate != null) {
+                    monsters.add(Monster(
+                        monsterId, species, name, image,
+                        Date(adoptionDate.time), stage, upTick, reqExp, level, statSaved, statSpent, description, unlocked, onField
+                    ))
+                }
+            } while (cursor.moveToNext())
+        } else {
+            Log.e("DatabaseHelper", "No monsters found in the database.")
+        }
+
+        cursor?.close()
+        return monsters
+    }
+
 }
