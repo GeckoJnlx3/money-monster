@@ -167,7 +167,7 @@ class HistoryActivity : ComponentActivity() {
                 entry.value.groupBy { it.type }
             }
 
-        val adapter = HistoryRecordDateAdapter(groupedByDateAndType)
+        val adapter = HistoryRecordDateAdapter(groupedByDateAndType, this)
         recyclerView.adapter = adapter
     }
 
