@@ -54,23 +54,34 @@
             android:textSize="24sp" />
     </LinearLayout>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/historyRecycler"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="0" />
+        android:layout_height="match_parent"
+        android:layout_marginStart="12sp"
+        android:layout_marginEnd="12sp"
+        android:layout_weight="0"
+        android:background="@drawable/rounded_square"
+        android:backgroundTint="@color/beige"
+        android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/endMarkerTv"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="12sp"
-        android:layout_marginTop="12dp"
-        android:fontFamily="sans-serif"
-        android:text="-- End of logs --"
-        android:textAlignment="center"
-        android:textColor="@color/brown_header"
-        android:textSize="20sp"
-        android:textStyle="bold" />
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/historyRecycler"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0" />
+
+        <TextView
+            android:id="@+id/endMarkerTv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="12sp"
+            android:layout_marginTop="12dp"
+            android:fontFamily="sans-serif"
+            android:text="-- End of logs --"
+            android:textAlignment="center"
+            android:textColor="@color/brown_header"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+    </LinearLayout>
 
 </LinearLayout>
