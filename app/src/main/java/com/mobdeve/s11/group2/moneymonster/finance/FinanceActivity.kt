@@ -250,15 +250,24 @@ class FinanceActivity : ComponentActivity() {
             val target = sharedPref.getFloat(SettingsActivity.TARGET, 500.0.toFloat())
             val limit = sharedPref.getFloat(SettingsActivity.LIMIT, 300.0.toFloat())
 
-            if (currentIncome > target){
+            if (currentIncome >= target){
                 val totalXp = currentIncome/target
                 currentIncome = currentIncome%target
 
                 activeMonster.upTick += totalXp.toInt()
 
-                if (activeMonster.upTick > activeMonster.reqExp){
+                if (activeMonster.upTick >= activeMonster.reqExp){
                     activeMonster.upTick = activeMonster.upTick%activeMonster.reqExp
-                    activeMonster.level += (totalXp/activeMonster.reqExp).toInt()
+                    val addLevel = (totalXp/activeMonster.reqExp).toInt()
+                    Log.d("Finance addLevel", "$addLevel")
+
+                    val levelToEvolve = getLevelToEvolve(activeMonster.stage)
+                    if (activeMonster.level + addLevel >= levelToEvolve && levelToEvolve != -1){
+                        activeMonster.level = levelToEvolve
+                        evolveMonster(activeMonster)
+                    } else {
+                        activeMonster.level += addLevel
+                    }
                 }
 
                 val editor = sharedPref.edit()
@@ -280,17 +289,24 @@ class FinanceActivity : ComponentActivity() {
                 editor.putFloat("CURRENT_EXPENSE", (currentExpense).toFloat())
                 editor.apply()
             }
-
-            if (shouldEvolve(activeMonster)) {
-                evolveMonster(activeMonster)
-            }
-
+//
+//            if (shouldEvolve(activeMonster)) {
+//                evolveMonster(activeMonster)
+//            }
             val result = dbHelper.updateMonster(activeMonster)
             if (result > 0) {
                 Log.d("FinanceActivity", "Monster stats updated successfully.")
             } else {
                 Log.e("FinanceActivity", "Failed to update monster stats.")
             }
+        }
+    }
+
+    private fun getLevelToEvolve(stage:String): Int{
+        return when (stage) {
+            "baby" -> 5
+            "teen" -> 15
+            else -> -1
         }
     }
 

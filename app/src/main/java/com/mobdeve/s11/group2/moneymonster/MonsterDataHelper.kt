@@ -28,9 +28,9 @@ object MonsterDataHelper {
 
     fun populateMonsterTable(db: SQLiteDatabase?) {
         val monsters = listOf(
-            Monster(1, "gwomp", "Gwomp", R.drawable.gwomp_baby, Date(System.currentTimeMillis()), "baby", 0, 5, 1, 0.00, 0.00, "A baby Gwomp.", true, true),
-            Monster(2, "gwomp", "Gwompor", R.drawable.gwomp_teen, Date(System.currentTimeMillis()), "teen", 5, 15, 2, 0.00, 0.00, "The teenage Gwomp.", false, false),
-            Monster(3, "gwomp", "Wompagwom", R.drawable.gwomp_adult, Date(System.currentTimeMillis()), "adult", 15, 25, 3, 0.00, 0.00, "The adult Gwomp.", false, false),
+            Monster(1, "gwomp", "Gwomp", R.drawable.gwomp_baby, Date(System.currentTimeMillis()), "baby", 0, 1, 1, 0.00, 0.00, "A baby Gwomp.", true, true),
+            Monster(2, "gwomp", "Gwompor", R.drawable.gwomp_teen, Date(System.currentTimeMillis()), "teen", 5, 2, 2, 0.00, 0.00, "The teenage Gwomp.", false, false),
+            Monster(3, "gwomp", "Wompagwom", R.drawable.gwomp_adult, Date(System.currentTimeMillis()), "adult", 3, 25, 3, 0.00, 0.00, "The adult Gwomp.", false, false),
             Monster(4, "mamoo", "Mamoo", R.drawable.mamoo_baby, Date(System.currentTimeMillis()), "baby", 0, 15, 1, 0.00, 0.00, "A baby Mamoo.", false, false),
             Monster(5, "mamoo", "Moomie", R.drawable.mamoo_teen, Date(System.currentTimeMillis()), "teen", 5, 15, 2, 0.00, 0.00, "The teenage Mamoo.", false, false),
             Monster(6, "mamoo", "Mamoolah", R.drawable.mamoo_adult, Date(System.currentTimeMillis()), "adult", 15, 25, 3, 0.00, 0.00, "The adult Mamoo.", false, false),
