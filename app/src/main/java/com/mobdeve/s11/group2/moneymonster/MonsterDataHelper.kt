@@ -78,6 +78,17 @@ object MonsterDataHelper {
             null,
             null
         )
+        fun updateMonster(db: SQLiteDatabase, monster: Monster) {
+            val contentValues = ContentValues().apply {
+                put("name", monster.name)
+                put("level", monster.level)
+                put("upTick", monster.upTick)
+                put("reqExp", monster.reqExp)
+                put("statSaved", monster.statSaved)
+                put("statSpent", monster.statSpent)
+            }
+
+        }
 
         var species: String? = null
         if (cursor != null && cursor.moveToFirst()) {

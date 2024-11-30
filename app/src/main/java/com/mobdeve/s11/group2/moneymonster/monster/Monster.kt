@@ -17,6 +17,8 @@ data class Monster(
     val description: String,
     val unlocked: Boolean,
     val onField: Boolean,
+//    val levelUpThreshold: Int
+
 //    val savingGoal: Double,
 //    val expensesGoal: Double
 )

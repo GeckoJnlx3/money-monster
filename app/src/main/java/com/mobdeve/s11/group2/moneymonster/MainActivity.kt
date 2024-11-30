@@ -7,14 +7,18 @@ import android.os.Handler
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.ProgressBar
+import android.widget.Toast
 import android.widget.TextView
 import android.view.View
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import com.mobdeve.s11.group2.moneymonster.databinding.ActivityMainBinding
 import com.mobdeve.s11.group2.moneymonster.history.HistoryActivity
 import com.mobdeve.s11.group2.moneymonster.finance.FinanceActivity
 import com.mobdeve.s11.group2.moneymonster.monsterpedia.MonsterpediaActivity
+import android.database.sqlite.SQLiteDatabase
+import com.mobdeve.s11.group2.moneymonster.MonsterProgressionHelper
+import com.mobdeve.s11.group2.moneymonster.DatabaseHelper
+import com.mobdeve.s11.group2.moneymonster.MonsterDataHelper
 import com.mobdeve.s11.group2.moneymonster.monster.MonsterStatActivity
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -38,9 +42,14 @@ class MainActivity : ComponentActivity() {
 
     private var currency: String = "PHP"
 
+    private lateinit var db: SQLiteDatabase  // Reference to your database
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         bindView()
+
+        // Initialize the database (adjust this as needed)
+        db = DatabaseHelper(this).writableDatabase
 
         settingsBtn.setOnClickListener { openSettings() }
         expenseGoal.setOnClickListener { openSettings() }
@@ -104,20 +113,43 @@ class MainActivity : ComponentActivity() {
 
     private fun loadAndDisplayProgress() {
         val sharedPref = getSharedPreferences(SettingsActivity.PREFERENCE_FILE, MODE_PRIVATE)
-        val target = sharedPref.getFloat(SettingsActivity.TARGET, 500.0f)
-        val limit = sharedPref.getFloat(SettingsActivity.LIMIT, 300.0f)
+        val target = sharedPref.getFloat(SettingsActivity.TARGET, 500.0.toFloat())
+        val limit = sharedPref.getFloat(SettingsActivity.LIMIT, 300.0.toFloat())
 
+        // Get current expense and income from shared preferences
         val currentExpense = sharedPref.getFloat("CURRENT_EXPENSE", 0f).toDouble()
         val currentIncome = sharedPref.getFloat("CURRENT_INCOME", 0f).toDouble()
 
-        targetProgressBar.max = target.toInt()
-        targetProgressBar.progress = currentIncome.toInt()
-        targetprogressText.text = String.format("$currency %.2f/%.2f", currentIncome, target.toDouble())
+        if (currentIncome >= target) {
+            // Saving goal reached: reset progress and show a message
+            with(sharedPref.edit()) {
+                putFloat("CURRENT_INCOME", 0f) // Reset income in SharedPreferences
+                apply()
+            }
+            targetProgressBar.progress = 0
+            targetprogressText.text = "$currency 0.00/$target"
+
+            // Increment up_tick for the active monster
+            val dbHelper = DatabaseHelper(this)
+            dbHelper.incrementUpTickForActiveMonster()  // Fixed call
+
+            // Ensure Toast is executed on the main thread
+            runOnUiThread {
+                Toast.makeText(this, "Congratulations! You've reached your saving goal!", Toast.LENGTH_SHORT).show()
+            }
+        } else {
+            targetProgressBar.max = target.toInt()
+            targetProgressBar.progress = currentIncome.toInt()
+            targetprogressText.text = String.format("$currency %.2f/%.2f", currentIncome, target.toDouble())
+        }
 
         limitProgressBar.max = limit.toInt()
         limitProgressBar.progress = currentExpense.toInt()
         limitprogressText.text = String.format("$currency %.2f/%.2f", currentExpense, limit.toDouble())
     }
+
+
+
 
     private fun loadAndDisplayCurrency() {
         val sharedPref = getSharedPreferences(SettingsActivity.PREFERENCE_FILE, MODE_PRIVATE)
@@ -131,27 +163,32 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun checkAndLevelUpMonster() {
-        val sharedPref = getSharedPreferences(SettingsActivity.PREFERENCE_FILE, MODE_PRIVATE)
-        val target = sharedPref.getFloat(SettingsActivity.TARGET, 500.0f)
-        val currentIncome = sharedPref.getFloat("CURRENT_INCOME", 0f)
-
-        if (currentIncome >= target) {
-            resetSavingGoal()
-            notifyMonsterStatsUpdated()
-        }
+        val monsterId = 1
+        val gainedExp = 20
+        MonsterProgressionHelper.levelUpMonster(db, monsterId, gainedExp)
     }
 
-    private fun resetSavingGoal() {
+    private fun startProgress(target: Int, currentIncome: Double) {
         targetProgressBar.progress = 0
-        val sharedPref = getSharedPreferences(SettingsActivity.PREFERENCE_FILE, Context.MODE_PRIVATE)
-        sharedPref.edit().putFloat("CURRENT_INCOME", 0f).apply()
-        Toast.makeText(this, "Saving goal reached and reset!", Toast.LENGTH_SHORT).show()
-    }
+        val maxProgress = target
 
-    private fun notifyMonsterStatsUpdated() {
-        val intent = Intent("com.mobdeve.s11.group2.moneymonster.UPDATE_MONSTER_STATS")
-        intent.putExtra("LEVEL_PROGRESS_INCREMENT", 1)
-        sendBroadcast(intent)
+        // Update the text initially to show progress is 0
+        targetprogressText.text = "$currency 0/$maxProgress"
+
+        Thread {
+            for (progress in 0..maxProgress) {
+                // Update progress bar and text
+                handler.post {
+                    targetProgressBar.progress = progress
+                    targetprogressText.text = "$currency %.2f/%.2f".format(progress.toDouble(), maxProgress.toDouble())
+                }
+                try {
+                    Thread.sleep(10) // Add delay to simulate progress
+                } catch (e: InterruptedException) {
+                    e.printStackTrace()
+                }
+            }
+        }.start()
     }
 
     private fun setDateToday() {

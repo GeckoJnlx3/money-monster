@@ -101,6 +101,24 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
             put(COL_DESC, record.description)
         }
 
+        fun incrementUpTickForActiveMonster() {
+            val db = this.writableDatabase
+            try {
+                val sql = """
+                UPDATE $MONSTER_TABLE_NAME 
+                SET $COL_UP_TICK = $COL_UP_TICK + 1 
+                WHERE $COL_ON_FIELD = 1
+            """
+                db.execSQL(sql)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            } finally {
+                db.close()
+            }
+        }
+
+
+
         val result = db.insert(FINANCE_TABLE_NAME, null, values)
         if (result == -1L) {
             Log.e("DatabaseHelper", "Failed to insert record: $record")
@@ -125,31 +143,6 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
             arrayOf(monster.monsterId.toString())
         ).toLong()
     }
-
-    fun getTotalStatSaved(): Double {
-        val db = readableDatabase
-        val cursor = db.rawQuery("SELECT SUM($COL_STAT_SAVED) AS total_saved FROM $MONSTER_TABLE_NAME", null)
-        return if (cursor.moveToFirst()) {
-            cursor.getDouble(cursor.getColumnIndexOrThrow("total_saved"))
-        } else {
-            0.0
-        }.also {
-            cursor.close()
-        }
-    }
-
-    fun getTotalStatSpent(): Double {
-        val db = readableDatabase
-        val cursor = db.rawQuery("SELECT SUM($COL_STAT_SPENT) AS total_spent FROM $MONSTER_TABLE_NAME", null)
-        return if (cursor.moveToFirst()) {
-            cursor.getDouble(cursor.getColumnIndexOrThrow("total_spent"))
-        } else {
-            0.0
-        }.also {
-            cursor.close()
-        }
-    }
-
 
     fun updateMonsterStatSaved(amount: Double) {
         val db = writableDatabase
@@ -311,5 +304,20 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         cursor?.close()
         return monsters
     }
+
+    fun incrementUpTickForActiveMonster() {
+        val db = this.writableDatabase
+        try {
+            val sql = """
+                UPDATE $MONSTER_TABLE_NAME 
+                SET $COL_UP_TICK = $COL_UP_TICK + 1 
+                WHERE $COL_ON_FIELD = 1
+            """
+            db.execSQL(sql)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        } finally {
+            db.close()
+        }    }
 
 }
