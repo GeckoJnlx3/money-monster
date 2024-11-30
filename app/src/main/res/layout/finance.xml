@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_margin="12sp"
     android:background="@color/offwhite_bg"
     android:orientation="vertical">
 
@@ -45,8 +46,10 @@
             android:layout_weight="1"
             android:background="@drawable/tab"
             android:backgroundTint="@color/beige"
-            android:padding="16dp"
-            android:text="Expense" />
+            android:fontFamily="@font/baloo_bhai"
+            android:padding="20dp"
+            android:text="Expense"
+            android:textSize="20sp" />
 
         <Button
             android:id="@+id/logIncomeBtn"
@@ -57,8 +60,10 @@
             android:layout_weight="1"
             android:background="@drawable/tab"
             android:backgroundTint="@color/brown_shadow"
-            android:padding="16dp"
-            android:text="Income" />
+            android:fontFamily="@font/baloo_bhai"
+            android:padding="20dp"
+            android:text="Income"
+            android:textSize="20sp" />
     </LinearLayout>
 
     <LinearLayout
@@ -75,7 +80,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:text="Log Expense"
-            android:textColor="#000000"
+            android:textColor="@color/brown_header"
             android:textSize="20sp"
             android:textStyle="bold" />
 
@@ -83,16 +88,16 @@
             android:id="@+id/dateEt"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:ems="10"
-            android:inputType="date"
             android:layout_margin="12sp"
-            android:textColor="#000000"
-            android:textSize="18sp"
             android:clickable="false"
             android:cursorVisible="false"
+            android:ems="10"
             android:focusable="false"
             android:focusableInTouchMode="false"
-            android:hint="Enter date"/>
+            android:hint="Enter date"
+            android:inputType="date"
+            android:textColor="#000000"
+            android:textSize="18sp" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -173,6 +178,7 @@
             android:id="@+id/saveBtn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:fontFamily="@font/baloo_bhai"
             android:layout_weight="0"
             android:background="@color/brown_accent"
             android:text="Save" />

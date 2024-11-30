@@ -17,6 +17,10 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.core.content.ContextCompat
 import com.mobdeve.s11.group2.moneymonster.DatabaseHelper
+import com.mobdeve.s11.group2.moneymonster.DatabaseHelper.Companion.COL_MONSTER_ID
+import com.mobdeve.s11.group2.moneymonster.DatabaseHelper.Companion.COL_SPECIES
+import com.mobdeve.s11.group2.moneymonster.DatabaseHelper.Companion.COL_STAGE
+import com.mobdeve.s11.group2.moneymonster.DatabaseHelper.Companion.MONSTER_TABLE_NAME
 import com.mobdeve.s11.group2.moneymonster.MonsterDataHelper
 import com.mobdeve.s11.group2.moneymonster.R
 import com.mobdeve.s11.group2.moneymonster.SettingsActivity
@@ -246,30 +250,63 @@ class FinanceActivity : ComponentActivity() {
             val target = sharedPref.getFloat(SettingsActivity.TARGET, 500.0.toFloat())
             val limit = sharedPref.getFloat(SettingsActivity.LIMIT, 300.0.toFloat())
 
-            if (currentIncome > target){
+            if (currentIncome >= target){
                 val totalXp = currentIncome/target
-//                Log.d("totalxp", totalXp.toString())
                 currentIncome = currentIncome%target
-//                Log.d("currentIncome", currentIncome.toString())
 
                 activeMonster.upTick += totalXp.toInt()
+
+                if (activeMonster.upTick >= activeMonster.reqExp){
+                    activeMonster.upTick = activeMonster.upTick%activeMonster.reqExp
+                    val addLevel = (totalXp/activeMonster.reqExp).toInt()
+                    Log.d("Finance addLevel", "$addLevel")
+
+                    val levelToEvolve = getLevelToEvolve(activeMonster.stage)
+                    if (activeMonster.level + addLevel >= levelToEvolve && levelToEvolve != -1){
+                        activeMonster.level = levelToEvolve
+                        evolveMonster(activeMonster)
+                    } else {
+                        activeMonster.level += addLevel
+                    }
+                }
 
                 val editor = sharedPref.edit()
                 editor.putFloat("CURRENT_INCOME", (currentIncome).toFloat())
                 editor.apply()
             }
 
+            if (currentExpense > limit){
+                val totalNegXp = currentExpense/limit
+                currentExpense = currentExpense%limit
 
-            if (shouldEvolve(activeMonster)) {
-                evolveMonster(activeMonster)
+                activeMonster.upTick -= totalNegXp.toInt()
+
+                if (activeMonster.upTick < 0){
+                    activeMonster.upTick = 0
+                }
+
+                val editor = sharedPref.edit()
+                editor.putFloat("CURRENT_EXPENSE", (currentExpense).toFloat())
+                editor.apply()
             }
-
+//
+//            if (shouldEvolve(activeMonster)) {
+//                evolveMonster(activeMonster)
+//            }
             val result = dbHelper.updateMonster(activeMonster)
             if (result > 0) {
                 Log.d("FinanceActivity", "Monster stats updated successfully.")
             } else {
                 Log.e("FinanceActivity", "Failed to update monster stats.")
             }
+        }
+    }
+
+    private fun getLevelToEvolve(stage:String): Int{
+        return when (stage) {
+            "baby" -> 5
+            "teen" -> 15
+            else -> -1
         }
     }
 
@@ -281,25 +318,34 @@ class FinanceActivity : ComponentActivity() {
         }
     }
 
-    private fun evolveMonster(monster: Monster) {
+    private fun evolveMonster(activeMonster: Monster) {
         val dbHelper = DatabaseHelper(this)
         val db = dbHelper.writableDatabase
 
-        val newLevel = when (monster.stage) {
-            "baby" -> 5
-            "teen" -> 15
+        val newStage = when (activeMonster.stage) {
+            "baby" -> "teen"
+            "teen" -> "adult"
             else -> return
         }
 
-        monster.level = newLevel
-        monster.stage = when (newLevel) {
-            5 -> "teen"
-            15 -> "adult"
-            else -> monster.stage
-        }
+        val evolvedMonster = MonsterDataHelper.getMonsterBySpeciesAndStage(db, activeMonster.species, newStage)
 
-        MonsterDataHelper.updateMonsterLevel(db, monster.monsterId, newLevel)
-        Log.d("FinanceActivity", "Monster leveled up to ${monster.stage}.")
+        Log.d("FinanceActivity", "Evolved from ${activeMonster.name} (Stage: ${activeMonster.stage}).")
+
+        if (evolvedMonster != null) {
+            activeMonster.onField = false
+            activeMonster.unlocked = true
+
+            evolvedMonster.onField = true
+            evolvedMonster.unlocked = true
+            evolvedMonster.upTick = activeMonster.upTick
+            evolvedMonster.level = activeMonster.level
+
+            dbHelper.updateMonster(evolvedMonster)
+            dbHelper.updateMonster(activeMonster)
+
+            Log.d("FinanceActivity", "Monster evolved to ${evolvedMonster.name} (Stage: $newStage).")
+        }
     }
 
     private fun loadCurrency() {

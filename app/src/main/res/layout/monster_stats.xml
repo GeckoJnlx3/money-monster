@@ -65,7 +65,7 @@
             android:layout_margin="16dp"
             android:layout_weight="0.3"
             android:background="@drawable/rounded_square"
-            android:backgroundTint="@color/brown_accent"
+            android:backgroundTint="@color/beige"
             android:orientation="vertical"
             android:padding="5dp">
 
@@ -82,12 +82,15 @@
                         android:id="@+id/levelText"
 out_width="2dp"
                         android:layout_height="50dp"
+                        android:layout_marginLeft="12sp"
                         android:layout_weight="1"
-                        android:text="Lvl" />
+                        android:text="Lvl"
+                        android:textColor="@color/black" />
 
                     <RelativeLayout
                         android:layout_width="299dp"
                         android:layout_height="wrap_content"
+                        android:layout_marginRight="12sp"
                         android:gravity="center">
 
                         <ProgressBar
@@ -128,15 +131,21 @@ out_width="2dp"
 
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginStart="12sp"
                         android:layout_weight="1"
-                        android:text="Money Saved" />
+                        android:text="Money Saved"
+                        android:textColor="@color/black"
+                        android:textStyle="bold" />
 
                     <TextView
                         android:id="@+id/moneySavedAmount"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginEnd="12sp"
                         android:layout_weight="1"
-                        android:text="Php 250,000" />
+                        android:gravity="right"
+                        android:text="Php 250,000"
+                        android:textColor="@color/black" />
                 </LinearLayout>
 
             </FrameLayout>
@@ -154,15 +163,21 @@ out_width="2dp"
                         android:id="@+id/moneySpentText"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginStart="12sp"
                         android:layout_weight="1"
-                        android:text="Money Spent" />
+                        android:text="Money Spent"
+                        android:textColor="@color/black"
+                        android:textStyle="bold" />
 
                     <TextView
                         android:id="@+id/moneySpentAmount"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginEnd="12sp"
                         android:layout_weight="1"
-                        android:text="Php 100,000" />
+                        android:gravity="right"
+                        android:text="Php 100,000"
+                        android:textColor="@color/black" />
                 </LinearLayout>
 
             </FrameLayout>

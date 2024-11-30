@@ -15,9 +15,11 @@ import com.mobdeve.s11.group2.moneymonster.history.HistoryActivity
 import com.mobdeve.s11.group2.moneymonster.finance.FinanceActivity
 import com.mobdeve.s11.group2.moneymonster.monsterpedia.MonsterpediaActivity
 import android.database.sqlite.SQLiteDatabase
+import android.util.Log
 import com.mobdeve.s11.group2.moneymonster.MonsterProgressionHelper
 import com.mobdeve.s11.group2.moneymonster.DatabaseHelper
 import com.mobdeve.s11.group2.moneymonster.MonsterDataHelper
+import com.mobdeve.s11.group2.moneymonster.finance.FormatUtils
 import com.mobdeve.s11.group2.moneymonster.monster.MonsterStatActivity
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -41,14 +43,12 @@ class MainActivity : ComponentActivity() {
 
     private var currency: String = "PHP"
 
-    private lateinit var db: SQLiteDatabase  // Reference to your database
+    private lateinit var db: SQLiteDatabase
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        bindView()
-
-        // Initialize the database (adjust this as needed)
         db = DatabaseHelper(this).writableDatabase
+        bindView()
 
         settingsBtn.setOnClickListener { openSettings() }
         expenseGoal.setOnClickListener { openSettings() }
@@ -83,7 +83,7 @@ class MainActivity : ComponentActivity() {
 
         loadAndDisplayProgress()
         loadAndDisplayCurrency()
-        checkAndLevelUpMonster()
+
     }
 
     private fun openSettings() {
@@ -94,6 +94,9 @@ class MainActivity : ComponentActivity() {
     private fun bindView() {
         val viewBinding: ActivityMainBinding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(viewBinding.root)
+
+        val activeMonster = MonsterDataHelper.getActiveMonster(db)
+        Log.d("MainActivity", "Active Monster: $activeMonster")
 
         targetProgressBar = viewBinding.targetProgressBar
         limitProgressBar = viewBinding.limitProgressBar
@@ -139,10 +142,14 @@ class MainActivity : ComponentActivity() {
         limitprogressText.text = "$currency %.2f/%.2f".format(currentExpense, limitProgressBar.max.toDouble())
     }
 
-    private fun checkAndLevelUpMonster() {
-        val monsterId = 1
-        val gainedExp = 20
-        MonsterProgressionHelper.levelUpMonster(db, monsterId, gainedExp)
+    private fun loadMonsterData() {
+        val activeMonster = MonsterDataHelper.getActiveMonster(db)
+
+        Log.d("MonsterStatActivity", "Active Monster: $activeMonster")
+
+        if (activeMonster != null) {
+            monsterImageView.setImageResource(activeMonster.image)
+        }
     }
 
     private fun startProgress(target: Int, currentIncome: Double) {
@@ -178,5 +185,7 @@ class MainActivity : ComponentActivity() {
         super.onResume()
         loadAndDisplayProgress()
         loadAndDisplayCurrency()
+        loadMonsterData()
     }
 }
+

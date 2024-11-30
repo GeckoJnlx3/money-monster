@@ -1,5 +1,7 @@
 package com.mobdeve.s11.group2.moneymonster.history
 
+import android.content.Context
+import android.content.SharedPreferences
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,12 +12,14 @@ import androidx.recyclerview.widget.RecyclerView
 import com.mobdeve.s11.group2.moneymonster.finance.FinanceRecord
 import com.mobdeve.s11.group2.moneymonster.finance.FormatUtils
 import com.mobdeve.s11.group2.moneymonster.R
+import com.mobdeve.s11.group2.moneymonster.SettingsActivity
 import java.text.SimpleDateFormat
 import java.util.Locale
 
 class HistoryRecordTypeAdapter(
     private val groupedByDate: Map<java.util.Date, List<FinanceRecord>>,
-    private val onItemClick: (FinanceRecord) -> Unit
+    private val onItemClick: (FinanceRecord) -> Unit,
+    private val context: Context
 ) : RecyclerView.Adapter<HistoryRecordTypeAdapter.TypeViewHolder>() {
 
     private val sharedPool = RecyclerView.RecycledViewPool()
@@ -44,7 +48,8 @@ class HistoryRecordTypeAdapter(
         val totalIncome = groupedByType["Income"]?.sumOf { it.amount?.toDoubleOrNull() ?: 0.00 } ?: 0.00
 
         val balance = totalIncome - totalExpense
-        holder.balanceTextView.text = FormatUtils.formatAmount(balance, "PHP")
+        val currency = loadCurrency()
+        holder.balanceTextView.text = FormatUtils.formatAmount(balance, currency)
 
         when {
             balance > 0 -> {
@@ -62,9 +67,14 @@ class HistoryRecordTypeAdapter(
 
         holder.recordRecyclerView.apply {
             layoutManager = LinearLayoutManager(holder.itemView.context, RecyclerView.VERTICAL, false)
-            adapter = HistoryRecordAdapter(recordsForDate, onItemClick, "PHP")
+            adapter = HistoryRecordAdapter(recordsForDate, onItemClick, loadCurrency())
             setRecycledViewPool(sharedPool)
         }
     }
     override fun getItemCount(): Int = groupedByDate.size
+
+    private fun loadCurrency() : String{
+        val sharedPref: SharedPreferences = context.getSharedPreferences(SettingsActivity.PREFERENCE_FILE, Context.MODE_PRIVATE)
+        return sharedPref.getString(SettingsActivity.CURRENCY, "PHP") ?: "PHP"
+    }
 }

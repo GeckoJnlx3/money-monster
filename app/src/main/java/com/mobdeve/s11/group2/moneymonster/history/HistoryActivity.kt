@@ -141,7 +141,7 @@ class HistoryActivity : ComponentActivity() {
             "Daily" -> {
                 selectedYear = null
                 selectedMonth = null
-                return "Latest logs."
+                return "Latest logs"
             }
             "Monthly" -> {
                 selectedMonth = Calendar.getInstance().get(Calendar.MONTH) + 1
@@ -167,7 +167,7 @@ class HistoryActivity : ComponentActivity() {
                 entry.value.groupBy { it.type }
             }
 
-        val adapter = HistoryRecordDateAdapter(groupedByDateAndType)
+        val adapter = HistoryRecordDateAdapter(groupedByDateAndType, this)
         recyclerView.adapter = adapter
     }
 

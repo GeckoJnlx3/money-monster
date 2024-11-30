@@ -1,5 +1,6 @@
 package com.mobdeve.s11.group2.moneymonster.history
 
+import android.content.Context
 import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
@@ -15,7 +16,8 @@ import java.util.*
 import java.util.Date
 
 class HistoryRecordDateAdapter(
-    private val groupedByDateAndType: Map<Date, Map<String, List<FinanceRecord>>>
+    private val groupedByDateAndType: Map<Date, Map<String, List<FinanceRecord>>>,
+    private val context:Context
 ) : RecyclerView.Adapter<HistoryRecordDateAdapter.DateViewHolder>() {
 
     private val sharedPool = RecyclerView.RecycledViewPool()
@@ -53,7 +55,8 @@ class HistoryRecordDateAdapter(
                     putExtra("record_description", selectedRecord.description)
                 }
                 holder.itemView.context.startActivity(intent)
-            }
+            },
+            context = context
         )
 
         holder.typeRecyclerView.apply {

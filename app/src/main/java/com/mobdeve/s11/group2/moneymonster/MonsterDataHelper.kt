@@ -28,9 +28,9 @@ object MonsterDataHelper {
 
     fun populateMonsterTable(db: SQLiteDatabase?) {
         val monsters = listOf(
-            Monster(1, "gwomp", "Gwomp", R.drawable.gwomp_baby, Date(System.currentTimeMillis()), "baby", 0, 5, 1, 0.00, 0.00, "A baby Gwomp.", true, true),
-            Monster(2, "gwomp", "Gwompor", R.drawable.gwomp_teen, Date(System.currentTimeMillis()), "teen", 5, 15, 2, 0.00, 0.00, "The teenage Gwomp.", false, false),
-            Monster(3, "gwomp", "Wompagwom", R.drawable.gwomp_adult, Date(System.currentTimeMillis()), "adult", 15, 25, 3, 0.00, 0.00, "The adult Gwomp.", false, false),
+            Monster(1, "gwomp", "Gwomp", R.drawable.gwomp_baby, Date(System.currentTimeMillis()), "baby", 0, 1, 1, 0.00, 0.00, "A baby Gwomp.", true, true),
+            Monster(2, "gwomp", "Gwompor", R.drawable.gwomp_teen, Date(System.currentTimeMillis()), "teen", 5, 2, 2, 0.00, 0.00, "The teenage Gwomp.", false, false),
+            Monster(3, "gwomp", "Wompagwom", R.drawable.gwomp_adult, Date(System.currentTimeMillis()), "adult", 3, 25, 3, 0.00, 0.00, "The adult Gwomp.", false, false),
             Monster(4, "mamoo", "Mamoo", R.drawable.mamoo_baby, Date(System.currentTimeMillis()), "baby", 0, 15, 1, 0.00, 0.00, "A baby Mamoo.", false, false),
             Monster(5, "mamoo", "Moomie", R.drawable.mamoo_teen, Date(System.currentTimeMillis()), "teen", 5, 15, 2, 0.00, 0.00, "The teenage Mamoo.", false, false),
             Monster(6, "mamoo", "Mamoolah", R.drawable.mamoo_adult, Date(System.currentTimeMillis()), "adult", 15, 25, 3, 0.00, 0.00, "The adult Mamoo.", false, false),
@@ -108,6 +108,51 @@ object MonsterDataHelper {
             }
             else -> throw IllegalArgumentException("Unknown species: $species")
         }
+    }
+
+    fun updateMonsterStageAndImage(db: SQLiteDatabase, monsterId: Int, newStage: String, newName: String, newImage: Int) {
+        val values = ContentValues().apply {
+            put(COL_STAGE, newStage)
+            put(COL_NAME, newName)
+            put(COL_IMAGE, newImage)
+        }
+
+        db.update(MONSTER_TABLE_NAME, values, "$COL_MONSTER_ID = ?", arrayOf(monsterId.toString()))
+    }
+
+    fun getMonsterBySpeciesAndStage(db: SQLiteDatabase, species: String, stage: String): Monster? {
+        val cursor =  db.query(
+            MONSTER_TABLE_NAME,
+            arrayOf(COL_MONSTER_ID, COL_SPECIES, COL_NAME, COL_IMAGE, COL_ADOPTION_DATE, COL_STAGE, COL_UP_TICK, COL_REQ_EXP, COL_LEVEL, COL_STAT_SAVED, COL_STAT_SPENT, COL_DESCRIPTION, COL_UNLOCKED, COL_ON_FIELD),
+            "$COL_SPECIES = ? AND $COL_STAGE = ?",
+            arrayOf(species, stage),
+            null,
+            null,
+            null
+        )
+
+        var monster: Monster? = null
+        if (cursor != null && cursor.moveToFirst()) {
+            monster = Monster(
+                monsterId = cursor.getInt(cursor.getColumnIndexOrThrow(COL_MONSTER_ID)),
+                species = cursor.getString(cursor.getColumnIndexOrThrow(COL_SPECIES)),
+                name = cursor.getString(cursor.getColumnIndexOrThrow(COL_NAME)),
+                image = cursor.getInt(cursor.getColumnIndexOrThrow(COL_IMAGE)),
+                adoptionDate = Date(cursor.getLong(cursor.getColumnIndexOrThrow(COL_ADOPTION_DATE))),
+                stage = cursor.getString(cursor.getColumnIndexOrThrow(COL_STAGE)),
+                upTick = cursor.getInt(cursor.getColumnIndexOrThrow(COL_UP_TICK)),
+                reqExp = cursor.getInt(cursor.getColumnIndexOrThrow(COL_REQ_EXP)),
+                level = cursor.getInt(cursor.getColumnIndexOrThrow(COL_LEVEL)),
+                statSaved = cursor.getDouble(cursor.getColumnIndexOrThrow(COL_STAT_SAVED)),
+                statSpent = cursor.getDouble(cursor.getColumnIndexOrThrow(COL_STAT_SPENT)),
+                description = cursor.getString(cursor.getColumnIndexOrThrow(COL_DESCRIPTION)),
+                unlocked = cursor.getInt(cursor.getColumnIndexOrThrow(COL_UNLOCKED)) == 1,
+                onField = cursor.getInt(cursor.getColumnIndexOrThrow(COL_ON_FIELD)) == 1
+            )
+        }
+
+        cursor?.close()
+        return monster
     }
 
     fun getActiveMonster(db: SQLiteDatabase): Monster? {

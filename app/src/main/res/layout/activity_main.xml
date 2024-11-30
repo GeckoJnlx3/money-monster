@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_margin="12sp"
     android:background="@color/offwhite_bg"
     android:gravity="center_horizontal"
     android:orientation="vertical"
@@ -20,12 +21,12 @@
             android:layout_height="wrap_content"
             android:fontFamily="@font/baloo_bhai"
             android:gravity="center"
+            android:padding="20dp"
             android:text="October 15"
+            android:textAlignment="center"
             android:textColor="@color/brown_header"
             android:textSize="48sp"
-            android:textStyle="bold"
-            android:textAlignment="center"
-            android:padding="20dp"/>
+            android:textStyle="bold" />
 
         <LinearLayout
             android:id="@+id/savingGoal"
@@ -137,69 +138,80 @@
 
     </LinearLayout>
 
-    <Button
-        android:id="@+id/historyBtn"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="12px"
-        android:layout_weight="1"
-        android:background="@color/brown_accent"
-        android:text="History" />
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:background="#685C5C"
-        android:gravity="center|center_horizontal"
-        android:orientation="horizontal"
-        android:padding="5dp"
-        android:weightSum="4">
+        android:background="@color/beige"
+        android:orientation="vertical">
 
         <Button
-            android:id="@+id/settingsBtn"
+            android:id="@+id/historyBtn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_margin="5dp"
+            android:layout_margin="12px"
             android:layout_weight="1"
             android:background="@color/brown_accent"
-            android:text="Settings"
-            android:textSize="16sp" />
+            android:fontFamily="@font/baloo_bhai"
+            android:text="History" />
 
-        <Button
-            android:id="@+id/monsterpediaBtn"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_margin="5dp"
             android:layout_weight="1"
-            android:background="@color/brown_accent"
-            android:text="Monster\npedia"
-            android:textSize="16sp" />
+            android:background="@color/beige"
+            android:gravity="center|center_horizontal"
+            android:orientation="horizontal"
+            android:weightSum="4">
 
-        <Button
-            android:id="@+id/analyticsBtn"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_margin="5dp"
-            android:layout_weight="1"
-            android:background="@color/brown_accent"
-            android:text="Analytics"
-            android:textSize="16sp" />
+            <Button
+                android:id="@+id/settingsBtn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_margin="5dp"
+                android:layout_weight="1"
+                android:background="@color/brown_accent"
+                android:fontFamily="@font/baloo_bhai"
+                android:text="Settings"
+                android:textSize="16sp" />
 
-        <Button
-            android:id="@+id/financeBtn"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_margin="5dp"
-            android:layout_weight="1"
-            android:background="@color/brown_accent"
-            android:text="Finance"
-            android:textSize="16sp" />
+            <Button
+                android:id="@+id/monsterpediaBtn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_margin="5dp"
+                android:layout_weight="1"
+                android:background="@color/brown_accent"
+                android:fontFamily="@font/baloo_bhai"
+                android:text="Monster\npedia"
+                android:textSize="14sp" />
 
+            <Button
+                android:id="@+id/analyticsBtn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_margin="5dp"
+                android:layout_weight="1"
+                android:background="@color/brown_accent"
+                android:fontFamily="@font/baloo_bhai"
+                android:text="Analytics"
+                android:textSize="16sp" />
+
+            <Button
+                android:id="@+id/financeBtn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_margin="5dp"
+                android:layout_weight="1"
+                android:background="@color/brown_accent"
+                android:fontFamily="@font/baloo_bhai"
+                android:text="Finance"
+                android:textSize="16sp" />
+
+        </LinearLayout>
     </LinearLayout>
 
 </LinearLayout>

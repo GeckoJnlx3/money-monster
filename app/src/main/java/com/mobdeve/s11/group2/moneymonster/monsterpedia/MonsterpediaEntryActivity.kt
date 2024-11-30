@@ -1,5 +1,7 @@
 package com.mobdeve.s11.group2.moneymonster.monsterpedia
 
+import android.content.Context
+import android.content.SharedPreferences
 import android.graphics.Color
 import android.graphics.PorterDuff
 import android.os.Bundle
@@ -8,6 +10,7 @@ import android.widget.TextView
 import androidx.activity.ComponentActivity
 import com.mobdeve.s11.group2.moneymonster.DatabaseHelper
 import com.mobdeve.s11.group2.moneymonster.R
+import com.mobdeve.s11.group2.moneymonster.SettingsActivity
 
 class MonsterpediaEntryActivity : ComponentActivity() {
 
@@ -49,8 +52,10 @@ class MonsterpediaEntryActivity : ComponentActivity() {
 
             monsterNameTextView.text = name
             monsterDescriptionTextView.text = description
-            savedAmountTextView.text = "PHP %.2f".format(statSaved.toDouble())
-            spentAmountTextView.text = "PHP %.2f".format(statSpent.toDouble())
+            val sharedPref: SharedPreferences = getSharedPreferences(SettingsActivity.PREFERENCE_FILE, Context.MODE_PRIVATE)
+            val currency = sharedPref.getString(SettingsActivity.CURRENCY, "PHP") ?: "PHP"
+            savedAmountTextView.text = "$currency %.2f".format(statSaved.toDouble())
+            spentAmountTextView.text = "$currency %.2f".format(statSpent.toDouble())
 
             if (isUnlocked) {
                 monsterImageView.setImageResource(image)
