@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_margin="12sp"
     android:background="@color/offwhite_bg"
     android:orientation="vertical">
 
@@ -22,10 +23,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="0"
+        android:background="@drawable/rounded_square"
         android:orientation="horizontal"
-        android:paddingEnd="10dp"
-        android:paddingStart="10dp"
-        android:background="@drawable/rounded_square">
+        android:paddingStart="10dp">
 
         <Button
             android:id="@+id/time_period_btn"
@@ -33,25 +33,23 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center|start"
             android:layout_weight="0.7"
-            android:gravity="center"
             android:background="@drawable/rounded_square"
             android:backgroundTint="@color/brown_accent"
+            android:gravity="center"
             android:textAlignment="center"
+            android:textAllCaps="false"
             android:textColor="@color/black"
-            android:textSize="24sp"
-            android:textAllCaps="false"/>
+            android:textSize="24sp" />
 
         <Spinner
             android:id="@+id/timePeriodSpinner"
-            android:background="@drawable/rounded_square"
-            android:backgroundTint="@color/green_btn"
-            android:spinnerMode="dropdown"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center|end"
-            android:layout_margin="24sp"
+            android:layout_margin="12sp"
             android:layout_weight="0"
             android:padding="10dp"
+            android:spinnerMode="dropdown"
             android:textAlignment="center"
             android:textSize="24sp" />
     </LinearLayout>

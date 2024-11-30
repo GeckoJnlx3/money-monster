@@ -85,7 +85,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="12sp"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:paddingLeft="12sp">
 
         <TextView
             android:id="@+id/textView4"
@@ -102,24 +103,28 @@
             android:layout_height="wrap_content" />
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/expensesHeaderTv2"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="12sp"
-        android:layout_marginTop="12dp"
-        android:fontFamily="sans-serif"
-        android:text="Set Currency"
-        android:textAlignment="viewStart"
-        android:textColor="@color/brown_header"
-        android:textSize="20sp"
-        android:textStyle="bold" />
+        android:orientation="horizontal"
+        android:paddingLeft="12sp">
 
-    <Spinner
-        android:id="@+id/currencySpnr"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="24sp" />
+        <TextView
+            android:id="@+id/SetCurrencyTxt"
+            android:layout_width="205dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Set Currency"
+            android:textColor="#000000"
+            android:textSize="18sp" />
+
+        <Spinner
+            android:id="@+id/currencySpnr"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="24sp" />
+    </LinearLayout>
 
     <TextView
         android:id="@+id/expensesHeaderTv3"

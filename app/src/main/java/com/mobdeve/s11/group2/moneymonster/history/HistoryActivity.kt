@@ -141,7 +141,7 @@ class HistoryActivity : ComponentActivity() {
             "Daily" -> {
                 selectedYear = null
                 selectedMonth = null
-                return "Latest logs."
+                return "Latest logs"
             }
             "Monthly" -> {
                 selectedMonth = Calendar.getInstance().get(Calendar.MONTH) + 1
