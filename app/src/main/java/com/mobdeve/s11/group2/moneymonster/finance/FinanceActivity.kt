@@ -266,6 +266,20 @@ class FinanceActivity : ComponentActivity() {
                 editor.apply()
             }
 
+            if (currentExpense > limit){
+                val totalNegXp = currentExpense/limit
+                currentExpense = currentExpense%limit
+
+                activeMonster.upTick -= totalNegXp.toInt()
+
+                if (activeMonster.upTick < 0){
+                    activeMonster.upTick = 0
+                }
+
+                val editor = sharedPref.edit()
+                editor.putFloat("CURRENT_EXPENSE", (currentExpense).toFloat())
+                editor.apply()
+            }
 
             if (shouldEvolve(activeMonster)) {
                 evolveMonster(activeMonster)
