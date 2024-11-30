@@ -58,7 +58,7 @@
             android:layout_margin="16dp"
             android:layout_weight="0.3"
             android:background="@drawable/rounded_square"
-            android:backgroundTint="@color/brown_accent"
+            android:backgroundTint="@color/beige"
             android:orientation="vertical"
             android:padding="5dp">
 
@@ -69,7 +69,7 @@
                 android:layout_margin="16dp"
                 android:text="Description"
                 android:textColor="@color/black"
-                android:textSize="24sp"
+                android:textSize="20sp"
                 android:textStyle="bold" />
 
             <TextView

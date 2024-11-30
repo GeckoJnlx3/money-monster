@@ -178,6 +178,7 @@
             android:id="@+id/saveBtn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:fontFamily="@font/baloo_bhai"
             android:layout_weight="0"
             android:background="@color/brown_accent"
             android:text="Save" />
