@@ -77,7 +77,7 @@
                 android:text="Expenses"
                 android:textAlignment="viewStart"
                 android:textColor="@color/brown_header"
-                android:textSize="24sp"
+                android:textSize="20sp"
                 android:textStyle="bold" />
 
             <com.github.mikephil.charting.charts.PieChart
@@ -98,7 +98,7 @@
                 android:text="Overview"
                 android:textAlignment="viewStart"
                 android:textColor="@color/brown_header"
-                android:textSize="24sp"
+                android:textSize="20sp"
                 android:textStyle="bold" />
 
             <com.github.mikephil.charting.charts.LineChart

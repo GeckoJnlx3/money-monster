@@ -151,6 +151,7 @@
             android:layout_margin="12px"
             android:layout_weight="1"
             android:background="@color/brown_accent"
+            android:fontFamily="@font/baloo_bhai"
             android:text="History" />
 
         <LinearLayout
@@ -170,6 +171,7 @@
                 android:layout_margin="5dp"
                 android:layout_weight="1"
                 android:background="@color/brown_accent"
+                android:fontFamily="@font/baloo_bhai"
                 android:text="Settings"
                 android:textSize="16sp" />
 
@@ -181,8 +183,9 @@
                 android:layout_margin="5dp"
                 android:layout_weight="1"
                 android:background="@color/brown_accent"
+                android:fontFamily="@font/baloo_bhai"
                 android:text="Monster\npedia"
-                android:textSize="16sp" />
+                android:textSize="14sp" />
 
             <Button
                 android:id="@+id/analyticsBtn"
@@ -192,6 +195,7 @@
                 android:layout_margin="5dp"
                 android:layout_weight="1"
                 android:background="@color/brown_accent"
+                android:fontFamily="@font/baloo_bhai"
                 android:text="Analytics"
                 android:textSize="16sp" />
 
@@ -203,6 +207,7 @@
                 android:layout_margin="5dp"
                 android:layout_weight="1"
                 android:background="@color/brown_accent"
+                android:fontFamily="@font/baloo_bhai"
                 android:text="Finance"
                 android:textSize="16sp" />
 

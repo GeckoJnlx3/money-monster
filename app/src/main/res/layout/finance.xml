@@ -46,8 +46,10 @@
             android:layout_weight="1"
             android:background="@drawable/tab"
             android:backgroundTint="@color/beige"
-            android:padding="16dp"
-            android:text="Expense" />
+            android:fontFamily="@font/baloo_bhai"
+            android:padding="20dp"
+            android:text="Expense"
+            android:textSize="20sp" />
 
         <Button
             android:id="@+id/logIncomeBtn"
@@ -58,8 +60,10 @@
             android:layout_weight="1"
             android:background="@drawable/tab"
             android:backgroundTint="@color/brown_shadow"
-            android:padding="16dp"
-            android:text="Income" />
+            android:fontFamily="@font/baloo_bhai"
+            android:padding="20dp"
+            android:text="Income"
+            android:textSize="20sp" />
     </LinearLayout>
 
     <LinearLayout
@@ -76,7 +80,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:text="Log Expense"
-            android:textColor="#000000"
+            android:textColor="@color/brown_header"
             android:textSize="20sp"
             android:textStyle="bold" />
 
